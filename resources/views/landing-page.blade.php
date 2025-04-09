@@ -29,7 +29,7 @@
     </div>
 
     <div class="main-content">
-      <button>Masuk ke akun SMK Telkom</button>
+      <a href="{{ route('login') }}">Masuk ke akun SMK Telkom</a>
     </div>
   </div>
 
