@@ -9,4 +9,13 @@ html, body{
   width: 100vw;
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+#form-box{
+  width: 100%;
+  height: fit-content;
+  margin: 0;
+  padding: 2rem;
+  background-color: azure;
 }

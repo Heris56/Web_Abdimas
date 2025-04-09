@@ -24,7 +24,7 @@
 <body>
   <!-- Wrapper untuk form masuk -->
   <div class="container1">
-    <div class="container" id="form_box">
+    <div class="container" id="form-box">
       @if (session('error'))
       <div class="alert alert-danger">
         {{session('error')}}
