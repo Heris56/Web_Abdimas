@@ -7,3 +7,5 @@ Route::get('/welcome', function () {
 });
 
 Route::view('/', 'landing-page')->name('landing');
+Route::view('/login', 'login')->name('login');
+Route::view('/main-page', 'main-page')->name('main');
