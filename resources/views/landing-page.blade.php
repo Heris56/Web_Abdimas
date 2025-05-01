@@ -25,11 +25,10 @@
 <body>
   <!-- Wrapper -->
   <div class="container1">
-    <div class="background">
-      <p>Insert image untuk formalitas. Preferably image sekolahnya biar bagus</p>
-    </div>
+    <div class="background"></div>
 
     <div class="main-content">
+      <img src="" alt="">
       <a href="{{ route('login') }}">Masuk ke akun SMK Telkom</a>
     </div>
   </div>
