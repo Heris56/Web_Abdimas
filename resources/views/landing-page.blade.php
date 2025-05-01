@@ -28,18 +28,21 @@
     <div class="background"></div>
 
     <div class="main-content">
-      <img src="" alt="">
-      <a href="{{ route('login') }}">Masuk ke akun SMK Telkom</a>
+      <div class="container">
+      <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri">
+      <a href="{{ route('login') }}"><button>Cari Info Siswa</button></a>
+      <a href="{{ route('login') }}"><button>Masuk ke akun PGRI</button></a>
+      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Connect Bootsrap bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+<!-- Connect Bootsrap bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+  crossorigin="anonymous"></script>
 
-  <!-- Connect Custom JS -->
-  <script src="{{ asset('js/darryl.js') }}"></script>
+<!-- Connect Custom JS -->
+<script src="{{ asset('js/darryl.js') }}"></script>
 </body>
 
 </html>
