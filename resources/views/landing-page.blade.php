@@ -7,39 +7,42 @@
   <title>SMK </title>
   <!-- External buat background -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
-  
+
   <!-- Conect CSS bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-  
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
   <!-- Connect CSS -->
   <link rel="stylesheet" href="{{ asset('css/landing-page.css') }}">
-  
+
   <!-- Import Fonts -->
-  <link
-  href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Merriweather:wght@400;700&display=swap"
-  rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <!-- Wrapper -->
   <div class="container1">
-    <div class="background">
-      <p>Insert image untuk formalitas. Preferably image sekolahnya biar bagus</p>
-    </div>
+    <div class="background"></div>
 
     <div class="main-content">
-      <a href="{{ route('login') }}">Masuk ke akun SMK Telkom</a>
+      <div class="container">
+      <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri">
+      <a href="{{ route('login') }}"><button>Cari Info Siswa</button></a>
+      <a href="{{ route('login') }}"><button>Masuk ke akun PGRI</button></a>
+      </div>
     </div>
-  </div>
+</div>
 
-  <!-- Connect Bootsrap bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+<!-- Connect Bootsrap bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+  crossorigin="anonymous"></script>
 
-  <!-- Connect Custom JS -->
-  <script src="{{ asset('js/darryl.js') }}"></script>
+<!-- Connect Custom JS -->
+<script src="{{ asset('js/darryl.js') }}"></script>
 </body>
 
 </html>
