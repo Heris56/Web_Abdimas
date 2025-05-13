@@ -49,14 +49,13 @@
             </div>
             @endif
             <!-- Insert bacotan formalitas -->
-            <div class="head text-center">Masuk ke Website Sekolah</div>
-            <div class="subhead text-center">Selamat datang di website SMK PGRI 35</div>
+            <div class="mb-4 head text-center">Cari data siswa SMK PGRI 35</div>
             <form action="{{ route('login') }}" method="POST" onsubmit="">
                 @csrf
 
                 <!-- Isi NISN -->
                 <div class="mb-4">
-                    <label for="inputNISN" class="form-label">NISN</label>
+                    <label for="inputNISN" class="form-label">Silahkan masukkan NISN siswa</label>
                     <input type="text" class="form-control" id="inputNISN" name="inputNISN" required>
                 </div>
 
