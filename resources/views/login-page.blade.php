@@ -34,7 +34,7 @@
 
     <!-- Button login/register -->
     <div class="navbar-button ms-auto">
-      <a href="{{ route('landing') }}">
+      <a href="{{ route('cari') }}">
         Cari data Siswa
       </a>
     </div>
