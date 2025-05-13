@@ -1,7 +1,19 @@
+:root {
+  --color-accent: #FCBA03;
+  --color-light: #FEFCFB;
+  --color-dark: #121212;
+  --text-dark: #121212;
+  --text-light: #FFFCF2;
+  --color-button: #FDFFFC
+  --font-head: 'Poppins', sans-serif;
+  --font-body: 'Lato', sans-serif;
+}
+
 html, body{
   height: 100%;
   width: 100%;
   margin: 0;
+  font-family: var(--font-body);
 }
 
 .container1{
