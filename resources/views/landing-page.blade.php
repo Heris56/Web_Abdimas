@@ -30,8 +30,8 @@
     <div class="main-content">
       <div class="container">
         <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri">
-        <a href="{{ route('cari') }}"><button>Cari Info Siswa</button></a>
-        <a href="{{ route('login') }}"><button>Masuk ke akun PGRI</button></a>
+        <a href="{{ route('login-siswa') }}"><button>Cari Info Siswa</button></a>
+        <a href="{{ route('login-walikelas') }}"><button>Masuk ke akun PGRI</button></a>
       </div>
     </div>
   </div>
