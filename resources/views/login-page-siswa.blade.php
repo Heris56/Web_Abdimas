@@ -14,6 +14,20 @@
 
   <!-- Connect CSS -->
   <link rel="stylesheet" href="{{ asset('css/login-page.css') }}">
+  <style>
+    .container1 {
+      padding-top: 50px;
+      /* atur sesuai tinggi navbar */
+      min-height: 100vh;
+      /* biar penuh layar */
+      position: relative;
+    }
+
+    #form-box {
+      max-width: 500px;
+      width: 100%;
+    }
+  </style>
 
   <!-- Import Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,44 +37,24 @@
 </head>
 
 <body>
-  <!-- Navbar -->
-  <nav class="navbar fixed-top">
-
-    <div class="container-fluid">
-
-      <!-- navigate to home/dashboard by clicking logo/name -->
-      <a class="navbar-brand brand-name" href="{{ route('landing') }}">
-        <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="d-inline-block" />
-        SMK PGRI
-      </a>
-
-      <!-- Button login/register -->
-      <div class="ms-auto" id="navbar_button">
-        <a href="{{ route('landing') }}">
-          Cari data Siswa
-        </a>
-      </div>
-    </div>
-  </nav>
-
+  <x-navbar></x-navbar>
   <!-- Wrapper untuk form masuk -->
   <div class="container1">
-    <div class="container" id="form-box">
+    <div class="container-sm border w-100 w-md-75 w-lg-50" id="form-box">
       @if (session('error'))
       <div class="alert alert-danger">
         {{session('error')}}
       </div>
       @endif
-      <!-- Insert bacotan formalitas -->
       <div class="fs-2 fw-bold text-center">Masuk</div>
-      <div class="fs-4 fw-medium mb-4 text-center">Masuk ke Website Sekolah</div>
-      <form action="{{ route('login') }}" method="POST" onsubmit="">
+      <div class="fs-4 fw-medium mb-4 text-center">Masuk Sebagai Siswa</div>
+      <form action="{{ route('landing') }}" method="POST" onsubmit="">
         @csrf
 
         <!-- Isi NIP -->
         <div class="mb-2">
-          <label for="inputNIP" class="form-label">NIP</label>
-          <input type="text" class="form-control" id="inputNIP" name="inputNIP" required>
+          <label for="inputNISN" class="form-label">NISN</label>
+          <input type="text" class="form-control" id="inputNISN" name="inputNISN" required>
         </div>
 
         <!-- Isi kata sandi -->
@@ -78,7 +72,7 @@
 
         <!-- Button masuk -->
         <div class="d-flex flex-column justify-content-center">
-          <button type="submit" class="btn">
+          <button type="submit" class="btn border btn-primary">
             Masuk
           </button>
       </form>
