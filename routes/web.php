@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\DB;
 
 Route::get('/welcome', function () {
     return view('welcome');
@@ -15,7 +15,7 @@ Route::view('/logingurumapel', 'login-page-gurumapel')->name('login-gurumapel');
 Route::view('/main-page', 'main-page')->name('main');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 
-use Illuminate\Support\Facades\DB;
+
 
 Route::get('/test-db', function () {
     $data = DB::table('kelas')->get();
@@ -26,3 +26,4 @@ Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name
 
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
+Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
