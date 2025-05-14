@@ -1,21 +1,18 @@
 <div>
     <!-- Navbar -->
-    <nav class="navbar fixed-top border">
+    <nav class="navbar container-fluid fixed-top">
 
-        <div class="container-fluid">
+        <!-- navigate to home/dashboard by clicking logo/name -->
+        <a class="logo" href="{{ route('landing') }}">
+            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="logo-img d-inline-block" />
+            SMK PGRI 35
+        </a>
 
-            <!-- navigate to home/dashboard by clicking logo/name -->
-            <a class="navbar-brand brand-name" href="{{ route('landing') }}">
-                <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="d-inline-block" />
-                SMK PGRI
+        <!-- Button login/register -->
+        <div class="navbar-button ms-auto">
+            <a href="{{ route('cari') }}">
+                Cari data Siswa
             </a>
-
-            <!-- Button login/register -->
-            <div class="ms-auto" id="navbar_button">
-                <a href="{{ route('landing') }}">
-                    Cari data Siswa
-                </a>
-            </div>
         </div>
     </nav>
 </div>
