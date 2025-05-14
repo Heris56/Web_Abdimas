@@ -43,16 +43,20 @@
 
   <!-- Wrapper untuk form masuk -->
   <div class="background container1">
-    <div class="form-box container">
+    <div class="form-box container border">
       @if (session('error'))
       <div class="alert alert-danger">
         {{session('error')}}
       </div>
+      @elseif(session('success'))
+      <div class="alert alert-success">
+        {{session('success')}}
+      </div>
       @endif
       <!-- Insert bacotan formalitas -->
-      <div class="head text-center">Masuk ke Website Sekolah</div>
+      <div class="head text-center">Masuk Sebagai Siswa</div>
       <div class="subhead text-center">Selamat datang di website SMK PGRI 35</div>
-      <form action="{{ route('login-siswa') }}" method="POST" onsubmit="">
+      <form action="{{ route('login.siswa') }}" method="POST" onsubmit="">
         @csrf
 
         <!-- Isi Username -->
