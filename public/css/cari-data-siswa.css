@@ -71,7 +71,7 @@ html, body{
   text-decoration: none;
   color: var(--text-dark);
   background-color: var(--color-light);
-  padding: 0.875rem 1rem;
+  padding: 0.875rem 2rem;
   border-radius: 0.5rem;
 }
 
