@@ -62,7 +62,7 @@
                 <!-- Button masuk -->
                 <div class="d-flex flex-column justify-content-center">
                     <button type="submit" class="btn">
-                        Cari
+                        Cari data siswa
                     </button>
                 </div>
             </form>
