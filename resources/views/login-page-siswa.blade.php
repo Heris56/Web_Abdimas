@@ -15,6 +15,7 @@
   <!-- Connect CSS -->
   <link rel="stylesheet" href="{{ asset('css/login-page.css') }}">
 
+
   <!-- Import Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,7 +52,7 @@
       <!-- Insert bacotan formalitas -->
       <div class="head text-center">Masuk ke Website Sekolah</div>
       <div class="subhead text-center">Selamat datang di website SMK PGRI 35</div>
-      <form action="{{ route('login') }}" method="POST" onsubmit="">
+      <form action="{{ route('login-siswa') }}" method="POST" onsubmit="">
         @csrf
 
         <!-- Isi Username -->
@@ -68,7 +69,7 @@
 
         <!-- Button masuk -->
         <div class="d-flex flex-column justify-content-center">
-          <button type="submit" class="btn">
+          <button type="submit" class="btn border btn-primary">
             Masuk
           </button>
         </div>
