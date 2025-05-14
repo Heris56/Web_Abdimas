@@ -44,10 +44,10 @@
         <div class="Tabs">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="#">Presensi</a>
+                    <a class="nav-link" href="{{ route('info.presensi') }}">Presensi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Nilai</a>
+                    <a class="nav-link" aria-current="page" href="{{ route('info.nilai') }}">Nilai</a>
                 </li>
             </ul>
         </div>
