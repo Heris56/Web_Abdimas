@@ -34,7 +34,7 @@
 
         <!-- Button login/register -->
         <div class="navbar-button ms-auto">
-            <a href="{{ route('login') }}">
+            <a href="{{ route('login-siswa') }}">
                 Login
             </a>
         </div>
@@ -50,7 +50,7 @@
             @endif
             <!-- Insert bacotan formalitas -->
             <div class="mb-4 head text-center">Cari data siswa SMK PGRI 35</div>
-            <form action="{{ route('login') }}" method="POST" onsubmit="">
+            <form action="{{ route('info.nilai') }}" method="" onsubmit="">
                 @csrf
 
                 <!-- Isi NISN -->
