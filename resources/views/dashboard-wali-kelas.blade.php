@@ -5,20 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Presensi</title>
   <link rel="stylesheet" href="{{ asset('css/dashboard-wali-kelas.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 </head>
 <body>
-  <header>
-    <button class="logo-btn">Logo Sekolah</button>
-    <div class="search-bar">
-      <input type="text" placeholder="Cari data siswa" />
-    </div>
-    <button class="logout-btn">Keluar</button>
-  </header>
-
-  <div class="container">
-
+  @include('components.navbar')
+  <div class="container" id="content-wrapper">
     <div class="main-content">
-      <div class="top-bar">
+        <div id="wrapper-info-wali-kelas">
+            <div class="column" id="nama-wali-kelas">
+                <H3>
+                Hi, Dafa Raimi Suandi👋
+                </H3>
+            </div>
+            <div class="column" id="kelas">
+                <H5>
+                Wali Kelas: XI-A
+                </H5>
+            </div>
+            <div class="column" id="nip">
+                <H5>
+                NIP: 999999999999
+                </H5>
+            </div>
+        </div>
+        <div id="wrapper-top-bar-and-table">
+        <div class="top-bar">
         <input type="text" placeholder="Cari Tanggal Presensi" />
         <button>Input Presensi</button>
         <button style="background-color: orange; color: white;">Cetak Presensi</button>
@@ -57,6 +69,7 @@
           </tr>
         </tbody>
       </table>
+        </div>
     </div>
   </div>
 </body>
