@@ -24,56 +24,46 @@
 
 <body>
   <!-- Navbar -->
-  <nav class="navbar fixed-top">
+  <nav class="navbar container-fluid fixed-top">
 
-    <div class="container-fluid">
+    <!-- navigate to home/dashboard by clicking logo/name -->
+    <a class="logo" href="{{ route('landing') }}">
+      <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="logo-img d-inline-block" />
+      SMK PGRI 35
+    </a>
 
-      <!-- navigate to home/dashboard by clicking logo/name -->
-      <a class="navbar-brand brand-name" href="{{ route('landing') }}">
-        <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="d-inline-block" />
-        SMK PGRI
+    <!-- Button login/register -->
+    <div class="navbar-button ms-auto">
+      <a href="{{ route('cari') }}">
+        Cari data Siswa
       </a>
-
-      <!-- Button login/register -->
-      <div class="ms-auto" id="navbar_button">
-        <a href="{{ route('landing') }}">
-          Cari data Siswa
-        </a>
-      </div>
     </div>
   </nav>
 
   <!-- Wrapper untuk form masuk -->
-  <div class="container1">
-    <div class="container" id="form-box">
+  <div class="background container1">
+    <div class="form-box container">
       @if (session('error'))
       <div class="alert alert-danger">
         {{session('error')}}
       </div>
       @endif
       <!-- Insert bacotan formalitas -->
-      <div class="fs-2 fw-bold text-center">Masuk</div>
-      <div class="fs-4 fw-medium mb-4 text-center">Masuk ke Website Sekolah</div>
+      <div class="head text-center">Masuk ke Website Sekolah</div>
+      <div class="subhead text-center">Selamat datang di website SMK PGRI 35</div>
       <form action="{{ route('login') }}" method="POST" onsubmit="">
         @csrf
 
-        <!-- Isi NIP -->
+        <!-- Isi Username -->
         <div class="mb-2">
-          <label for="inputNIP" class="form-label">NIP</label>
-          <input type="text" class="form-control" id="inputNIP" name="inputNIP" required>
+          <label for="inputUsername" class="form-label">Username</label>
+          <input type="text" class="form-control" id="inputUsername" name="inputUsername" required>
         </div>
 
         <!-- Isi kata sandi -->
-        <div class="mb-2">
-          <label for="inputPassword" class="form-label">Kata sandi</label>
-          <input type="password" class="form-control" id="inputPassword" name="inputPassword" required>
-        </div>
-
-        <div class="mb-1">
-          <input type="checkbox" id="togglePassword"> Tunjukan sandi
-        </div>
         <div class="mb-4">
-          <input type="checkbox" id="RememberMe" name="RememberMe"> Ingat Saya
+          <label for="inputPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="inputPassword" name="inputPassword" required>
         </div>
 
         <!-- Button masuk -->
@@ -81,6 +71,7 @@
           <button type="submit" class="btn">
             Masuk
           </button>
+        </div>
       </form>
     </div>
   </div>
