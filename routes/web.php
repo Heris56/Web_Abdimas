@@ -13,6 +13,7 @@ Route::view('/loginsiswa', 'login-page-siswa')->name('login-siswa');
 Route::view('/loginwalikelas', 'login-page-walikelas')->name('login-walikelas');
 Route::view('/logingurumapel', 'login-page-gurumapel')->name('login-gurumapel');
 Route::view('/main-page', 'main-page')->name('main');
+Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 Route::view('/info-nilai-siswa', 'info-nilai-siswa')->name('info.nilai');
 Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
@@ -31,6 +32,7 @@ Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
+Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 
 // buat test
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
