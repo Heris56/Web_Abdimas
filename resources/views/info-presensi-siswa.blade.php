@@ -35,7 +35,7 @@
         <!-- Button login/register -->
         <div class="navbar-button ms-auto">
             <a href="{{ route('login-siswa') }}">
-                Login
+                Logout
             </a>
         </div>
     </nav>
@@ -62,7 +62,6 @@
                         <th scope="col">No</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col">Keterangan</th>
-                        <th scope="col">Overtime</th>
                         <th scope="col">Catatan</th>
                     </tr>
                 </thead>
@@ -71,35 +70,30 @@
                         <th scope="row">1</th>
                         <td>2025-05-01</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
                         <td>2025-05-02</td>
                         <td>Izin</td>
-                        <td>Tidak</td>
                         <td>Surat izin sakit</td>
                     </tr>
                     <tr>
                         <th scope="row">3</th>
                         <td>2025-05-03</td>
                         <td>Hadir</td>
-                        <td>Ya</td>
                         <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
                     </tr>
                     <tr>
                         <th scope="row">4</th>
                         <td>2025-05-04</td>
                         <td>Alpha</td>
-                        <td>Tidak</td>
                         <td>Tidak ada keterangan</td>
                     </tr>
                     <tr>
                         <th scope="row">5</th>
                         <td>2025-05-05</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                 </tbody>
@@ -115,7 +109,6 @@
                         <th scope="col">No</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col">Keterangan</th>
-                        <th scope="col">Overtime</th>
                         <th scope="col">Catatan</th>
                     </tr>
                 </thead>
@@ -124,35 +117,30 @@
                         <th scope="row">1</th>
                         <td>2025-05-01</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
                         <td>2025-05-02</td>
                         <td>Izin</td>
-                        <td>Tidak</td>
                         <td>Surat izin sakit</td>
                     </tr>
                     <tr>
                         <th scope="row">3</th>
                         <td>2025-05-03</td>
                         <td>Hadir</td>
-                        <td>Ya</td>
                         <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
                     </tr>
                     <tr>
                         <th scope="row">4</th>
                         <td>2025-05-04</td>
                         <td>Alpha</td>
-                        <td>Tidak</td>
                         <td>Tidak ada keterangan</td>
                     </tr>
                     <tr>
                         <th scope="row">5</th>
                         <td>2025-05-05</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                 </tbody>
@@ -168,7 +156,6 @@
                         <th scope="col">No</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col">Keterangan</th>
-                        <th scope="col">Overtime</th>
                         <th scope="col">Catatan</th>
                     </tr>
                 </thead>
@@ -177,35 +164,30 @@
                         <th scope="row">1</th>
                         <td>2025-05-01</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                     <tr>
                         <th scope="row">2</th>
                         <td>2025-05-02</td>
                         <td>Izin</td>
-                        <td>Tidak</td>
                         <td>Surat izin sakit</td>
                     </tr>
                     <tr>
                         <th scope="row">3</th>
                         <td>2025-05-03</td>
                         <td>Hadir</td>
-                        <td>Ya</td>
                         <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
                     </tr>
                     <tr>
                         <th scope="row">4</th>
                         <td>2025-05-04</td>
                         <td>Alpha</td>
-                        <td>Tidak</td>
                         <td>Tidak ada keterangan</td>
                     </tr>
                     <tr>
                         <th scope="row">5</th>
                         <td>2025-05-05</td>
                         <td>Hadir</td>
-                        <td>Tidak</td>
                         <td>-</td>
                     </tr>
                 </tbody>

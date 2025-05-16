@@ -35,7 +35,7 @@
         <!-- Button login/register -->
         <div class="navbar-button ms-auto">
             <a href="{{ route('login-siswa') }}">
-                Login
+                Logout
             </a>
         </div>
     </nav>
