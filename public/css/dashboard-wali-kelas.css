@@ -71,15 +71,7 @@ table th {
     padding-top: 50px;
 }
 
-.navbar {
-    background-color: yellow;
-}
-
 .btn-outline-secondary,
 .btn-warning {
-    width: 170px;
-}
-
-.form-control {
     width: 200px;
 }
