@@ -1,0 +1,347 @@
+:root {
+    /* color settings */
+    --color-accent: #fcba03;
+    --color-light: #fefcfb;
+    --color-dark: #121212;
+    --text-dark: #121212;
+    --text-light: #fffcf2;
+    --color-button: #fdfffc;
+
+    /* fonts settings */
+    --font-head: "Poppins", sans-serif;
+    --font-body: "Lato", sans-serif;
+
+    --font-size-sm: 0.875rem; /* 14px for hints */
+    --font-size-base: 1rem; /* 16px for default/input */
+    --font-size-md: 1.125rem; /* 18px for label */
+    --font-size-lg: 1.5rem; /* 24px for title/subheading */
+    --font-size-head: 2rem; /* 32px for heading*/
+    --font-size-hero: 3rem; /* 48px for hero section */
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    background-color: var(--color-light);
+}
+
+body {
+    /* navbar 80px + margin 20px */
+    padding-top: 6.25rem;
+}
+
+/* Navbar section */
+/* Button navbar controls */
+.navbar-button a {
+    text-decoration: none;
+    color: var(--text-dark);
+    background-color: var(--color-light);
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.navbar-button:active {
+    transform: scale(0.97);
+}
+
+.navbar {
+    background-color: var(--color-accent);
+    height: 80px;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: var(--font-size-lg);
+    color: inherit;
+}
+
+.logo-img {
+    margin-right: 0.5rem;
+}
+/* End navbar section */
+
+/* Input controls */
+input.form-control {
+    height: 3rem;
+    font-size: var(--font-size-base);
+    border: 1px solid var(--color-dark);
+    border-radius: 4px;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    outline: none;
+}
+
+input.form-control:focus {
+    box-shadow: 0 0 0 3px var(--color-accent);
+    border: 1px var(--color-accent);
+    background-color: var(--color-light);
+}
+
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 0.3fr 1.7fr;
+    grid-template-rows: 0.2fr 2fr;
+    grid-auto-columns: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    justify-items: stretch;
+    grid-template-areas:
+        "Profile Tabs"
+        "Profile Contents";
+}
+
+.Tabs {
+    grid-area: Tabs;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.Tabs input{
+    width: 400px;
+}
+
+.Contents {
+    grid-area: Contents;
+    padding: 0.5rem 1.5rem;
+}
+
+.Profile {
+    grid-area: Profile;
+}
+
+.Profile img {
+    width: 300px;
+}
+
+.head {
+    font-size: var(--font-size-lg);
+    font-family: var(--font-head);
+}
+
+/* tab button controls */
+.Tabs ul li a {
+    width: 6rem;
+    height: 2.5rem;
+    text-align: center;
+    gap: 1rem;
+}
+
+.Tabs ul {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #cbcac9;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--color-accent);
+    position: relative;
+}
+
+.nav-link:focus {
+    color: var(--text-dark);
+    position: relative;
+}
+
+.nav-link:focus,
+.nav-link:active,
+.nav-link.active {
+    color: var(--text-dark);
+}
+
+.nav-link:hover::after,
+.nav-link:focus::after,
+.nav-link:active::after,
+.nav-link.active::after {
+    transform: scaleX(1);
+    background: var(--text-dark);
+}
+
+.nav-link::after,
+.nav-link::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--color-accent);
+    bottom: -5px;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.2s ease-out;
+}
+
+.nav-link::before {
+    top: -5px;
+    transform-origin: left;
+}
+
+.nav-link:hover::after,
+.nav-link:hover::before {
+    transform: scaleX(1);
+    background: var(--color-accent);
+}
+/* end tab button controls */
+
+/* profile card controls */
+
+/* Profile Card */
+.profile-card {
+    position: relative;
+    padding: 2.5rem;
+    backdrop-filter: blur(10px);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    background-color: var(--color-accent);
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Avatar Styles */
+.avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 2rem;
+}
+
+.avatar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.avatar-inner {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    opacity: 0.8;
+}
+
+.avatar-border {
+    position: absolute;
+    inset: 0;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    background: var(--color-dark) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+}
+
+.avatar-inner img.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Profile Info */
+.profile-info {
+    text-align: center;
+}
+
+.name {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, var(--text-dark), #343434);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.title {
+    color: var(--text-dark);
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Stats Section */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(to right, var(--text-dark), #343434);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+/* end profile card controls */
+
+/* table controls */
+.table {
+    background-color: var(--color-light);
+}
+
+.table thead th,
+.table tbody td,
+.table tbody th {
+    background-color: var(--color-light);
+}
+
+/* end table controls */
+
+.cetak-nilai a {
+    text-decoration: none;
+    color: var(--text-dark);
+    background-color: var(--color-accent);
+    padding: 0.875rem 2rem;
+    border-radius: 0.5rem;
+}
+
+.input-nilai a {
+    text-decoration: none;
+    color: var(--text-dark);
+border: 1px solid var(--color-dark);
+    padding: 0.875rem 2rem;
+    border-radius: 0.5rem;
+}
+
+.btns:active {
+    transform: scale(0.97);
+}
+
