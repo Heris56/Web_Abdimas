@@ -32,6 +32,7 @@ Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
+Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 
 // buat test
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
