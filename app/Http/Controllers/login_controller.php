@@ -84,6 +84,24 @@ class login_controller extends Controller
     {
         if (strlen($user->password) === 32) {
             if (md5($password) === $user->password) {
+                if (property_exists($user, 'nisn') && $user->nisn) {
+                    $id = $user->nisn;
+                    $role = "siswa";
+                } elseif (property_exists($user, 'nip_wali_kelas') && $user->nip_wali_kelas) {
+                    $id = $user->nip_wali_kelas;
+                    $role = "waliKelas";
+                } elseif (property_exists($user, 'nip_guru_mapel') && $user->nip_guru_mapel) {
+                    $id = $user->nip_guru_mapel;
+                    $role = "guruMapel";
+                } else {
+                    return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
+                }
+
+                session([
+                    'userID' => $id,
+                    'userRole' => $role,
+                ]);
+
                 return redirect()->route($success_login)->with("success", "berhasil Login");
             } else {
                 return redirect()->route($error_login)->with("error", "Password salah");
