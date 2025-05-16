@@ -54,7 +54,7 @@ class login_controller extends Controller
         $user = DB::table('wali_kelas')->where('nip_wali_kelas', $username)->first();
 
         if ($user) {
-            return $this->checkhashmd5('login-walikelas', 'login-walikelas', $password, $user);
+            return $this->checkhashmd5('dashboard-wali-kelas', 'login-walikelas', $password, $user);
         } else {
             return redirect()->route('login-walikelas')->with("error", "user tidak ditemukan");
         }
