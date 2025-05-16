@@ -34,7 +34,7 @@ class login_controller extends Controller
         $user = DB::table('siswa')->where('nisn', $username)->first();
 
         if ($user) {
-            return $this->checkhashmd5('login-siswa', 'login-siswa', $password, $user);
+            return $this->checkhashmd5('info.presensi', 'login-siswa', $password, $user);
         } else {
             return redirect()->route('login-siswa')->with("error", "user tidak ditemukan");
         }
