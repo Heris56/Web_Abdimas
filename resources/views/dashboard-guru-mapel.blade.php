@@ -44,10 +44,11 @@
         <div class="Tabs d-flex align-items-center">
             <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
             <div class="btns input-nilai me-3">
-                <a href="{{ route('login-siswa') }}">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
                     Input Nilai
                 </a>
             </div>
+
             <div class="btns cetak-nilai">
                 <a href="{{ route('login-siswa') }}">
                     Cetak Nilai
@@ -147,6 +148,62 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="inputNilaiModalLabel">Input Nilai Siswa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action="" method="">
+                            @csrf
+
+                            <!-- Nama Siswa (Dropdown or Text Input) -->
+                            <div class="mb-3">
+                                <label for="namaSiswa" class="form-label">Nama Siswa</label>
+                                <select class="form-select" id="namaSiswa" name="namaSiswa">
+                                    <option selected disabled>Pilih Siswa</option>
+                                    <option value="1">Teddy Aditya</option>
+                                    <option value="2">John Doe</option>
+                                    <option value="3">Jane Smith</option>
+                                </select>
+                            </div>
+
+                            <!-- Nilai -->
+                            <div class="row">
+                                <div class="col">
+                                    <label for="quiz1" class="form-label">Quiz 1</label>
+                                    <input type="number" class="form-control" id="quiz1" name="quiz1">
+                                </div>
+                                <div class="col">
+                                    <label for="quiz2" class="form-label">Quiz 2</label>
+                                    <input type="number" class="form-control" id="quiz2" name="quiz2">
+                                </div>
+                                <div class="col">
+                                    <label for="uts" class="form-label">UTS</label>
+                                    <input type="number" class="form-control" id="uts" name="uts">
+                                </div>
+                                <div class="col">
+                                    <label for="uas" class="form-label">UAS</label>
+                                    <input type="number" class="form-control" id="uas" name="uas">
+                                </div>
+                            </div>
+
+                            <div class="mt-4 mb-2 text-end btns simpan-nilai">
+                                <a href="#">
+                                    Simpan Nilai
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <!-- Connect Bootsrap bundle-->
