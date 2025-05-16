@@ -56,7 +56,7 @@
             <!-- Insert bacotan formalitas -->
             <div class="head text-center">Masuk Sebagai Wali Kelas</div>
             <div class="subhead text-center">Selamat datang di website SMK PGRI 35</div>
-            <form action="{{ route('login.siswa') }}" method="POST" onsubmit="">
+            <form action="{{ route('login.walikelas') }}" method="POST" onsubmit="">
                 @csrf
 
                 <!-- Isi Username -->

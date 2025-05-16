@@ -22,9 +22,6 @@ class login_controller extends Controller
 
     public function auth_login_siswa(Request $request)
     {
-
-
-        // Tampilkan (sementara) untuk cek
         $request->validate([
             'inputUsername' => 'required',
             'inputPassword' => 'required'
@@ -36,25 +33,72 @@ class login_controller extends Controller
 
         $user = DB::table('siswa')->where('nisn', $username)->first();
 
-        if (!$user) {
+        if ($user) {
+            return $this->checkhashmd5('login-siswa', 'login-siswa', $password, $user);
+        } else {
             return redirect()->route('login-siswa')->with("error", "user tidak ditemukan");
         }
+    }
+
+    public function auth_login_walikelas(Request $request)
+    {
+        $request->validate([
+            'inputUsername' => 'required',
+            'inputPassword' => 'required'
+        ]);
+
+        // Ambil data dari form
+        $username = $request->input('inputUsername');
+        $password = $request->input('inputPassword');
+
+        $user = DB::table('wali_kelas')->where('nip_wali_kelas', $username)->first();
 
         if ($user) {
-            if (strlen($user->password) === 32) {
-                if (md5($password) === $user->password) {
-                    return redirect()->route('login-siswa')->with("success", "berhasil Login");
-                } else {
-                    return redirect()->route('login-siswa')->with("error", "Password salah");
-                }
-            }
-            //buat bycript ntar
-            // if (Hash::check($password, $user->password)) {
-            //     // pass cocok
-            //     return redirect()->route('login-siswa')->with("success", "berhasil Login");
-            // } else {
-            //     return redirect()->route('login-siswa')->with("success", "berhasil Login");
-            // }
+            return $this->checkhashmd5('login-walikelas', 'login-walikelas', $password, $user);
+        } else {
+            return redirect()->route('login-walikelas')->with("error", "user tidak ditemukan");
         }
+    }
+
+    public function auth_login_gurumapel(Request $request)
+    {
+        $request->validate([
+            'inputUsername' => 'required',
+            'inputPassword' => 'required'
+        ]);
+
+        // Ambil data dari form
+        $username = $request->input('inputUsername');
+        $password = $request->input('inputPassword');
+
+        $user = DB::table('guru_mapel')->where('nip_guru_mapel', $username)->first();
+
+        if ($user) {
+            return $this->checkhashmd5('login-gurumapel', 'login-gurumapel', $password, $user);
+        } else {
+            return redirect()->route('login-gurumapel')->with("error", "user tidak ditemukan");
+        }
+    }
+
+    public function checkhashmd5($success_login, $error_login, $password, $user)
+    {
+        if (strlen($user->password) === 32) {
+            if (md5($password) === $user->password) {
+                return redirect()->route($success_login)->with("success", "berhasil Login");
+            } else {
+                return redirect()->route($error_login)->with("error", "Password salah");
+            }
+        }
+    }
+
+    public function checkbycript()
+    {
+        //buat bycript ntar
+        // if (Hash::check($password, $user->password)) {
+        //     // pass cocok
+        //     return redirect()->route('login-siswa')->with("success", "berhasil Login");
+        // } else {
+        //     return redirect()->route('login-siswa')->with("success", "berhasil Login");
+        // }
     }
 }

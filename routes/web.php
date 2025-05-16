@@ -20,12 +20,17 @@ Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi'
 
 
 Route::get('/test-db', function () {
-    $data = DB::table('kelas')->get();
+    $data = DB::table('guru_mapel')->get();
     return $data;
 });
 
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
+Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');
+Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
 
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
+
+// buat test
+Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
