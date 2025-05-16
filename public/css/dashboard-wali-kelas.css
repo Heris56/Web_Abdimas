@@ -22,8 +22,9 @@ body {
 
 .top-bar {
     display: flex;
-    align-items: center;
     margin-bottom: 20px;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .top-bar input[type="text"] {
@@ -59,7 +60,7 @@ table th {
     padding: 10px;
     width: fit-content;
     border-radius: 10pt;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 #nama-wali-kelas h3 {
@@ -72,4 +73,13 @@ table th {
 
 .navbar {
     background-color: yellow;
+}
+
+.btn-outline-secondary,
+.btn-warning {
+    width: 170px;
+}
+
+.form-control {
+    width: 200px;
 }
