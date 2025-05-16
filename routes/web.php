@@ -29,3 +29,4 @@ Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
+Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
