@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\login_controller;
+use App\Http\Controllers\controllerSiswa;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -36,3 +37,9 @@ Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.ma
 
 // buat test
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
+
+
+//Controllersiswa
+Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
+Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
+
