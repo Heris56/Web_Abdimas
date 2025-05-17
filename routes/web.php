@@ -43,3 +43,5 @@ Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
 
+// staff
+Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
