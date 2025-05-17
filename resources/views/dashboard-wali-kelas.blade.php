@@ -15,27 +15,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
+  @php
+   $wali = $data_wali_kelas->first();
+   $data_absen = $data_absen;
+  @endphp
 <x-navbar></x-navbar>
   @include('components.input-absen')
   <div class="container" id="content-wrapper">
     <div class="main-content">
         <div id="wrapper-info-wali-kelas">
+          @if($wali)
             <div class="column" id="nama-wali-kelas">
                 <H3>
-                Hi, Devi Daviana Dasyla👋
+                Hi, {{$wali->nama}}👋
                 </H3>
             </div>
             <div class="column" id="kelas">
                 <H5>
-                Wali Kelas: XI-A
+                Wali Kelas: {{$wali->id_kelas}}
                 </H5>
             </div>
             <div class="column" id="nip">
                 <H5>
-                NIP: 197806152005011001
+                NIP: {{$wali->nip_wali_kelas}}
                 </H5>
             </div>
         </div>
+        @endif
         <div id="wrapper-top-bar-and-table">
         <div class="top-bar">
         <input type="text" placeholder="Cari Tanggal Presensi" class="form-control w-50"/>
@@ -49,35 +55,18 @@
         <thead class="table-warning">
           <tr>
             <th>Nama Siswa</th>
-            <th>16 Januari 2023</th>
-            <th>20 Januari 2023</th>
-            <th>21 Januari 2023</th>
-            <th>22 Januari 2023</th>
-            <th>23 Januari 2023</th>
-            <th>24 Januari 2023</th>
+            @foreach($data_absen as $data_absens)
+            <th>{{$data_absens->tanggal}}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Tasha Ariana</td>
-            <td>Hadir</td>
-            <td>Hadir</td>
-            <td>Sakit</td>
-            <td>Hadir</td>
-            <td>Hadir</td>
-            <td>Dispen</td>
-          </tr>
-          <tr>
-            <td>Alvira</td>
-            <td>Izin</td>
-            <td>Hadir</td>
-            <td>Hadir</td>
-            <td>Hadir</td>
-            <td>Hadir</td>
-            <td>Alpha</td>
+            <td>{{$data_absens->nama_siswa}}</td>
+            <td>{{$data_absens->keterangan_absen}}</td>
           </tr>
         </tbody>
       </table>
+      @endforeach
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>

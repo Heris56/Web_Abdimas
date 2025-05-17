@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use App\Http\Controllers\dashboard_wali_kelas_controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,6 @@ Route::view('/info-nilai-siswa', 'info-nilai-siswa')->name('info.nilai');
 Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
 
 
-
 Route::get('/test-db', function () {
     $data = DB::table('guru_mapel')->get();
     return $data;
@@ -32,7 +32,7 @@ Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'
 
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
-Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
+Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class,'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
 Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 
 // buat test
