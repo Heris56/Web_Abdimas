@@ -59,7 +59,7 @@
         <div class="Contents">
             <!-- Table 1 -->
             <div class="header mb-2">
-                <span class="head">XII A</span>
+                <span class="head">Matematika</span>
             </div>
             <table class="table table-bordered">
                 <thead>
@@ -67,59 +67,31 @@
                         <th scope="col">No</th>
                         <th scope="col">NISN/NIS</th>
                         <th scope="col">Nama Siswa</th>
+                        <th scope="col">Kelas</th>
                         <th scope="col">Quiz 1</th>
                         <th scope="col">Quiz 2</th>
+                        <th scope="col">Quiz 3</th>
+                        <th scope="col">Quiz 4</th>
                         <th scope="col">UTS</th>
                         <th scope="col">UAS</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     <tr>
-                        <td>1</td>
-                        <td>0056789012</td>
-                        <td>Amanda Putri</td>
+                        <th scope="row">1</th>
+                        <td>1234567890</td>
+                        <td>Ahmad Rafi</td>
+                        <td>XII TKJ 1</td>
                         <td>85</td>
-                        <td>88</td>
-                        <td>82</td>
                         <td>90</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>0056789013</td>
-                        <td>Bagas Pratama</td>
-                        <td>78</td>
-                        <td>80</td>
-                        <td>75</td>
-                        <td>84</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>0056789014</td>
-                        <td>Citra Lestari</td>
+                        <td>88</td>
                         <td>92</td>
-                        <td>95</td>
+                        <td>87</td>
                         <td>89</td>
-                        <td>93</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>0056789015</td>
-                        <td>Dimas Aditya</td>
-                        <td>70</td>
-                        <td>72</td>
-                        <td>68</td>
-                        <td>74</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>0056789016</td>
-                        <td>Elvira Sari</td>
-                        <td>88</td>
-                        <td>90</td>
-                        <td>85</td>
-                        <td>91</td>
                     </tr>
                 </tbody>
+
             </table>
         </div>
 
@@ -174,6 +146,16 @@
                                 </select>
                             </div>
 
+                            <!-- Mata Pelajaran -->
+                            <div class="mb-3">
+                                <label for="namaSiswa" class="form-label">Nama Siswa</label>
+                                <select class="form-select" id="namaSiswa" name="namaSiswa">
+                                    <option selected disabled>Pilih Mata Pelajaran</option>
+                                    <option value="1">Matematika</option>
+                                    <option value="2">Bahasa Inggris</option>
+                                </select>
+                            </div>
+
                             <!-- Nilai -->
                             <div class="row">
                                 <div class="col">
@@ -182,6 +164,14 @@
                                 </div>
                                 <div class="col">
                                     <label for="quiz2" class="form-label">Quiz 2</label>
+                                    <input type="number" class="form-control" id="quiz2" name="quiz2">
+                                </div>
+                                <div class="col">
+                                    <label for="quiz1" class="form-label">Quiz 3</label>
+                                    <input type="number" class="form-control" id="quiz1" name="quiz1">
+                                </div>
+                                <div class="col">
+                                    <label for="quiz2" class="form-label">Quiz 4</label>
                                     <input type="number" class="form-control" id="quiz2" name="quiz2">
                                 </div>
                                 <div class="col">
