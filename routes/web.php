@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use App\Http\Controllers\DataController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -45,3 +46,4 @@ Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->nam
 
 // staff
 Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
+Route::get('/dashboard-staff/data/{type}', [DataController::class, 'fetchData'])->name('data.fetch');
