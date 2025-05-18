@@ -13,7 +13,7 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
     <!-- Connect CSS -->
-    <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard-staff.css') }}">
 
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,81 +45,79 @@
             <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
             <div class="btns input-nilai me-3">
                 <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
-                    Input Nilai
+                    Input Data Siswa
                 </a>
             </div>
 
             <div class="btns cetak-nilai">
                 <a href="{{ route('login-siswa') }}">
-                    Cetak Nilai
+                    Cetak List Siswa
                 </a>
             </div>
         </div>
 
         <div class="Contents">
-            <!-- Table 1 -->
-            <div class="header mb-2">
-                <span class="head">Matematika</span>
-            </div>
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">NISN/NIS</th>
-                        <th scope="col">Nama Siswa</th>
-                        <th scope="col">Kelas</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">Quiz 3</th>
-                        <th scope="col">Quiz 4</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
+                        <th>#</th>
+                        @foreach ($columns as $key => $label)
+                        <th>{{ $label }}</th>
+                        @endforeach
                     </tr>
                 </thead>
-
                 <tbody>
+                    @forelse ($data as $item)
                     <tr>
-                        <th scope="row">1</th>
-                        <td>1234567890</td>
-                        <td>Ahmad Rafi</td>
-                        <td>XII TKJ 1</td>
-                        <td>85</td>
-                        <td>90</td>
-                        <td>88</td>
-                        <td>92</td>
-                        <td>87</td>
-                        <td>89</td>
+                        <td>{{ $loop->iteration }}</td>
+                        @foreach ($columns as $key => $label)
+                        <td>{{ $item->$key ?? '-' }}</td>
+                        @endforeach
                     </tr>
+                    @empty
+                    <tr>
+                        <td colspan="{{ count($columns) + 1 }}">Tidak ada data.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
-
             </table>
         </div>
 
-        <div class="Profile">
-            <div class="head text-center">Daftar Kelas</div>
+        <div class="Sidebar">
+            <div class="head">Data</div>
 
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <td>XII A</td>
-                    </tr>
-                    <tr>
-                        <td>XII B</td>
-                    </tr>
-                    <tr>
-                        <td>XI A</td>
-                    </tr>
-                    <tr>
-                        <td>XI B</td>
-                    </tr>
-                    <tr>
-                        <td>X A</td>
-                    </tr>
-                    <tr>
-                        <td>X B</td>
-                    </tr>
-                </tbody>
-            </table>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'siswa') }}" class="nav-link" aria-current="page">
+                        <i class="bi bi-house-door me-2"></i> Siswa
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'guru_mapel') }}" class="nav-link">
+                        <i class="bi bi-person-lines-fill me-2"></i> Guru Mapel
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'wali_kelas') }}" class="nav-link">
+                        <i class="bi bi-person-lines-fill me-2"></i> Wali Kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'mapel') }}" class="nav-link">
+                        <i class="bi bi-journal-check me-2"></i> Mata Pelajaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'kelas') }}" class="nav-link">
+                        <i class="bi bi-bar-chart-line me-2"></i> Kelas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel" aria-hidden="true">

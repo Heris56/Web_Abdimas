@@ -3,6 +3,7 @@
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
+use App\Http\Controllers\DataController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -43,3 +44,6 @@ Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
 
+// staff
+Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
+Route::get('/dashboard-staff/data/{type}', [DataController::class, 'fetchData'])->name('data.fetch');
