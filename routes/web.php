@@ -4,6 +4,7 @@ use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\NilaiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,6 @@ Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class,'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
-Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 
 // buat test
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
@@ -43,6 +43,10 @@ Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
 //Controllersiswa
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
+
+// dashboard/guru-mapel
+Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
+Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 
 // staff
 Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
