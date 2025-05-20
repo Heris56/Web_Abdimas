@@ -58,9 +58,11 @@
 
         <div class="Contents">
             <!-- Table 1 -->
+            @if (isset($data_nilai[0]))
             <div class="header mb-2">
-                <span class="head">Matematika</span>
+                <span class="head">{{ $data_nilai[0]->nama_mapel }}</span>
             </div>
+            @endif
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -136,9 +138,9 @@
                                 <label for="namaSiswa" class="form-label">Nama Siswa</label>
                                 <select class="form-select" id="namaSiswa" name="namaSiswa">
                                     <option selected disabled>Pilih Siswa</option>
-                                    <option value="1">Teddy Aditya</option>
-                                    <option value="2">John Doe</option>
-                                    <option value="3">Jane Smith</option>
+                                    @foreach ($data_nilai as $i => $row)
+                                    <option value="{{ $i }}">{{ $row->nama_siswa }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -147,37 +149,20 @@
                                 <label for="namaSiswa" class="form-label">Nama Siswa</label>
                                 <select class="form-select" id="namaSiswa" name="namaSiswa">
                                     <option selected disabled>Pilih Mata Pelajaran</option>
-                                    <option value="1">Matematika</option>
-                                    <option value="2">Bahasa Inggris</option>
+                                    @foreach ($data_nilai as $i => $row)
+                                    <option value="{{ $i }}">{{ $row->nama_mapel }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <!-- Nilai -->
                             <div class="row">
+                                @foreach ($kegiatanList as $kegiatan)
                                 <div class="col">
-                                    <label for="quiz1" class="form-label">Quiz 1</label>
+                                    <label for="quiz1" class="form-label">{{ $kegiatan }}</label>
                                     <input type="number" class="form-control" id="quiz1" name="quiz1">
                                 </div>
-                                <div class="col">
-                                    <label for="quiz2" class="form-label">Quiz 2</label>
-                                    <input type="number" class="form-control" id="quiz2" name="quiz2">
-                                </div>
-                                <div class="col">
-                                    <label for="quiz1" class="form-label">Quiz 3</label>
-                                    <input type="number" class="form-control" id="quiz1" name="quiz1">
-                                </div>
-                                <div class="col">
-                                    <label for="quiz2" class="form-label">Quiz 4</label>
-                                    <input type="number" class="form-control" id="quiz2" name="quiz2">
-                                </div>
-                                <div class="col">
-                                    <label for="uts" class="form-label">UTS</label>
-                                    <input type="number" class="form-control" id="uts" name="uts">
-                                </div>
-                                <div class="col">
-                                    <label for="uas" class="form-label">UAS</label>
-                                    <input type="number" class="form-control" id="uas" name="uas">
-                                </div>
+                                @endforeach
                             </div>
 
                             <div class="mt-4 mb-2 text-end btns simpan-nilai">

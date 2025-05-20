@@ -62,4 +62,9 @@ class NilaiController extends Controller
             'kegiatanList' => $kegiatanList
         ]);
     }
+
+    public function inputNilai()
+    {
+        // input nilai logic
+    }
 }
