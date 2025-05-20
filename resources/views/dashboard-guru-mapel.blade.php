@@ -65,9 +65,9 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>NISN</th>
                         <th>Nama Siswa</th>
-                        <th>Mapel</th>
-                        <th>Guru</th>
+                        <th>Kelas</th>
                         @foreach ($kegiatanList as $kegiatan)
                         <th>{{ $kegiatan }}</th>
                         @endforeach
@@ -77,9 +77,9 @@
                     @foreach ($data_nilai as $i => $row)
                     <tr>
                         <td>{{ $i + 1 }}</td>
+                        <td>{{ $row->nisn }}</td>
                         <td>{{ $row->nama_siswa }}</td>
-                        <td>{{ $row->nama_mapel }}</td>
-                        <td>{{ $row->nama_guru }}</td>
+                        <td>{{ $row->id_kelas }}</td>
                         @foreach ($kegiatanList as $kegiatan)
                         @php $alias = str_replace(' ', '_', strtolower($kegiatan)); @endphp
                         <td>{{ $row->$alias ?? '-' }}</td>

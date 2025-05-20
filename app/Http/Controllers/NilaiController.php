@@ -18,6 +18,8 @@ class NilaiController extends Controller
 
     public function fetchNilaiForEachGuru()
     {
+        // 197806152005011001
+        // budi123
         $nip = session('userID');
 
         // simpan kegiatan (Quiz 1,2, etc) ke list
@@ -29,11 +31,17 @@ class NilaiController extends Controller
             ->toArray();
 
         $query = DB::table('nilai')
-            ->join('siswa', 'nilai.id_siswa', '=', 'siswa.id_siswa')
+            ->join('siswa', 'nilai.nisn', '=', 'siswa.nisn')
             ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
-            ->join('guru_mapel', 'nilai.id_guru_mapel', '=', 'guru_mapel.id_guru_mapel')
+            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
             ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->select('siswa.nama_siswa', 'mapel.nama_mapel', 'guru_mapel.nama_guru');
+            ->select(
+                'siswa.nisn',
+                'siswa.id_kelas',
+                'siswa.nama_siswa',
+                'mapel.nama_mapel',
+                'guru_mapel.nama_guru'
+            );
 
         foreach ($kegiatanList as $kegiatan) {
             $alias = str_replace(' ', '_', strtolower($kegiatan));
@@ -41,11 +49,16 @@ class NilaiController extends Controller
         }
 
         $data_nilai = $query
-            ->groupBy('siswa.nama_siswa', 'mapel.nama_mapel', 'guru_mapel.nama_guru')
-            ->get();
+            ->groupBy(
+                'siswa.nisn',
+                'siswa.id_kelas',
+                'siswa.nama_siswa',
+                'mapel.nama_mapel',
+                'guru_mapel.nama_guru'
+            )->get();
 
         return view('dashboard-guru-mapel', [
-            'data' => $data_nilai,
+            'data_nilai' => $data_nilai,
             'kegiatanList' => $kegiatanList
         ]);
     }

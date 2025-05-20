@@ -46,7 +46,7 @@ Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->nam
 
 // dashboard/guru-mapel
 Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
-Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
+Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilaiForEachGuru'])->name('nilai.fetch');
 
 // staff
 Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
