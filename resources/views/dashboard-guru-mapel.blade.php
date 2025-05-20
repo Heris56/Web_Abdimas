@@ -64,32 +64,28 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">NISN/NIS</th>
-                        <th scope="col">Nama Siswa</th>
-                        <th scope="col">Kelas</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">Quiz 3</th>
-                        <th scope="col">Quiz 4</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
+                        <th>No</th>
+                        <th>NISN</th>
+                        <th>Nama Siswa</th>
+                        <th>Kelas</th>
+                        @foreach ($kegiatanList as $kegiatan)
+                        <th>{{ $kegiatan }}</th>
+                        @endforeach
                     </tr>
                 </thead>
-
                 <tbody>
+                    @foreach ($data_nilai as $i => $row)
                     <tr>
-                        <th scope="row">1</th>
-                        <td>1234567890</td>
-                        <td>Ahmad Rafi</td>
-                        <td>XII TKJ 1</td>
-                        <td>85</td>
-                        <td>90</td>
-                        <td>88</td>
-                        <td>92</td>
-                        <td>87</td>
-                        <td>89</td>
+                        <td>{{ $i + 1 }}</td>
+                        <td>{{ $row->nisn }}</td>
+                        <td>{{ $row->nama_siswa }}</td>
+                        <td>{{ $row->id_kelas }}</td>
+                        @foreach ($kegiatanList as $kegiatan)
+                        @php $alias = str_replace(' ', '_', strtolower($kegiatan)); @endphp
+                        <td>{{ $row->$alias ?? '-' }}</td>
+                        @endforeach
                     </tr>
+                    @endforeach
                 </tbody>
 
             </table>
