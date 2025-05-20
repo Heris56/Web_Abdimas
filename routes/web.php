@@ -43,6 +43,8 @@ Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
 //Controllersiswa
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
+Route::get('/info-presensi-siswa', [ControllerSiswa::class, 'showPresensi'])->name('info.presensi');
+
 
 // dashboard/guru-mapel
 Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
