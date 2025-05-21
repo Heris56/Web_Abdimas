@@ -18,31 +18,36 @@
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
     <!-- Tambahkan style untuk memperbaiki spacing -->
     <style>
         .stats {
             display: flex;
             justify-content: space-between;
-            gap: 1.5rem; /* Menambahkan jarak antar item */
+            gap: 1.5rem;
+            /* Menambahkan jarak antar item */
             margin-top: 1.5rem;
         }
-        
+
         .stat {
             display: flex;
             flex-direction: column;
             align-items: center;
             min-width: 80px;
         }
-        
+
         .stat-value {
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 0.3rem;
         }
-        
+
         .stat-label {
             font-size: 0.85rem;
             color: #6c757d;
@@ -56,7 +61,8 @@
 
         <!-- navigate to home/dashboard by clicking logo/name -->
         <a class="logo" href="{{ route('landing') }}">
-            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="logo-img d-inline-block" />
+            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
+                class="logo-img d-inline-block" />
             SMK PGRI 35
         </a>
 
@@ -84,7 +90,7 @@
                 @foreach($presensiBySemester as $semester => $presensiList)
                     <!-- Table per Semester -->
                     <div class="header mb-2">
-                        <span class="head">Semester {{ $semester }}</span>
+                        <span class="head">Riwayat Presensi</span>
                     </div>
                     <table class="table table-bordered">
                         <thead>
@@ -96,16 +102,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($presensiList as $index => $presensi)
+                            @foreach($presensiBySemester as $index => $presensi)
                                 <tr>
                                     <th scope="row">{{ $index + 1 }}</th>
                                     <td>{{ $presensi->tanggal }}</td>
                                     <td>{{ $presensi->keterangan_absen }}</td>
-                                    <td>{{ $presensi->keterangan_absen == 'Hadir' ? '-' : ($presensi->keterangan_absen == 'Izin' ? 'Surat izin sakit' : ($presensi->keterangan_absen == 'Alpha' ? 'Tidak ada keterangan' : 'Terlambat')) }}</td>
+                                    <td>
+                                        @if($presensi->keterangan_absen == 'Hadir')
+                                            -
+                                        @elseif($presensi->keterangan_absen == 'Izin')
+                                            Surat izin sakit
+                                        @elseif($presensi->keterangan_absen == 'Alpha')
+                                            Tidak ada keterangan
+                                        @else
+                                            Terlambat
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+
                 @endforeach
             @else
                 <div class="alert alert-info">
