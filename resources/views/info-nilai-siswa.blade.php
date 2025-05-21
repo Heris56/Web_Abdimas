@@ -18,8 +18,41 @@
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tambahkan style untuk memperbaiki spacing -->
+    <style>
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            /* Menambahkan jarak antar item */
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
 </head>
 
 <body>
@@ -28,7 +61,8 @@
 
         <!-- navigate to home/dashboard by clicking logo/name -->
         <a class="logo" href="{{ route('landing') }}">
-            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="logo-img d-inline-block" />
+            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
+                class="logo-img d-inline-block" />
             SMK PGRI 35
         </a>
 
@@ -56,176 +90,63 @@
             <div class="header mb-2">
                 <span class="head">Semester 1</span>
             </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Mata Pelajaran</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Matematika</td>
-                        <td>85</td>
-                        <td>90</td>
-                        <td>78</td>
-                        <td>88</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Bahasa Indonesia</td>
-                        <td>92</td>
-                        <td>87</td>
-                        <td>80</td>
-                        <td>85</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Bahasa Inggris</td>
-                        <td>75</td>
-                        <td>80</td>
-                        <td>82</td>
-                        <td>79</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>Fisika</td>
-                        <td>88</td>
-                        <td>84</td>
-                        <td>76</td>
-                        <td>81</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>Kimia</td>
-                        <td>79</td>
-                        <td>83</td>
-                        <td>77</td>
-                        <td>80</td>
-                    </tr>
-                </tbody>
-            </table>
+            @php
+                // Menyiapkan struktur data yang dikelompokkan
+                $data_nilai = [];
 
-            <!-- Table 2 -->
-            <div class="header mb-2">
-                <span class="head">Semester 2</span>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Mata Pelajaran</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Matematika</td>
-                        <td>85</td>
-                        <td>90</td>
-                        <td>78</td>
-                        <td>88</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Bahasa Indonesia</td>
-                        <td>92</td>
-                        <td>87</td>
-                        <td>80</td>
-                        <td>85</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Bahasa Inggris</td>
-                        <td>75</td>
-                        <td>80</td>
-                        <td>82</td>
-                        <td>79</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>Fisika</td>
-                        <td>88</td>
-                        <td>84</td>
-                        <td>76</td>
-                        <td>81</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>Kimia</td>
-                        <td>79</td>
-                        <td>83</td>
-                        <td>77</td>
-                        <td>80</td>
-                    </tr>
-                </tbody>
-            </table>
+                // Ambil semua jenis kegiatan unik
+                $jenis_kegiatan = [];
 
-            <!-- Table 3 -->
-            <div class="header mb-2">
-                <span class="head">Semester 3</span>
-            </div>
+                foreach ($nilai as $item) {
+                    $mapel = $item->nama_mapel;
+                    $kegiatan = strtoupper($item->kegiatan); // Menggunakan uppercase langsung
+
+                    // Simpan data tanggal untuk setiap mata pelajaran
+                    if (!isset($data_nilai[$mapel])) {
+                        $data_nilai[$mapel] = [
+                            'tanggal' => $item->tanggal,
+                            'nilai' => []
+                        ];
+                    }
+
+                    // Simpan nilai untuk kegiatan ini
+                    $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
+
+                    // Tambahkan jenis kegiatan jika belum ada
+                    if (!in_array($kegiatan, $jenis_kegiatan)) {
+                        $jenis_kegiatan[] = $kegiatan;
+                    }
+                }
+
+                // Urutkan kegiatan biar rapi
+                sort($jenis_kegiatan);
+            @endphp
+
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Mata Pelajaran</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>Mata Pelajaran</th>
+                        @foreach ($jenis_kegiatan as $kegiatan)
+                            <th>{{ $kegiatan }}</th>
+                        @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Matematika</td>
-                        <td>85</td>
-                        <td>90</td>
-                        <td>78</td>
-                        <td>88</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Bahasa Indonesia</td>
-                        <td>92</td>
-                        <td>87</td>
-                        <td>80</td>
-                        <td>85</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Bahasa Inggris</td>
-                        <td>75</td>
-                        <td>80</td>
-                        <td>82</td>
-                        <td>79</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>Fisika</td>
-                        <td>88</td>
-                        <td>84</td>
-                        <td>76</td>
-                        <td>81</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>Kimia</td>
-                        <td>79</td>
-                        <td>83</td>
-                        <td>77</td>
-                        <td>80</td>
-                    </tr>
+                    @php $no = 1; @endphp
+                    @foreach ($data_nilai as $mapel => $data)
+                        <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>{{ $data['tanggal'] }}</td>
+                            <td>{{ $mapel }}</td>
+                            @foreach ($jenis_kegiatan as $kegiatan)
+                                <td>
+                                    {{ $data['nilai'][$kegiatan] ?? '-' }}
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -244,20 +165,20 @@
 
                     <!-- Profile Info -->
                     <div class="profile-info">
-                        <h2 class="name">Teddy Aditya</h2>
-                        <p class="title">13022222222</p>
+                        <h2 class="name">{{ $siswa->nama_siswa ?? 'Nama Siswa' }}</h2>
+                        <p class="title">{{ $siswa->nisn ?? 'NISN' }}</p>
 
                         <div class="stats">
                             <div class="stat">
-                                <span class="stat-value">XII A</span>
+                                <span class="stat-value">{{ $siswa->id_kelas ?? 'Kelas' }}</span>
                                 <span class="stat-label">Kelas</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">2022</span>
+                                <span class="stat-value">{{ $siswa->tahun_ajaran ?? 'Tahun' }}</span>
                                 <span class="stat-label">Angkatan</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">TKJ</span>
+                                <span class="stat-value">{{ $siswa->jurusan ?? 'Jurusan' }}</span>
                                 <span class="stat-label">Jurusan</span>
                             </div>
                         </div>
