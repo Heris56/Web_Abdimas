@@ -2,15 +2,19 @@
 <html lang="en">
 
 <head>
+    <title>Olah Nilai</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masuk ke SMK Telkom</title>
-    <!-- External buat background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
+
+    <!-- CSRF Token biar bisa dipake di AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- Connect jQuery, DOM Manipulation, AJAX -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
@@ -70,7 +74,8 @@
                         <th>NISN</th>
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
-                        @foreach ($kegiatanList as $kegiatan)
+                        <th>Tahun Ajaran</td>
+                            @foreach ($kegiatanList as $kegiatan)
                         <th>{{ $kegiatan }}</th>
                         @endforeach
                     </tr>
@@ -82,40 +87,15 @@
                         <td>{{ $row->nisn }}</td>
                         <td>{{ $row->nama_siswa }}</td>
                         <td>{{ $row->id_kelas }}</td>
+                        <td>{{ $row->tahun_pelajaran }}</td>
                         @foreach ($kegiatanList as $kegiatan)
-                        @php $alias = str_replace(' ', '_', strtolower($kegiatan)); @endphp
-                        <td>{{ $row->$alias ?? '-' }}</td>
+                        @php
+                        $alias = str_replace(' ', '_', strtolower($kegiatan));
+                        @endphp
+                        <td class="editable" data-nisn="{{ $row->nisn }}" data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
                         @endforeach
                     </tr>
                     @endforeach
-                </tbody>
-
-            </table>
-        </div>
-
-        <div class="Profile">
-            <div class="head text-center">Daftar Kelas</div>
-
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <td>XII A</td>
-                    </tr>
-                    <tr>
-                        <td>XII B</td>
-                    </tr>
-                    <tr>
-                        <td>XI A</td>
-                    </tr>
-                    <tr>
-                        <td>XI B</td>
-                    </tr>
-                    <tr>
-                        <td>X A</td>
-                    </tr>
-                    <tr>
-                        <td>X B</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -146,7 +126,7 @@
 
                             <!-- Mata Pelajaran -->
                             <div class="mb-3">
-                                <label for="namaSiswa" class="form-label">Nama Siswa</label>
+                                <label for="namaSiswa" class="form-label">Mata Pelajaran</label>
                                 <select class="form-select" id="namaSiswa" name="namaSiswa">
                                     <option selected disabled>Pilih Mata Pelajaran</option>
                                     @foreach ($data_nilai as $i => $row)
@@ -172,7 +152,16 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Buat notif kecil nyimpen error/success -->
+        <div class="toast-container">
+            <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage"></div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
             </div>
         </div>
@@ -183,7 +172,7 @@
             crossorigin="anonymous"></script>
 
         <!-- Connect Custom JS -->
-        <script src="{{ asset('js/darryl.js') }}"></script>
+        <script src="{{ asset('js/dashboard-guru-mapel.js') }}"></script>
 </body>
 
 </html>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class NilaiController extends Controller
@@ -40,6 +40,7 @@ class NilaiController extends Controller
                 'siswa.id_kelas',
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
+                'nilai.tahun_pelajaran',
                 'guru_mapel.nama_guru'
             );
 
@@ -54,6 +55,7 @@ class NilaiController extends Controller
                 'siswa.id_kelas',
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
+                'nilai.tahun_pelajaran',
                 'guru_mapel.nama_guru'
             )->get();
 
@@ -63,8 +65,75 @@ class NilaiController extends Controller
         ]);
     }
 
-    public function inputNilai()
+    public function inputNilai(Request $request)
     {
-        // input nilai logic
+        $validated = $request->validate([
+            'id_siswa' => 'required|integer',
+            'id_mapel' => 'required|integer',
+            'nilai' => 'required|array',
+        ]);
+
+        foreach ($validated['nilai'] as $kegiatan => $nilai) {
+            DB::table('nilai')->insert([
+                'nisn' => $validated['id_siswa'],
+                'id_mapel' => $validated['id_mapel'],
+                'nip_guru_mapel' => session('userID'),
+                'kegiatan' => $kegiatan,
+                'nilai' => $nilai,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Nilai berhasil disimpan.');
+    }
+
+    public function updateNilai(Request $request)
+    {
+        $nisn = trim((string) $request->input('nisn')); // Ensure string
+        $field = trim($request->input('field'));
+        $value = $request->input('value');
+
+        Log::info('updateNilai inputs', [
+            'nisn' => $nisn,
+            'field' => $field,
+            'value' => $value,
+            'nisn_type' => gettype($nisn),
+            'nisn_length' => strlen($nisn),
+            'field_type' => gettype($field)
+        ]);
+
+        try {
+            $record = DB::table('nilai')
+                ->where('nisn', $nisn)
+                ->where('kegiatan', $field)
+                ->first();
+
+            Log::info('Record query result', [
+                'record' => $record,
+                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND kegiatan = '$field'"
+            ]);
+
+            if ($record) {
+                DB::table('nilai')
+                    ->where('nisn', $nisn)
+                    ->where('kegiatan', $field)
+                    ->update(['nilai' => $value]);
+                return response()->json(['success' => true, 'message' => 'Berhasil update nilai!']);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Record not found for nisn: ' . $nisn . ' and kegiatan: ' . $field
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error in updateNilai', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
