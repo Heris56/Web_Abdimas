@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -19,17 +20,22 @@ Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 Route::view('/info-nilai-siswa', 'info-nilai-siswa')->name('info.nilai');
 Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
 
-
-
+// ini buat test
 Route::get('/test-db', function () {
     $data = DB::table('guru_mapel')->get();
     return $data;
+});
+Route::get('/testcookies', function (Request $request) {
+    return dd([
+        'userID' => $request->cookie('userID'),
+        'userRole' => $request->cookie('userRole'),
+        'allCookies' => $request->cookies->all()
+    ]);
 });
 
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
 Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');
 Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
-
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 Route::view('/dashboard-wali-kelas', 'dashboard-wali-kelas')->name('dashboard-wali-kelas');
@@ -37,9 +43,8 @@ Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.ma
 
 // buat test
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
-
+Route::get('/test/cookies', [login_controller::class, 'loginOrRedirect']);
 
 //Controllersiswa
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
-

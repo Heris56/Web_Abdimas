@@ -8,6 +8,26 @@ use Illuminate\Support\Facades\Hash;
 
 class login_controller extends Controller
 {
+
+    public function loginOrRedirect(Request $request)
+    {
+        $userID = $request->cookie('userID');
+        $userRole = $request->cookie('userRole');
+
+        if ($userID && $userRole) {
+            switch ($userRole) {
+                case 'siswa':
+                    return redirect()->route('info.presensi');
+                case 'waliKelas':
+                    return redirect()->route('dashboard-wali-kelas');
+                case 'guruMapel':
+                    return redirect()->route('dashboard.mapel');
+            }
+        }
+        // Belum login, lempar ke landing page
+        return redirect()->route('landing')->with("warning", "Keluar dari akun, silahkan lakukan login kembali");
+    }
+
     public function getkelas()
     {
         $data = DB::table('kelas')->get();
@@ -102,7 +122,13 @@ class login_controller extends Controller
                     'userRole' => $role,
                 ]);
 
-                return redirect()->route($success_login)->with("success", "berhasil Login");
+                return redirect()
+                    ->route($success_login)
+                    ->withCookies([
+                        cookie('userID', $id, 60),
+                        cookie('userRole', $role, 60)
+                    ])
+                    ->with("success", "berhasil Login");
             } else {
                 return redirect()->route($error_login)->with("error", "Password salah");
             }
