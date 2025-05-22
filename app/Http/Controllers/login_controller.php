@@ -17,7 +17,7 @@ class login_controller extends Controller
         if ($userID && $userRole) {
             switch ($userRole) {
                 case 'siswa':
-                    return redirect()->route('info.presensi');
+                    return redirect()->route('info.presensi.sukses');
                 case 'waliKelas':
                     return redirect()->route('dashboard-wali-kelas');
                 case 'guruMapel':

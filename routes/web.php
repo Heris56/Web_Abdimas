@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\NilaiController;
+use App\Http\Middleware\CheckLoginCookie;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -13,6 +15,7 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 
+// semua view
 Route::view('/', 'landing-page')->name('landing');
 Route::view('/loginsiswa', 'login-page-siswa')->name('login-siswa');
 Route::view('/loginwalikelas', 'login-page-walikelas')->name('login-walikelas');
@@ -21,8 +24,9 @@ Route::view('/main-page', 'main-page')->name('main');
 Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 Route::view('/info-nilai-siswa', 'info-nilai-siswa')->name('info.nilai');
-Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
+//Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
 
+// func login 
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
 Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');
 Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
@@ -33,7 +37,7 @@ Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'ge
 //Controllersiswa
 Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
-Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi');
+Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi')->middleware(CheckLoginCookie::class);
 Route::get('/dashboard-siswa', [controllerSiswa::class, 'get_absen_by_nisn'])->name('dashboard.siswa');
 Route::get('/nilai-siswa', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
 Route::get('/data-siswa', [controllerSiswa::class, 'fetchdatasiswa'])->name('data.siswa');
@@ -57,6 +61,15 @@ Route::get('/test-db', function () {
     return $data;
 });
 
+
+
+Route::get('/test/clear-cookies', function () {
+    Cookie::queue(Cookie::forget('userID'));
+    Cookie::queue(Cookie::forget('userRole'));
+    session()->forget(['userID', 'userRole']);
+    return "Cookies cleared.";
+});
+
 Route::get('/testcookies', function (Request $request) {
     return dd([
         'userID' => $request->cookie('userID'),
@@ -64,3 +77,5 @@ Route::get('/testcookies', function (Request $request) {
         'allCookies' => $request->cookies->all()
     ]);
 });
+
+// Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi')->middleware(CheckLoginCookie::class);
