@@ -6,39 +6,68 @@ $.ajaxSetup({
 });
 
 $(document).ready(function () {
-    // Handle mapel filter change
-    $('#mapelFilter').on('change', function () {
-        var mapel = $(this).val();
-        fetchFilteredData(mapel);
+    // ganti ganti filter
+    $("#mapelFilter, #tahunFilter, #kelasFilter").on("change", function () {
+        var mapel = $("#mapelFilter").val() || "";
+        var tahun = $("#tahunFilter").val() || "";
+        var kelas = $("#kelasFilter").val() || "";
+        console.log("Filter change triggered:", {
+            mapel: mapel,
+            tahun_pelajaran: tahun,
+            id_kelas: kelas,
+        });
+        fetchFilteredData(mapel, tahun, kelas);
     });
 
-    // Fetch filtered data
-    function fetchFilteredData(mapel) {
+    function fetchFilteredData(mapel, tahun, kelas) {
+        console.log("Fetching data:", {
+            mapel: mapel,
+            tahun_pelajaran: tahun,
+            id_kelas: kelas,
+        });
         $.ajax({
             url: "/dashboard/guru-mapel",
             type: "GET",
-            data: { mapel: mapel },
+            data: {
+                mapel: mapel,
+                tahun_pelajaran: tahun,
+                id_kelas: kelas,
+            },
             success: function (response) {
+                console.log("AJAX success:", response);
                 updateTable(response);
+                // Biar filternya tetap
+                $("#mapelFilter").val(mapel);
+                $("#tahunFilter").val(tahun);
+                $("#kelasFilter").val(kelas);
             },
             error: function (xhr, status, error) {
-                console.error('Filter error:', { status, error, responseText: xhr.responseText });
-                showToast("Failed to load data!", "text-bg-danger");
-            }
+                console.error("Filter error:", {
+                    status,
+                    error,
+                    responseText: xhr.responseText,
+                });
+                showToast(
+                    "Failed to load data: " +
+                        (xhr.responseJSON?.message || error),
+                    "text-bg-danger"
+                );
+            },
         });
     }
 
-    // Update table with new data
     function updateTable(data) {
-        var $tableContainer = $('#tableContainer');
+        console.log("updateTable data:", data);
+        var $tableContainer = $("#tableContainer");
         $tableContainer.empty();
 
-        // Update header
-        var headerHtml = data.data_nilai.length > 0
-            ? `<div class="header mb-2"><span class="head">${data.nama_mapel}</span></div>`
-            : '';
+        // Update header table dengan nilai baru
+        var headerHtml =
+            data.data_nilai.length > 0
+                ? `<div class="header mb-2 mt-2"><span class="head">${data.nama_mapel}</span></div>`
+                : '<div class="alert alert-danger mt-4">Tidak ada data yang tersedia!</div>';
 
-        // Build table
+        // Update table dengan nilai baru
         var tableHtml = `
             <table class="table table-bordered" id="nilaiTable">
                 <thead>
@@ -48,101 +77,72 @@ $(document).ready(function () {
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
                         <th>Tahun Ajaran</th>
-                        ${data.kegiatanList.map(kegiatan => `<th>${kegiatan}</th>`).join('')}
+                        ${data.kegiatanList
+                            .map((kegiatan) => `<th>${kegiatan}</th>`)
+                            .join("")}
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.data_nilai.map((row, i) => `
+                    ${data.data_nilai
+                        .map(
+                            (row, i) => `
                         <tr>
                             <td>${i + 1}</td>
                             <td>${row.nisn}</td>
                             <td>${row.nama_siswa}</td>
                             <td>${row.id_kelas}</td>
                             <td>${row.tahun_pelajaran}</td>
-                            ${data.kegiatanList.map(kegiatan => {
-                                var alias = kegiatan.replace(/\s+/g, '_').toLowerCase();
-                                return `<td class="editable" data-nisn="${row.nisn}" data-field="${kegiatan}">${row[alias] ?? '-'}</td>`;
-                            }).join('')}
+                            ${data.kegiatanList
+                                .map((kegiatan) => {
+                                    var alias = kegiatan
+                                        .replace(/\s+/g, "_")
+                                        .toLowerCase();
+                                    return `<td class="editable" data-nisn="${
+                                        row.nisn
+                                    }" data-field="${kegiatan}">${
+                                        row[alias] ?? "-"
+                                    }</td>`;
+                                })
+                                .join("")}
                         </tr>
-                    `).join('')}
+                    `
+                        )
+                        .join("")}
                 </tbody>
             </table>
         `;
 
         $tableContainer.html(headerHtml + tableHtml);
-
-        // Re-attach editable cell event listeners
         attachEditableListeners();
     }
 
-    // Attach event listeners for editable cells
+    // Function agar cellnya clickable
     function attachEditableListeners() {
-        $('.editable').on('click', function () {
+        $(".editable").on("click", function () {
             var $cell = $(this);
-            var nisn = $cell.data('nisn');
-            var field = $cell.data('field');
-            var currentValue = $cell.text() === '-' ? '' : $cell.text();
+            var nisn = $cell.data("nisn");
+            var field = $cell.data("field");
+            var currentValue = $cell.text() === "-" ? "" : $cell.text();
 
-            // Replace cell content with input
-            $cell.html(`<input type="text" value="${currentValue}" class="form-control form-control-sm">`);
-            var $input = $cell.find('input');
+            $cell.html(
+                `<input type="text" value="${currentValue}" class="form-control form-control-sm">`
+            );
+            var $input = $cell.find("input");
             $input.focus();
 
-            // Save on blur or enter
-            $input.on('blur keypress', function (e) {
-                if (e.type === 'blur' || e.which === 13) {
+            $input.on("blur keypress", function (e) {
+                if (e.type === "blur" || e.which === 13) {
                     saveValue($cell, $input, nisn, field);
                 }
             });
         });
     }
 
-    // Initialize Bootstrap toast
-    const toastElement = document.getElementById("notificationToast");
-    const toast = new bootstrap.Toast(toastElement, {
-        delay: 3000, // Auto-hide dalam 3 detik
-    });
-
-    // Make cells with class 'editable' clickable
-    $("td.editable").on("click", function () {
-        var $cell = $(this);
-        // Prevent multiple inputs in the same cell
-        if ($cell.find("input").length) return;
-
-        // Ambil attribute isi sekarang, nisn, dan nilai apa yang mau di edit
-        var currentValue =
-            $cell.text().trim() === "-" ? "" : $cell.text().trim();
-        var nisn = $cell.data("nisn");
-        var field = $cell.data("field");
-
-        $cell.html(
-            `<input type="text" class="editable-input" value="${currentValue}" />`
-        );
-
-        // Focus on the input
-        var $input = $cell.find("input");
-        $input.focus();
-
-        // Save on Enter key or blur
-        $input
-            .on("keypress", function (e) {
-                if (e.which === 13) {
-                    // Enter key
-                    saveValue($cell, $input, nisn, field);
-                }
-            })
-            .on("blur", function () {
-                saveValue($cell, $input, nisn, field);
-            });
-    });
-
+    // simpan value yang sudah terupdate
     function saveValue($cell, $input, nisn, field) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
         $input.remove();
-
-        // Ensure nisn is a string
-        nisn = String(nisn);
 
         console.log("saveValue inputs:", {
             nisn: nisn,
@@ -165,6 +165,11 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("AJAX success:", response);
                 showToast("Sukses Update Data!", "text-bg-success");
+                fetchFilteredData(
+                    $("#mapelFilter").val() || "",
+                    $("#tahunFilter").val() || "",
+                    $("#kelasFilter").val() || ""
+                );
                 window.location.reload();
             },
             error: function (xhr, status, error) {
@@ -179,14 +184,29 @@ $(document).ready(function () {
         });
     }
 
-    function showToast(message, bgClass) {
-        // Update toast content and style
-        $("#toastMessage").text(message);
-        $("#notificationToast")
-            .removeClass("text-bg-primary text-bg-success text-bg-danger")
-            .addClass(bgClass);
+    // notif untuk memberi tau status fungsi update
+    function showToast(message, className) {
+        console.log("Toast:", message, className);
+        const toastElement = document.getElementById("notificationToast");
+        const toastBody = document.getElementById("toastMessage");
 
-        // Munculin
+        // update isi notif
+        toastBody.textContent = message;
+
+        // ganti warna untuk notif sesuai status
+        toastElement.classList.remove(
+            "text-bg-primary",
+            "text-bg-success",
+            "text-bg-danger"
+        );
+        toastElement.classList.add(className);
+
+        // tutup notif dalam 3 detik
+        const toast = new bootstrap.Toast(toastElement, {
+            delay: 3000,
+        });
         toast.show();
     }
+
+    attachEditableListeners();
 });

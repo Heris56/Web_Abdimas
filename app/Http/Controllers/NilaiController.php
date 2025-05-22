@@ -24,19 +24,36 @@ class NilaiController extends Controller
 
         Log::info('NIP', ['nip' => $nip]);
 
-        // Get mapel options
+        // untuk filter mapel
         $mapelList = DB::table('mapel')
-            ->join('nilai', 'mapel.id_mapel', '=', 'nilai.id_mapel')
-            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->leftJoin('nilai', 'mapel.id_mapel', '=', 'nilai.id_mapel')
+            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
             ->where('guru_mapel.nip_guru_mapel', $nip)
             ->distinct()
             ->pluck('mapel.nama_mapel')
             ->toArray();
         Log::info('mapelList', ['mapelList' => $mapelList]);
 
-        // Get kegiatan list
-        // simpan kegiatan (Quiz 1,2, etc) ke list
-        // untuk menentukan header di UI dashboard guru mapel
+        // untuk filter tahun ajaran
+        $tahunPelajaranList = DB::table('nilai')
+            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->distinct()
+            ->pluck('nilai.tahun_pelajaran')
+            ->toArray();
+        Log::info('tahunPelajaranList', ['tahunPelajaranList' => $tahunPelajaranList]);
+
+        // untuk filter kelas
+        $kelasList = DB::table('siswa')
+            ->leftJoin('nilai', 'siswa.nisn', '=', 'nilai.nisn')
+            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->distinct()
+            ->pluck('siswa.id_kelas')
+            ->toArray();
+        Log::info('kelasList', ['kelasList' => $kelasList]);
+
+        // untuk buat column sesuai kegiatan
         $kegiatanList = DB::table('nilai')
             ->distinct()
             ->orderBy('kegiatan')
@@ -44,21 +61,11 @@ class NilaiController extends Controller
             ->toArray();
         Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
 
-        // Test raw query
-        $testData = DB::table('nilai')
-            ->join('siswa', 'nilai.nisn', '=', 'siswa.nisn')
-            ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
-            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->select('nilai.nisn', 'nilai.kegiatan', 'nilai.nilai', 'mapel.nama_mapel')
-            ->get();
-        Log::info('Test data', ['testData' => $testData->toArray()]);
-
-        // Build main query
+        // query untuk minta data nilai dan lainnya
         $query = DB::table('nilai')
-            ->join('siswa', 'nilai.nisn', '=', 'siswa.nisn')
-            ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
-            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->leftJoin('siswa', 'nilai.nisn', '=', 'siswa.nisn')
+            ->leftJoin('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
+            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
             ->where('guru_mapel.nip_guru_mapel', $nip)
             ->select(
                 'siswa.nisn',
@@ -69,13 +76,25 @@ class NilaiController extends Controller
                 'guru_mapel.nama_guru'
             );
 
-        // Apply mapel filter
+        // menerapkan setiap filter
         if ($request->has('mapel') && !empty($request->input('mapel'))) {
             $query->where('mapel.nama_mapel', $request->input('mapel'));
             Log::info('Applied mapel filter', ['mapel' => $request->input('mapel')]);
         }
+        if ($request->has('tahun_pelajaran') && !empty($request->input('tahun_pelajaran'))) {
+            $query->where('nilai.tahun_pelajaran', $request->input('tahun_pelajaran'));
+            Log::info('Applied tahun_pelajaran filter', ['tahun_pelajaran' => $request->input('tahun_pelajaran')]);
+        }
+        if ($request->has('id_kelas') && !empty($request->input('id_kelas'))) {
+            $query->where('siswa.id_kelas', $request->input('id_kelas'));
+            Log::info('Applied id_kelas filter', ['id_kelas' => $request->input('id_kelas')]);
+        }
 
-        // Pivot nilai values
+        // Debug query
+        $testData = $query->get();
+        Log::info('Test query data', ['testData' => $testData->toArray()]);
+
+        // simpan nilai nama kegiatan ke list
         foreach ($kegiatanList as $kegiatan) {
             $alias = str_replace(' ', '_', strtolower($kegiatan));
             $query->addSelect(DB::raw("MAX(CASE WHEN kegiatan = '$kegiatan' THEN nilai END) as `$alias`"));
@@ -105,7 +124,9 @@ class NilaiController extends Controller
         return view('dashboard-guru-mapel', [
             'data_nilai' => $data_nilai,
             'kegiatanList' => $kegiatanList,
-            'mapelList' => $mapelList
+            'mapelList' => $mapelList,
+            'tahunPelajaranList' => $tahunPelajaranList,
+            'kelasList' => $kelasList
         ]);
     }
 

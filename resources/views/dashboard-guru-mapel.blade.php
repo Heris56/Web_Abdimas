@@ -62,18 +62,40 @@
 
         <div class="Contents">
             <!-- Filter -->
-            <div class="mb-3">
-                <label for="mapelFilter" class="form-label">Filter by Mapel:</label>
-                <select id="mapelFilter" class="form-select" style="max-width: 300px;">
-                    <option value="">All Mapel</option>
-                    @foreach ($mapelList as $mapel)
-                    <option value="{{ $mapel }}">{{ $mapel }}</option>
-                    @endforeach
-                </select>
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="mapelFilter" class="form-label">Filter by Mapel:</label>
+                    <select id="mapelFilter" class="form-select">
+                        <option value="">All Mapel</option>
+                        @foreach ($mapelList as $mapel)
+                        <option value="{{ $mapel }}">{{ $mapel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="tahunFilter" class="form-label">Filter by Tahun Ajaran:</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">All Tahun Ajaran</option>
+                        @foreach ($tahunPelajaranList as $tahun)
+                        <option value="{{ $tahun }}">{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="kelasFilter" class="form-label">Filter by Kelas:</label>
+                    <select id="kelasFilter" class="form-select">
+                        <option value="">All Kelas</option>
+                        @foreach ($kelasList as $kelas)
+                        <option value="{{ $kelas }}">{{ $kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <!-- Table -->
             <div id="tableContainer">
+                <div class="header mb-2 mt-2"><span class="head">Semua Mapel</span></div>
+
                 <table class="table table-bordered" id="nilaiTable">
                     <thead>
                         <tr>
@@ -165,14 +187,14 @@
         </div>
 
         <!-- Buat notif kecil nyimpen error/success -->
-        <div class="toast-container">
-            <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body" id="toastMessage"></div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
+    </div>
 
         <!-- Connect Bootsrap bundle-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
