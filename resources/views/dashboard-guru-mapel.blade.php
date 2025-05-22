@@ -61,43 +61,51 @@
         </div>
 
         <div class="Contents">
-            <!-- Table 1 -->
-            @if (isset($data_nilai[0]))
-            <div class="header mb-2">
-                <span class="head">{{ $data_nilai[0]->nama_mapel }}</span>
-            </div>
-            @endif
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>NISN</th>
-                        <th>Nama Siswa</th>
-                        <th>Kelas</th>
-                        <th>Tahun Ajaran</td>
-                            @foreach ($kegiatanList as $kegiatan)
-                        <th>{{ $kegiatan }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($data_nilai as $i => $row)
-                    <tr>
-                        <td>{{ $i + 1 }}</td>
-                        <td>{{ $row->nisn }}</td>
-                        <td>{{ $row->nama_siswa }}</td>
-                        <td>{{ $row->id_kelas }}</td>
-                        <td>{{ $row->tahun_pelajaran }}</td>
-                        @foreach ($kegiatanList as $kegiatan)
-                        @php
-                        $alias = str_replace(' ', '_', strtolower($kegiatan));
-                        @endphp
-                        <td class="editable" data-nisn="{{ $row->nisn }}" data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
-                        @endforeach
-                    </tr>
+            <!-- Filter -->
+            <div class="mb-3">
+                <label for="mapelFilter" class="form-label">Filter by Mapel:</label>
+                <select id="mapelFilter" class="form-select" style="max-width: 300px;">
+                    <option value="">All Mapel</option>
+                    @foreach ($mapelList as $mapel)
+                    <option value="{{ $mapel }}">{{ $mapel }}</option>
                     @endforeach
-                </tbody>
-            </table>
+                </select>
+            </div>
+
+            <!-- Table -->
+            <div id="tableContainer">
+                <table class="table table-bordered" id="nilaiTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NISN</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
+                            @foreach ($kegiatanList as $kegiatan)
+                            <th>{{ $kegiatan }}</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($data_nilai as $i => $row)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $row->nisn }}</td>
+                            <td>{{ $row->nama_siswa }}</td>
+                            <td>{{ $row->id_kelas }}</td>
+                            <td>{{ $row->tahun_pelajaran }}</td>
+                            @foreach ($kegiatanList as $kegiatan)
+                            @php
+                            $alias = str_replace(' ', '_', strtolower($kegiatan));
+                            @endphp
+                            <td class="editable" data-nisn="{{ $row->nisn }}" data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
+                            @endforeach
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel" aria-hidden="true">

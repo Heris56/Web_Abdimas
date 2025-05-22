@@ -45,10 +45,10 @@ Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presens
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
 
 // dashboard/guru-mapel
-Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
-Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilaiForEachGuru'])->name('nilai.fetch');
+// Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
+Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
-Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.input');
+Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 
 // staff
 Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');

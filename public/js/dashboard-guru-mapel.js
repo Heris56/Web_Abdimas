@@ -6,6 +6,97 @@ $.ajaxSetup({
 });
 
 $(document).ready(function () {
+    // Handle mapel filter change
+    $('#mapelFilter').on('change', function () {
+        var mapel = $(this).val();
+        fetchFilteredData(mapel);
+    });
+
+    // Fetch filtered data
+    function fetchFilteredData(mapel) {
+        $.ajax({
+            url: "/dashboard/guru-mapel",
+            type: "GET",
+            data: { mapel: mapel },
+            success: function (response) {
+                updateTable(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Filter error:', { status, error, responseText: xhr.responseText });
+                showToast("Failed to load data!", "text-bg-danger");
+            }
+        });
+    }
+
+    // Update table with new data
+    function updateTable(data) {
+        var $tableContainer = $('#tableContainer');
+        $tableContainer.empty();
+
+        // Update header
+        var headerHtml = data.data_nilai.length > 0
+            ? `<div class="header mb-2"><span class="head">${data.nama_mapel}</span></div>`
+            : '';
+
+        // Build table
+        var tableHtml = `
+            <table class="table table-bordered" id="nilaiTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>NISN</th>
+                        <th>Nama Siswa</th>
+                        <th>Kelas</th>
+                        <th>Tahun Ajaran</th>
+                        ${data.kegiatanList.map(kegiatan => `<th>${kegiatan}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.data_nilai.map((row, i) => `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${row.nisn}</td>
+                            <td>${row.nama_siswa}</td>
+                            <td>${row.id_kelas}</td>
+                            <td>${row.tahun_pelajaran}</td>
+                            ${data.kegiatanList.map(kegiatan => {
+                                var alias = kegiatan.replace(/\s+/g, '_').toLowerCase();
+                                return `<td class="editable" data-nisn="${row.nisn}" data-field="${kegiatan}">${row[alias] ?? '-'}</td>`;
+                            }).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        $tableContainer.html(headerHtml + tableHtml);
+
+        // Re-attach editable cell event listeners
+        attachEditableListeners();
+    }
+
+    // Attach event listeners for editable cells
+    function attachEditableListeners() {
+        $('.editable').on('click', function () {
+            var $cell = $(this);
+            var nisn = $cell.data('nisn');
+            var field = $cell.data('field');
+            var currentValue = $cell.text() === '-' ? '' : $cell.text();
+
+            // Replace cell content with input
+            $cell.html(`<input type="text" value="${currentValue}" class="form-control form-control-sm">`);
+            var $input = $cell.find('input');
+            $input.focus();
+
+            // Save on blur or enter
+            $input.on('blur keypress', function (e) {
+                if (e.type === 'blur' || e.which === 13) {
+                    saveValue($cell, $input, nisn, field);
+                }
+            });
+        });
+    }
+
     // Initialize Bootstrap toast
     const toastElement = document.getElementById("notificationToast");
     const toast = new bootstrap.Toast(toastElement, {

@@ -8,20 +8,33 @@ use Illuminate\Http\Request;
 
 class NilaiController extends Controller
 {
-    public function fetchNilai()
-    {
-        $data = DB::table('nilai')->get();
-        return view('dashboard-guru-mapel', [
-            'data' => $data
-        ]);
-    }
+    // public function fetchNilai()
+    // {
+    //     $data = DB::table('nilai')->get();
+    //     return view('dashboard-guru-mapel', [
+    //         'data' => $data
+    //     ]);
+    // }
 
-    public function fetchNilaiForEachGuru()
+    public function fetchNilai(Request $request)
     {
         // 197806152005011001
         // budi123
         $nip = session('userID');
 
+        Log::info('NIP', ['nip' => $nip]);
+
+        // Get mapel options
+        $mapelList = DB::table('mapel')
+            ->join('nilai', 'mapel.id_mapel', '=', 'nilai.id_mapel')
+            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->distinct()
+            ->pluck('mapel.nama_mapel')
+            ->toArray();
+        Log::info('mapelList', ['mapelList' => $mapelList]);
+
+        // Get kegiatan list
         // simpan kegiatan (Quiz 1,2, etc) ke list
         // untuk menentukan header di UI dashboard guru mapel
         $kegiatanList = DB::table('nilai')
@@ -29,7 +42,19 @@ class NilaiController extends Controller
             ->orderBy('kegiatan')
             ->pluck('kegiatan')
             ->toArray();
+        Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
 
+        // Test raw query
+        $testData = DB::table('nilai')
+            ->join('siswa', 'nilai.nisn', '=', 'siswa.nisn')
+            ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
+            ->join('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->select('nilai.nisn', 'nilai.kegiatan', 'nilai.nilai', 'mapel.nama_mapel')
+            ->get();
+        Log::info('Test data', ['testData' => $testData->toArray()]);
+
+        // Build main query
         $query = DB::table('nilai')
             ->join('siswa', 'nilai.nisn', '=', 'siswa.nisn')
             ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
@@ -44,6 +69,13 @@ class NilaiController extends Controller
                 'guru_mapel.nama_guru'
             );
 
+        // Apply mapel filter
+        if ($request->has('mapel') && !empty($request->input('mapel'))) {
+            $query->where('mapel.nama_mapel', $request->input('mapel'));
+            Log::info('Applied mapel filter', ['mapel' => $request->input('mapel')]);
+        }
+
+        // Pivot nilai values
         foreach ($kegiatanList as $kegiatan) {
             $alias = str_replace(' ', '_', strtolower($kegiatan));
             $query->addSelect(DB::raw("MAX(CASE WHEN kegiatan = '$kegiatan' THEN nilai END) as `$alias`"));
@@ -57,11 +89,23 @@ class NilaiController extends Controller
                 'mapel.nama_mapel',
                 'nilai.tahun_pelajaran',
                 'guru_mapel.nama_guru'
-            )->get();
+            )
+            ->get();
+
+        Log::info('Pivoted data', ['data_nilai' => $data_nilai->toArray()]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'data_nilai' => $data_nilai,
+                'kegiatanList' => $kegiatanList,
+                'nama_mapel' => $data_nilai->isEmpty() ? '' : $data_nilai[0]->nama_mapel
+            ]);
+        }
 
         return view('dashboard-guru-mapel', [
             'data_nilai' => $data_nilai,
-            'kegiatanList' => $kegiatanList
+            'kegiatanList' => $kegiatanList,
+            'mapelList' => $mapelList
         ]);
     }
 
