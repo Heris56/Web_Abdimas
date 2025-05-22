@@ -88,15 +88,15 @@ input.form-control:focus {
 
 .content-wrapper {
     display: grid;
-    grid-template-columns: 0fr 2fr;
+    grid-template-columns: 0.3fr 1.7fr;
     grid-template-rows: 0.2fr 2fr;
     grid-auto-columns: 1fr;
     gap: 0px 0px;
     grid-auto-flow: row;
     justify-items: stretch;
     grid-template-areas:
-        "Profile Tabs"
-        "Profile Contents";
+        "Sidebar Tabs"
+        "Sidebar Contents";
 }
 
 .Tabs {
@@ -115,8 +115,16 @@ input.form-control:focus {
     padding: 0.5rem 1.5rem;
 }
 
+.Sidebar {
+    grid-area: Sidebar;
+}
+
+.Sidebar img {
+    width: 300px;
+}
+
 .head {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md);
     font-family: var(--font-head);
 }
 
@@ -315,19 +323,6 @@ input.form-control:focus {
     background-color: var(--color-light);
 }
 
-.editable-input {
-    width: 100%;
-    height: 100%;
-    border: none;
-    padding: 0.5rem;
-    font-size: 1rem;
-}
-
-td.editable:hover {
-    background-color: #f5f5f5;
-    cursor: pointer;
-}
-
 /* end table controls */
 
 .simpan-nilai a {
@@ -353,6 +348,7 @@ td.editable:hover {
     padding: 0.875rem 2rem;
     border-radius: 0.5rem;
 }
+
 
 .btns:active {
     transform: scale(0.97);

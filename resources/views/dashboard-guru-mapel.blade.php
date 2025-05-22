@@ -2,15 +2,19 @@
 <html lang="en">
 
 <head>
+    <title>Olah Nilai</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masuk ke SMK Telkom</title>
-    <!-- External buat background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
+
+    <!-- CSRF Token biar bisa dipake di AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- Connect jQuery, DOM Manipulation, AJAX -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
@@ -44,10 +48,11 @@
         <div class="Tabs d-flex align-items-center">
             <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
             <div class="btns input-nilai me-3">
-                <a href="{{ route('login-siswa') }}">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
                     Input Nilai
                 </a>
             </div>
+
             <div class="btns cetak-nilai">
                 <a href="{{ route('login-siswa') }}">
                     Cetak Nilai
@@ -56,98 +61,140 @@
         </div>
 
         <div class="Contents">
-            <!-- Table 1 -->
-            <div class="header mb-2">
-                <span class="head">XII A</span>
+            <!-- Filter -->
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="mapelFilter" class="form-label">Filter by Mapel:</label>
+                    <select id="mapelFilter" class="form-select">
+                        <option value="">All Mapel</option>
+                        @foreach ($mapelList as $mapel)
+                        <option value="{{ $mapel }}">{{ $mapel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="tahunFilter" class="form-label">Filter by Tahun Ajaran:</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">All Tahun Ajaran</option>
+                        @foreach ($tahunPelajaranList as $tahun)
+                        <option value="{{ $tahun }}">{{ $tahun }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="kelasFilter" class="form-label">Filter by Kelas:</label>
+                    <select id="kelasFilter" class="form-select">
+                        <option value="">All Kelas</option>
+                        @foreach ($kelasList as $kelas)
+                        <option value="{{ $kelas }}">{{ $kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">NISN/NIS</th>
-                        <th scope="col">Nama Siswa</th>
-                        <th scope="col">Quiz 1</th>
-                        <th scope="col">Quiz 2</th>
-                        <th scope="col">UTS</th>
-                        <th scope="col">UAS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>0056789012</td>
-                        <td>Amanda Putri</td>
-                        <td>85</td>
-                        <td>88</td>
-                        <td>82</td>
-                        <td>90</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>0056789013</td>
-                        <td>Bagas Pratama</td>
-                        <td>78</td>
-                        <td>80</td>
-                        <td>75</td>
-                        <td>84</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>0056789014</td>
-                        <td>Citra Lestari</td>
-                        <td>92</td>
-                        <td>95</td>
-                        <td>89</td>
-                        <td>93</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>0056789015</td>
-                        <td>Dimas Aditya</td>
-                        <td>70</td>
-                        <td>72</td>
-                        <td>68</td>
-                        <td>74</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>0056789016</td>
-                        <td>Elvira Sari</td>
-                        <td>88</td>
-                        <td>90</td>
-                        <td>85</td>
-                        <td>91</td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <!-- Table -->
+            <div id="tableContainer">
+                <div class="header mb-2 mt-2"><span class="head">Semua Mapel</span></div>
+
+                <table class="table table-bordered" id="nilaiTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>NISN</th>
+                            <th>Nama Siswa</th>
+                            <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
+                            @foreach ($kegiatanList as $kegiatan)
+                            <th>{{ $kegiatan }}</th>
+                            @endforeach
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($data_nilai as $i => $row)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $row->nisn }}</td>
+                            <td>{{ $row->nama_siswa }}</td>
+                            <td>{{ $row->id_kelas }}</td>
+                            <td>{{ $row->tahun_pelajaran }}</td>
+                            @foreach ($kegiatanList as $kegiatan)
+                            @php
+                            $alias = str_replace(' ', '_', strtolower($kegiatan));
+                            @endphp
+                            <td class="editable" data-nisn="{{ $row->nisn }}" data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
+                            @endforeach
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="Profile">
-            <div class="head text-center">Daftar Kelas</div>
+        <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
 
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <td>XII A</td>
-                    </tr>
-                    <tr>
-                        <td>XII B</td>
-                    </tr>
-                    <tr>
-                        <td>XI A</td>
-                    </tr>
-                    <tr>
-                        <td>XI B</td>
-                    </tr>
-                    <tr>
-                        <td>X A</td>
-                    </tr>
-                    <tr>
-                        <td>X B</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="inputNilaiModalLabel">Input Nilai Siswa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action="" method="">
+                            @csrf
+
+                            <!-- Nama Siswa (Dropdown or Text Input) -->
+                            <div class="mb-3">
+                                <label for="namaSiswa" class="form-label">Nama Siswa</label>
+                                <select class="form-select" id="namaSiswa" name="namaSiswa">
+                                    <option selected disabled>Pilih Siswa</option>
+                                    @foreach ($data_nilai as $i => $row)
+                                    <option value="{{ $i }}">{{ $row->nama_siswa }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Mata Pelajaran -->
+                            <div class="mb-3">
+                                <label for="namaSiswa" class="form-label">Mata Pelajaran</label>
+                                <select class="form-select" id="namaSiswa" name="namaSiswa">
+                                    <option selected disabled>Pilih Mata Pelajaran</option>
+                                    @foreach ($data_nilai as $i => $row)
+                                    <option value="{{ $i }}">{{ $row->nama_mapel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Nilai -->
+                            <div class="row">
+                                @foreach ($kegiatanList as $kegiatan)
+                                <div class="col">
+                                    <label for="quiz1" class="form-label">{{ $kegiatan }}</label>
+                                    <input type="number" class="form-control" id="quiz1" name="quiz1">
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-4 mb-2 text-end btns simpan-nilai">
+                                <a href="#">
+                                    Simpan Nilai
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Buat notif kecil nyimpen error/success -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
         <!-- Connect Bootsrap bundle-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -155,7 +202,7 @@
             crossorigin="anonymous"></script>
 
         <!-- Connect Custom JS -->
-        <script src="{{ asset('js/darryl.js') }}"></script>
+        <script src="{{ asset('js/dashboard-guru-mapel.js') }}"></script>
 </body>
 
 </html>

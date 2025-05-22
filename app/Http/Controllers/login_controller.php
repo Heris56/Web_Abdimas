@@ -94,7 +94,7 @@ class login_controller extends Controller
         $user = DB::table('guru_mapel')->where('nip_guru_mapel', $username)->first();
 
         if ($user) {
-            return $this->checkhashmd5('login-gurumapel', 'login-gurumapel', $password, $user);
+            return $this->checkhashmd5('nilai.fetch', 'login-gurumapel', $password, $user);
         } else {
             return redirect()->route('login-gurumapel')->with("error", "user tidak ditemukan");
         }

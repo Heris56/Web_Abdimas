@@ -18,8 +18,41 @@
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tambahkan style untuk memperbaiki spacing -->
+    <style>
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            /* Menambahkan jarak antar item */
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
 </head>
 
 <body>
@@ -28,7 +61,8 @@
 
         <!-- navigate to home/dashboard by clicking logo/name -->
         <a class="logo" href="{{ route('landing') }}">
-            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64" class="logo-img d-inline-block" />
+            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
+                class="logo-img d-inline-block" />
             SMK PGRI 35
         </a>
 
@@ -52,146 +86,49 @@
             </ul>
         </div>
         <div class="Contents">
-            <!-- Table 1 -->
-            <div class="header mb-2">
-                <span class="head">Semester 1</span>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Keterangan</th>
-                        <th scope="col">Catatan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>2025-05-01</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>2025-05-02</td>
-                        <td>Izin</td>
-                        <td>Surat izin sakit</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>2025-05-03</td>
-                        <td>Hadir</td>
-                        <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>2025-05-04</td>
-                        <td>Alpha</td>
-                        <td>Tidak ada keterangan</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>2025-05-05</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-            </table>
+            @if(isset($presensiBySemester) && count($presensiBySemester) > 0)
+                @foreach($presensiBySemester as $semester => $presensiList)
+                    <!-- Table per Semester -->
+                    <div class="header mb-2">
+                        <span class="head">Riwayat Presensi</span>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Tanggal</th>
+                                <th scope="col">Keterangan</th>
+                                <th scope="col">Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($presensiBySemester as $index => $presensi)
+                                <tr>
+                                    <th scope="row">{{ $index + 1 }}</th>
+                                    <td>{{ $presensi->tanggal }}</td>
+                                    <td>{{ $presensi->keterangan_absen }}</td>
+                                    <td>
+                                        @if($presensi->keterangan_absen == 'Hadir')
+                                            -
+                                        @elseif($presensi->keterangan_absen == 'Izin')
+                                            Surat izin sakit
+                                        @elseif($presensi->keterangan_absen == 'Alpha')
+                                            Tidak ada keterangan
+                                        @else
+                                            Terlambat
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-            <!-- Table 2 -->
-            <div class="header mb-2">
-                <span class="head">Semester 2</span>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Keterangan</th>
-                        <th scope="col">Catatan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>2025-05-01</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>2025-05-02</td>
-                        <td>Izin</td>
-                        <td>Surat izin sakit</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>2025-05-03</td>
-                        <td>Hadir</td>
-                        <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>2025-05-04</td>
-                        <td>Alpha</td>
-                        <td>Tidak ada keterangan</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>2025-05-05</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Table 3 -->
-            <div class="header mb-2">
-                <span class="head">Semester 3</span>
-            </div>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Keterangan</th>
-                        <th scope="col">Catatan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>2025-05-01</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>2025-05-02</td>
-                        <td>Izin</td>
-                        <td>Surat izin sakit</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>2025-05-03</td>
-                        <td>Hadir</td>
-                        <td>Terlambat lebih dari 30 Menit dihitung Alfa</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">4</th>
-                        <td>2025-05-04</td>
-                        <td>Alpha</td>
-                        <td>Tidak ada keterangan</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">5</th>
-                        <td>2025-05-05</td>
-                        <td>Hadir</td>
-                        <td>-</td>
-                    </tr>
-                </tbody>
-            </table>
+                @endforeach
+            @else
+                <div class="alert alert-info">
+                    Belum ada data presensi untuk ditampilkan.
+                </div>
+            @endif
         </div>
         <div class="Profile">
             <div class="profile-card">
@@ -208,20 +145,20 @@
 
                     <!-- Profile Info -->
                     <div class="profile-info">
-                        <h2 class="name">Teddy Aditya</h2>
-                        <p class="title">13022222222</p>
+                        <h2 class="name">{{ $siswa->nama_siswa ?? 'Nama Siswa' }}</h2>
+                        <p class="title">{{ $siswa->nisn ?? 'NISN' }}</p>
 
                         <div class="stats">
                             <div class="stat">
-                                <span class="stat-value">XII A</span>
+                                <span class="stat-value">{{ $siswa->id_kelas ?? 'Kelas' }}</span>
                                 <span class="stat-label">Kelas</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">2022</span>
+                                <span class="stat-value">{{ $siswa->tahun_ajaran ?? 'Tahun' }}</span>
                                 <span class="stat-label">Angkatan</span>
                             </div>
                             <div class="stat">
-                                <span class="stat-value">TKJ</span>
+                                <span class="stat-value">{{ $siswa->jurusan ?? 'Jurusan' }}</span>
                                 <span class="stat-label">Jurusan</span>
                             </div>
                         </div>
