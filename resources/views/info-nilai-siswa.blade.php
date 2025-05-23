@@ -31,7 +31,6 @@
             display: flex;
             justify-content: space-between;
             gap: 1.5rem;
-            /* Menambahkan jarak antar item */
             margin-top: 1.5rem;
         }
 
@@ -52,13 +51,48 @@
             font-size: 0.85rem;
             color: #6c757d;
         }
+
+        .summary-stats {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .subject-stats {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 
 <body>
     <!-- Navbar -->
     <nav class="navbar container-fluid fixed-top">
-
         <!-- navigate to home/dashboard by clicking logo/name -->
         <a class="logo" href="{{ route('landing') }}">
             <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
@@ -85,71 +119,146 @@
                 </li>
             </ul>
         </div>
+
         <div class="Contents">
-            <!-- Table 1 -->
-            <div class="header mb-2">
-                <span class="head">Semester 1</span>
-            </div>
-            @php
-                // Menyiapkan struktur data yang dikelompokkan
-                $data_nilai = [];
 
-                // Ambil semua jenis kegiatan unik
-                $jenis_kegiatan = [];
-
-                foreach ($nilai as $item) {
-                    $mapel = $item->nama_mapel;
-                    $kegiatan = strtoupper($item->kegiatan); // Menggunakan uppercase langsung
-
-                    // Simpan data tanggal untuk setiap mata pelajaran
-                    if (!isset($data_nilai[$mapel])) {
-                        $data_nilai[$mapel] = [
-                            'tanggal' => $item->tanggal,
-                            'nilai' => []
-                        ];
-                    }
-
-                    // Simpan nilai untuk kegiatan ini
-                    $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
-
-                    // Tambahkan jenis kegiatan jika belum ada
-                    if (!in_array($kegiatan, $jenis_kegiatan)) {
-                        $jenis_kegiatan[] = $kegiatan;
-                    }
-                }
-
-                // Urutkan kegiatan biar rapi
-                sort($jenis_kegiatan);
-            @endphp
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Tanggal</th>
-                        <th>Mata Pelajaran</th>
-                        @foreach ($jenis_kegiatan as $kegiatan)
-                            <th>{{ $kegiatan }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $no = 1; @endphp
-                    @foreach ($data_nilai as $mapel => $data)
-                        <tr>
-                            <td>{{ $no++ }}</td>
-                            <td>{{ $data['tanggal'] }}</td>
-                            <td>{{ $mapel }}</td>
-                            @foreach ($jenis_kegiatan as $kegiatan)
-                                <td>
-                                    {{ $data['nilai'][$kegiatan] ?? '-' }}
-                                </td>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="filterTahunAjaran" class="form-label">Filter Tahun Ajaran:</label>
+                    <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
+                        <option value="all" {{ request('tahun_ajaran') == 'all' || !request()->has('tahun_ajaran') ? 'selected' : '' }}>
+                            Semua Tahun Ajaran
+                        </option>
+                        @if(isset($tahunAjaranList))
+                            @foreach($tahunAjaranList as $tahun)
+                                <option value="{{ $tahun }}" {{ request('tahun_ajaran') == $tahun ? 'selected' : '' }}>
+                                    {{ $tahun }}
+                                </option>
                             @endforeach
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                        @endif
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="filterMapel" class="form-label">Filter Mata Pelajaran:</label>
+                    <select class="form-select" id="filterMapel" onchange="filterSubjects()">
+                        <option value="all">Semua Mata Pelajaran</option>
+                        @foreach($nilaiByMapel as $mapel => $data)
+                            <option value="{{ Str::slug($mapel, '-') }}">{{ $mapel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table by Subject -->
+            @if(isset($nilaiByMapel) && count($nilaiByMapel) > 0)
+                @foreach($nilaiByMapel as $mapel => $data)
+                    <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
+                        <span class="head">{{ $mapel }}</span>
+                        <div class="subject-stats">
+                            Rata-rata: {{ $data['average'] }} |
+                            Tertinggi: {{ $data['highest'] }} |
+                            Terendah: {{ $data['lowest'] }} |
+                            Total Tugas: {{ $data['total_assignments'] }}
+                        </div>
+                    </div>
+
+                    @php
+                        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
+                        $grouped_data = [];
+
+                        foreach ($data['grades'] as $item) {
+                            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
+
+                            $grouped_data[$key] = [
+                                'tanggal' => $item->tanggal,
+                                'guru' => $item->nama_guru ?? 'Unknown',
+                                'nilai' => []
+                            ];
+
+                            foreach ($kegiatan_list as $kegiatan) {
+                                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
+                            }
+                        }
+
+                        // Urutkan berdasarkan tanggal terbaru
+                        uasort($grouped_data, function ($a, $b) {
+                            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+                        });
+                    @endphp
+
+                    <table class="table table-bordered mb-4">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Guru</th>
+                                @foreach($kegiatan_list as $kegiatan)
+                                    <th>{{ strtoupper($kegiatan) }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $no = 1; @endphp
+                            @foreach($grouped_data as $row)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $row['tanggal'] }}</td>
+                                    <td>{{ $row['guru'] }}</td>
+                                    @foreach($kegiatan_list as $kegiatan)
+                                        <td>{{ $row['nilai'][$kegiatan] }}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            @else
+
+                @php
+                    // Format lama - menyiapkan struktur data yang dikelompokkan
+                    $data_nilai = [];
+                    $jenis_kegiatan = [];
+
+                    foreach ($nilai as $item) {
+                        $mapel = $item->nama_mapel;
+                        $kegiatan = strtoupper($item->kegiatan);
+
+                        if (!isset($data_nilai[$mapel])) {
+                            $data_nilai[$mapel] = [
+                                'tanggal' => $item->tanggal,
+                                'nilai' => []
+                            ];
+                        }
+
+                        $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
+
+                        if (!in_array($kegiatan, $jenis_kegiatan)) {
+                            $jenis_kegiatan[] = $kegiatan;
+                        }
+                    }
+
+                    sort($jenis_kegiatan);
+                @endphp
+
+                <table class="table table-bordered">
+
+                    <tbody>
+                        @php $no = 1; @endphp
+                        @foreach ($data_nilai as $mapel => $data)
+                            <tr>
+                                <td>{{ $no++ }}</td>
+                                <td>{{ $data['tanggal'] }}</td>
+                                <td>{{ $mapel }}</td>
+                                @foreach ($jenis_kegiatan as $kegiatan)
+                                    <td>{{ $data['nilai'][$kegiatan] ?? '-' }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
         </div>
+
         <div class="Profile">
             <div class="profile-card">
                 <div class="card-content">
@@ -170,7 +279,7 @@
 
                         <div class="stats">
                             <div class="stat">
-                                <span class="stat-value">{{ $siswa->id_kelas ?? 'Kelas' }}</span>
+                                <span class="stat-value">{{ $siswa->id_kelas ?? $siswa->nama_kelas ?? 'Kelas' }}</span>
                                 <span class="stat-label">Kelas</span>
                             </div>
                             <div class="stat">
@@ -186,14 +295,62 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Connect Bootsrap bundle-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
+    <!-- Connect Bootstrap bundle-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 
-        <!-- Connect Custom JS -->
-        <script src="{{ asset('js/darryl.js') }}"></script>
+    <!-- Connect Custom JS -->
+    <script src="{{ asset('js/darryl.js') }}"></script>
+
+    <script>
+        function filterSubjects() {
+            const selected = document.getElementById('filterMapel').value;
+            const allSections = document.querySelectorAll('.subject-section');
+            const allTables = document.querySelectorAll('table.table-bordered');
+
+            // First hide everything
+            allSections.forEach(section => section.style.display = 'none');
+            allTables.forEach(table => table.style.display = 'none');
+
+            if (selected === 'all') {
+                // Show all sections and tables
+                allSections.forEach(section => section.style.display = '');
+                allTables.forEach(table => table.style.display = '');
+            } else {
+                // Show only selected subject
+                const selectedSection = document.querySelector(`.subject-section[data-mapel="${selected}"]`);
+                if (selectedSection) {
+                    selectedSection.style.display = '';
+
+                    // Find the table that comes right after this section
+                    let nextElement = selectedSection.nextElementSibling;
+                    while (nextElement) {
+                        if (nextElement.tagName === 'TABLE') {
+                            nextElement.style.display = '';
+                            break;
+                        }
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                }
+            }
+        }
+        function filterByTahunAjaran() {
+            const selectedTahun = document.getElementById('filterTahunAjaran').value;
+
+            // Jika memilih "Semua Tahun Ajaran", reload halaman tanpa filter
+            if (selectedTahun === 'all') {
+                window.location.href = "{{ route('info.nilai') }}?tahun_ajaran=all";
+                return;
+            }
+
+            // Redirect ke URL dengan parameter tahun ajaran
+            window.location.href = "{{ route('info.nilai') }}?tahun_ajaran=" + selectedTahun;
+        }
+    </script>
+
 </body>
 
 </html>
