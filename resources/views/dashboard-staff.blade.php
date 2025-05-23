@@ -50,7 +50,7 @@
             </div>
 
             <div class="btns cetak-nilai">
-                <a href="{{ route('login-siswa') }}">
+                <a href="">
                     Cetak List Siswa
                 </a>
             </div>

@@ -30,7 +30,7 @@ class DataController extends Controller
                 ];
                 break;
             case 'guru_mapel':
-                $data = DB::table('wali_kelas')->get();
+                $data = DB::table('guru_mapel')->get();
                 $columns = [
                     'nip_wali_kelas' => 'NIP',
                     'nama' => 'Nama Guru',
@@ -40,7 +40,7 @@ class DataController extends Controller
                 ];
                 break;
             case 'wali_kelas':
-                $data = DB::table('guru_mapel')->get();
+                $data = DB::table('wali_kelas')->get();
                 $columns = [
                     'nip_guru_mapel' => 'NIP',
                     'nama_guru' => 'Nama Guru',
