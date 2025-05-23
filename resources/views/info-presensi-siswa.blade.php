@@ -86,47 +86,67 @@
             </ul>
         </div>
         <div class="Contents">
-            @if(isset($presensiBySemester) && count($presensiBySemester) > 0)
-                @foreach($presensiBySemester as $semester => $presensiList)
-                    <!-- Table per Semester -->
-                    <div class="header mb-2">
-                        <span class="head">Riwayat Presensi</span>
-                    </div>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">No</th>
-                                <th scope="col">Tanggal</th>
-                                <th scope="col">Keterangan</th>
-                                <th scope="col">Catatan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($presensiBySemester as $index => $presensi)
-                                <tr>
-                                    <th scope="row">{{ $index + 1 }}</th>
-                                    <td>{{ $presensi->tanggal }}</td>
-                                    <td>{{ $presensi->keterangan_absen }}</td>
-                                    <td>
-                                        @if($presensi->keterangan_absen == 'Hadir')
-                                            -
-                                        @elseif($presensi->keterangan_absen == 'Izin')
-                                            Surat izin sakit
-                                        @elseif($presensi->keterangan_absen == 'Alpha')
-                                            Tidak ada keterangan
-                                        @else
-                                            Terlambat
-                                        @endif
-                                    </td>
-                                </tr>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="filterTahunAjaran" class="form-label">Filter Tahun Ajaran:</label>
+                    <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
+                        <option value="all">Semua Tahun Ajaran</option>
+                        @if(isset($tahunAjaranList))
+                            @foreach($tahunAjaranList as $tahun)
+                                <option value="{{ $tahun }}" {{ $tahunAjaranFilter == $tahun ? 'selected' : '' }}>
+                                    {{ $tahun }}
+                                </option>
                             @endforeach
-                        </tbody>
-                    </table>
+                        @endif
+                    </select>
+                </div>
+            </div>
 
-                @endforeach
+            @if(isset($presensi) && count($presensi) > 0)
+                <!-- Table Presensi -->
+                <div class="header mb-2">
+                    <span class="head">Riwayat Presensi</span>
+                    @if($tahunAjaranFilter !== 'all')
+                        <span class="badge bg-primary ms-2">{{ $tahunAjaranFilter }}</span>
+                    @endif
+                </div>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Tanggal</th>
+                            <th scope="col">Keterangan</th>
+                            <th scope="col">Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($presensi as $index => $presensiItem)
+                            <tr>
+                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>{{ $presensiItem->tanggal }}</td>
+                                <td>{{ $presensiItem->keterangan_absen }}</td>
+                                <td>
+                                    @if($presensiItem->keterangan_absen == 'Hadir')
+                                        -
+                                    @elseif($presensiItem->keterangan_absen == 'Izin')
+                                        Surat izin sakit
+                                    @elseif($presensiItem->keterangan_absen == 'Alpha')
+                                        Tidak ada keterangan
+                                    @else
+                                        Terlambat
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             @else
                 <div class="alert alert-info">
                     Belum ada data presensi untuk ditampilkan.
+                    @if($tahunAjaranFilter !== 'all')
+                        ({{ $tahunAjaranFilter }})
+                    @endif
                 </div>
             @endif
         </div>
@@ -174,6 +194,19 @@
 
         <!-- Connect Custom JS -->
         <script src="{{ asset('js/darryl.js') }}"></script>
+
+        <script>
+            function filterByTahunAjaran() {
+                const selectedTahun = document.getElementById('filterTahunAjaran').value;
+
+                if (selectedTahun === 'all') {
+                    window.location.href = "{{ route('info.presensi') }}";
+                    return;
+                }
+
+                window.location.href = "{{ route('info.presensi') }}?tahun_ajaran=" + selectedTahun;
+            }
+        </script>
 </body>
 
 </html>
