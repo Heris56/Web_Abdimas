@@ -10,6 +10,15 @@ class DataController extends Controller
 {
     public function fetchData($type)
     {
+        // supaya label buttons bisa dinamis
+        $labels = [
+            'siswa' => 'Siswa',
+            'kelas' => 'Kelas',
+            'guru_mapel' => 'Guru Mapel',
+            'wali_kelas' => 'Wali Kelas',
+            'mapel' => 'Mapel'
+        ];
+
         switch ($type) {
             case 'siswa':
                 $data = DB::table('siswa')->get();
@@ -32,18 +41,19 @@ class DataController extends Controller
             case 'guru_mapel':
                 $data = DB::table('guru_mapel')->get();
                 $columns = [
-                    'nip_wali_kelas' => 'NIP',
-                    'nama' => 'Nama Guru',
+                    'nip_guru_mapel' => 'NIP',
+                    'nama_guru' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status_tahun_ajaran' => 'Status',
+                    'id_mapel' => 'ID Mapel',
                     'id_kelas' => 'Kelas'
                 ];
                 break;
             case 'wali_kelas':
                 $data = DB::table('wali_kelas')->get();
                 $columns = [
-                    'nip_guru_mapel' => 'NIP',
-                    'nama_guru' => 'Nama Guru',
+                    'nip_wali_kelas' => 'NIP',
+                    'nama' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status_tahun_ajaran' => 'Status',
                     'id_mapel' => 'ID Mapel',
@@ -67,12 +77,17 @@ class DataController extends Controller
                     'status_tahun_ajaran' => 'Status',
                     'tahun_ajaran' => 'Tahun Ajaran'
                 ];
+                $type = 'siswa';
         }
+
+        // agar di view tidak ada '_' atau spasi kosong ' '
+        $label = $labels[$type] ?? str_replace('_', ' ', ucwords($type));
 
         return view('dashboard-staff', [
             'data' => $data,
             'columns' => $columns,
-            'type' => $type
+            'type' => $type,
+            'label' => $label
         ]);
     }
 }

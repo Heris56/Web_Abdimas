@@ -45,13 +45,13 @@
             <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
             <div class="btns input-nilai me-3">
                 <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
-                    Input Data Siswa
+                    Input Data {{ $label }}
                 </a>
             </div>
 
             <div class="btns cetak-nilai">
                 <a href="">
-                    Cetak List Siswa
+                    Cetak List {{ $label }}
                 </a>
             </div>
         </div>
