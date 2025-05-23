@@ -46,9 +46,9 @@ Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'input
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 
 // staff
-Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
-Route::get('/dashboard-staff/data/{type}', [DataController::class, 'fetchData'])->name('data.fetch');
-
+// Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
+Route::get('/dashboard/staff/data/{type}', [DataController::class, 'fetchData'])->name('data.fetch');
+Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
 
 // ini buat test <<<<<<<<<<---------->>>>>>>>>>
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);

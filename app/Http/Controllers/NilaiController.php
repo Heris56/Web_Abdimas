@@ -153,7 +153,7 @@ class NilaiController extends Controller
 
     public function updateNilai(Request $request)
     {
-        $nisn = trim((string) $request->input('nisn')); // Ensure string
+        $nisn = trim((string) $request->input('nisn')); // pastikan keluaran string
         $field = trim($request->input('field'));
         $value = $request->input('value');
 
