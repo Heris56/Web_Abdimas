@@ -23,8 +23,9 @@ Route::view('/logingurumapel', 'login-page-gurumapel')->name('login-gurumapel');
 Route::view('/main-page', 'main-page')->name('main');
 Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
-Route::view('/info-nilai-siswa', 'info-nilai-siswa')->name('info.nilai');
-//Route::view('/info-presensi-siswa', 'info-presensi-siswa')->name('info.presensi');
+Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi')->middleware(CheckLoginCookie::class);
+Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
+
 
 // func login 
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
@@ -35,12 +36,8 @@ Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa'
 Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
 
 //Controllersiswa
-Route::get('/presensi', [controllerSiswa::class, 'showPresensi'])->name('presensi');
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
-Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi')->middleware(CheckLoginCookie::class);
-Route::get('/dashboard-siswa', [controllerSiswa::class, 'get_absen_by_nisn'])->name('dashboard.siswa');
-Route::get('/nilai-siswa', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
-Route::get('/data-siswa', [controllerSiswa::class, 'fetchdatasiswa'])->name('data.siswa');
+Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai.ajax');
 
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
