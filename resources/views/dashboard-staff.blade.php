@@ -15,6 +15,9 @@
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-staff.css') }}">
 
+    {{-- untuk modal notification --}}
+    <script src="{{ asset('js/app.js') }}"></script>
+
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +30,9 @@
 </head>
 
 <body>
+    {{-- toast notification --}}
+    <x-toast-notification />
+
     <!-- Navbar -->
     <nav class="navbar container-fluid fixed-top">
 
@@ -55,14 +61,15 @@
             </div>
 
             <div class="btns cetak-nilai">
-                <a href="">
-                    Cetak List {{ $buttonText }}
-                </a>
+                <button id="button-cetak" class="btn btn-success"
+                    onclick="showToast('Mencetak {{ $buttonText }}...', 'text-bg-primary'); exportExcel('{{ $buttonText }}', '{{ str_replace(' ', '_', $buttonText) }}_{{ date('YmdHis') }}')">
+                    Export {{ $buttonText }} to Excel
+                </button>
             </div>
         </div>
 
         <div class="Contents">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="table-data">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -199,6 +206,32 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            document.getElementById('button-cetak').addEventListener('click', function() {
+                alert('File presensi akan segera didownload');
+            });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script>
+            function exportExcel() {
+                const table = document.getElementById("table-data");
+                const wb = XLSX.utils.table_to_book(table, {
+                    sheet: "{{ $buttonText }}",
+                    raw: true
+                });
+                XLSX.writeFile(wb, "{{ buttonText }}.xlsx");
+            }
+        </script>
+
+        {{-- connect assets untuk show notif suatu process --}}
+        <script src="{{ asset('js/app.js') }}"></script>
+
+        {{-- show notifs --}}
+        @vite(['resources/js/app.js'])
+
+        {{-- connect library untuk export ke excel --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.9/xlsx.full.min.js"></script>
 
         <!-- Connect Bootsrap bundle-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
