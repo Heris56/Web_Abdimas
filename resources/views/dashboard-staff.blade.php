@@ -5,8 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Olah Data SMK PGRI 35</title>
-    <!-- External buat background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
     <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -14,9 +12,6 @@
 
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-staff.css') }}">
-
-    {{-- untuk modal notification --}}
-    <script src="{{ asset('js/app.js') }}"></script>
 
     <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +22,17 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+
+    {{-- XLSX CDN --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- show notifs -->
+    @vite(['resources/js/app.js'])
+
+    <!-- Connect Bootsrap bundle-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 </head>
 
 <body>
@@ -61,9 +67,8 @@
             </div>
 
             <div class="btns cetak-nilai">
-                <button id="button-cetak" class="btn btn-success"
-                    onclick="showToast('Mencetak {{ $buttonText }}...', 'text-bg-primary'); exportExcel('{{ $buttonText }}', '{{ str_replace(' ', '_', $buttonText) }}_{{ date('YmdHis') }}')">
-                    Export {{ $buttonText }} to Excel
+                <button id="button-cetak" class="btn btn-success">
+                    Cetak {{ $buttonText }}
                 </button>
             </div>
         </div>
@@ -209,33 +214,9 @@
 
         <script>
             document.getElementById('button-cetak').addEventListener('click', function() {
-                alert('File presensi akan segera didownload');
+                showToast('Mencetak {{ $buttonText }}...', 'text-bg-primary');
+                exportExcel('{{ $buttonText }}', '{{ str_replace(' ', '_', $buttonText) }}_{{ date('YmdHis') }}');
             });
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script>
-            function exportExcel() {
-                const table = document.getElementById("table-data");
-                const wb = XLSX.utils.table_to_book(table, {
-                    sheet: "{{ $buttonText }}",
-                    raw: true
-                });
-                XLSX.writeFile(wb, "{{ buttonText }}.xlsx");
-            }
-        </script>
-
-        {{-- connect assets untuk show notif suatu process --}}
-        <script src="{{ asset('js/app.js') }}"></script>
-
-        {{-- show notifs --}}
-        @vite(['resources/js/app.js'])
-
-        {{-- connect library untuk export ke excel --}}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.9/xlsx.full.min.js"></script>
-
-        <!-- Connect Bootsrap bundle-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
 </body>
 

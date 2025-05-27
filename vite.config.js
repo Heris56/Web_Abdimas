@@ -10,9 +10,4 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-    resolve: {
-        alias: {
-            'xlsx': 'xlsx/dist/xlsx.full.min.js',
-        },
-    },
 });
