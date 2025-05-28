@@ -190,6 +190,17 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
 
+                                        @elseif (in_array($key == 'jurusan'))
+                                            <select class="form-select @error($key) is-invalid @enderror"
+                                                id="{{ $key }}" name="{{ $key }}" required>
+                                                <option selected disabled>Pilih {{ $label }}</option>
+                                                <option value="aktif">Teknik Komputer dan Jaringan</option>
+                                                <option value="nonaktif">Rekayasa Perangkat Lunak</option>
+                                            </select>
+                                            @error($key)
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+
                                         <!-- input fields yang lainnya -->
                                     @else
                                         <input
