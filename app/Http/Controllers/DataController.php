@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class DataController extends Controller
 {
-    public function fetchData($type)
+    public function fetchData($type = 'siswa')
     {
         // supaya label buttons bisa dinamis
         $labels = [
@@ -85,7 +85,7 @@ class DataController extends Controller
                     'status_tahun_ajaran' => 'Status Tahun Ajaran',
                     'tahun_ajaran' => 'Tahun Ajaran'
                 ];
-                $type = 'siswa';
+                $type = 'siswa'; // set default untuk selalu show data siswa
         }
 
         // agar di view tidak ada '_' atau spasi kosong ' '

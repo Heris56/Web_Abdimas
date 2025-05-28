@@ -5,8 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Olah Data SMK PGRI 35</title>
-    <!-- External buat background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
     <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -24,9 +22,23 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+
+    {{-- XLSX CDN --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- show notifs -->
+    @vite(['resources/js/app.js'])
+
+    <!-- Connect Bootsrap bundle-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 </head>
 
 <body>
+    {{-- toast notification --}}
+    <x-toast-notification />
+
     <!-- Navbar -->
     <nav class="navbar container-fluid fixed-top">
 
@@ -55,14 +67,14 @@
             </div>
 
             <div class="btns cetak-nilai">
-                <a href="">
-                    Cetak List {{ $buttonText }}
-                </a>
+                <button id="button-cetak" class="btn btn-success">
+                    Cetak {{ $buttonText }}
+                </button>
             </div>
         </div>
 
         <div class="Contents">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="table-data">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -178,6 +190,17 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
 
+                                        @elseif (in_array($key == 'jurusan'))
+                                            <select class="form-select @error($key) is-invalid @enderror"
+                                                id="{{ $key }}" name="{{ $key }}" required>
+                                                <option selected disabled>Pilih {{ $label }}</option>
+                                                <option value="aktif">Teknik Komputer dan Jaringan</option>
+                                                <option value="nonaktif">Rekayasa Perangkat Lunak</option>
+                                            </select>
+                                            @error($key)
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+
                                         <!-- input fields yang lainnya -->
                                     @else
                                         <input
@@ -200,9 +223,11 @@
             </div>
         </div>
 
-        <!-- Connect Bootsrap bundle-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+        <script>
+            document.getElementById('button-cetak').addEventListener('click', function() {
+                showToast('Mencetak {{ $buttonText }}...', 'text-bg-primary');
+                exportExcel('{{ $buttonText }}', '{{ str_replace(' ', '_', $buttonText) }}_{{ date('YmdHis') }}');
+            });
         </script>
 </body>
 

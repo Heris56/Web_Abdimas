@@ -27,7 +27,7 @@ Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->na
 Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
 
 
-// func login 
+// func login
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
 Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');
 Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
@@ -47,7 +47,7 @@ Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'upda
 
 // staff
 // Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
-Route::get('/dashboard/staff/data/{type}', [DataController::class, 'fetchData'])->name('data.fetch');
+Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
 Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
 
 // ini buat test <<<<<<<<<<---------->>>>>>>>>>
