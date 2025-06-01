@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +6,74 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+@layer base {
+    :root {
+        --background: 42 35% 99%;
+        --foreground: 42 66% 1%;
+        --muted: 42 20% 90%;
+        --muted-foreground: 42 15% 34%;
+        --popover: 42 35% 99%;
+        --popover-foreground: 42 66% 1%;
+        --card: 42 35% 99%;
+        --card-foreground: 42 66% 1%;
+        --border: 42 9% 90%;
+        --input: 42 9% 90%;
+        --primary: 42 100% 63%;
+        --primary-foreground: 42 100% 3%;
+        --secondary: 42 7% 92%;
+        --secondary-foreground: 42 7% 32%;
+        --accent: 42 7% 92%;
+        --accent-foreground: 42 7% 32%;
+        --destructive: 17 94% 39%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 42 100% 63%;
+        --chart-1: 42 100% 63%;
+        --chart-2: 42 7% 92%;
+        --chart-3: 42 7% 92%;
+        --chart-4: 42 7% 95%;
+        --chart-5: 42 103% 63%;
+        --radius: 0.5rem;
+
+        /* font settings */
+        --font-head: 'Poppins', sans-serif;
+        --font-body: 'Lato', sans-serif;
+        --font-size-sm: 0.875rem; /* 14px for hints */
+        --font-size-base: 1rem; /* 16px for default/input */
+        --font-size-md: 1.125rem; /* 18px for label */
+        --font-size-lg: 1.5rem; /* 24px for title/subheading */
+        --font-size-head: 2rem; /* 32px for heading */
+        --font-size-hero: 3rem; /* 48px for hero section */
+    }
+
+    .dark {
+        --background: 42 38% 3%;
+        --foreground: 42 10% 99%;
+        --muted: 42 20% 10%;
+        --muted-foreground: 42 15% 66%;
+        --popover: 42 38% 3%;
+        --popover-foreground: 42 10% 99%;
+        --card: 42 38% 3%;
+        --card-foreground: 42 10% 99%;
+        --border: 42 9% 13%;
+        --input: 42 9% 13%;
+        --primary: 42 100% 63%;
+        --primary-foreground: 42 100% 3%;
+        --secondary: 42 6% 17%;
+        --secondary-foreground: 42 6% 77%;
+        --accent: 42 6% 17%;
+        --accent-foreground: 42 6% 77%;
+        --destructive: 17 94% 50%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 42 100% 63%;
+        --chart-1: 42 100% 63%;
+        --chart-2: 42 6% 17%;
+        --chart-3: 42 6% 17%;
+        --chart-4: 42 6% 20%;
+        --chart-5: 42 103% 63%;
+    }
 }
