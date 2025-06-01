@@ -39,6 +39,9 @@ Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'ge
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
 Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai.ajax');
 
+//Controller Wali Kelas
+Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
+
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
