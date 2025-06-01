@@ -190,7 +190,7 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
 
-                                        @elseif (in_array($key == 'jurusan'))
+                                        {{-- @elseif (in_array($key == 'jurusan'))
                                             <select class="form-select @error($key) is-invalid @enderror"
                                                 id="{{ $key }}" name="{{ $key }}" required>
                                                 <option selected disabled>Pilih {{ $label }}</option>
@@ -199,7 +199,7 @@
                                             </select>
                                             @error($key)
                                                 <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                            @enderror --}}
 
                                         <!-- input fields yang lainnya -->
                                     @else

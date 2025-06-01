@@ -8,14 +8,6 @@ use Illuminate\Http\Request;
 
 class NilaiController extends Controller
 {
-    // public function fetchNilai()
-    // {
-    //     $data = DB::table('nilai')->get();
-    //     return view('dashboard-guru-mapel', [
-    //         'data' => $data
-    //     ]);
-    // }
-
     public function fetchNilai(Request $request)
     {
         // 197806152005011001
@@ -132,23 +124,87 @@ class NilaiController extends Controller
 
     public function inputNilai(Request $request)
     {
-        $validated = $request->validate([
-            'id_siswa' => 'required|integer',
-            'id_mapel' => 'required|integer',
-            'nilai' => 'required|array',
-        ]);
+        try {
+            $nip = session('userID');
 
-        foreach ($validated['nilai'] as $kegiatan => $nilai) {
-            DB::table('nilai')->insert([
-                'nisn' => $validated['id_siswa'],
-                'id_mapel' => $validated['id_mapel'],
-                'nip_guru_mapel' => session('userID'),
-                'kegiatan' => $kegiatan,
-                'nilai' => $nilai,
+            Log::info('inputNilai called', [
+                'nip' => $nip,
+                'nisn' => $request->input('nisn'),
+                'kegiatan' => $request->input('kegiatan'),
+                'nilai' => $request->input('nilai'),
+                'mapel' => $request->input('mapel'),
+                'tahun_pelajaran' => $request->input('tahun_pelajaran'),
+                'id_kelas' => $request->input('id_kelas')
             ]);
-        }
 
-        return redirect()->back()->with('success', 'Nilai berhasil disimpan.');
+            // Validate input
+            $validated = $request->validate([
+                'nisn' => 'required|exists:siswa,nisn',
+                'kegiatan' => 'required|string',
+                'nilai' => 'required|numeric|min:0|max:100',
+                'mapel' => 'required|exists:mapel,nama_mapel',
+                'tahun_pelajaran' => 'required|string',
+                'id_kelas' => 'nullable|string|exists:siswa,id_kelas'
+            ]);
+
+            // Get id_mapel from mapel name
+            $id_mapel = DB::table('mapel')
+                ->where('nama_mapel', $validated['mapel'])
+                ->value('id_mapel');
+
+            if (!$id_mapel) {
+                Log::error('Mapel not found', ['mapel' => $validated['mapel']]);
+                return response()->json(['message' => 'Mapel tidak ditemukan'], 404);
+            }
+
+            // Verify teacher has access to this mapel
+            $guru_mapel = DB::table('guru_mapel')
+                ->where('nip_guru_mapel', $nip)
+                ->where('id_mapel', $id_mapel)
+                ->exists();
+
+            if (!$guru_mapel) {
+                Log::error('Unauthorized access to mapel', ['nip' => $nip, 'id_mapel', 'id_kelas' => 'id_kelas']);
+                return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
+            }
+
+            // Check if grade already exists
+            $exists = DB::table('nilai')
+                ->where('nisn', 'nisn', '=', $validated['nisn'])
+                ->where('id_mapel', 'id_kelas', '=', $id_mapel)
+                ->where('kegiatan', 'kegiatan', '=', $validated['kegiatan'])
+                ->where('tahun_pelajaran', 'tahun_pelajaran', '=', $validated['tahun_pelajaran'])
+                ->exists();
+
+            if ($exists) {
+                Log::warning('Grade already exists', ['nisn' => 'nisn', 'nilai' => 'nilai', 'kegiatan' => 'kegiatan', 'id_kelas' => 'id_kelas', 'tahun_pelajaran' => 'tahun_pelajaran']);
+                Log::warning('Nilai', ['nilai' => ['nisn']]);
+                return response()->json(['message' => 'Nilai untuk kegiatahan ini sudah ada'], 409);
+            }
+
+
+            // Insert new grade
+            DB::table('nilai')->insert([
+                'nisn' => $validated['nisn'],
+                'id_mapel' => $id_mapel,
+                'nip_guru_mapel' => $nip,
+                'tahun_pelajaran' => $validated['tahun_pelajaran'] ?? '',
+                'kegiatan' => $validated['kegiatan'],
+                'nilai' => $validated['nilai'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            Log::info('Grade inserted successfully', ['nisn' => $validated['nisn'], 'kegiatan' => $validated['kegiatan']]);
+
+            return response()->json(['message' => 'Nilai berhasil disimpan']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation error in inputNilai', ['errors' => $e->errors()]);
+            return response()->json(['message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error in inputNilai', ['message' => $e->getMessage()]);
+            return response()->json(['message' => 'Terjadi kesalahan saat menyimpan nilai'], 500);
+        }
     }
 
     public function updateNilai(Request $request)
