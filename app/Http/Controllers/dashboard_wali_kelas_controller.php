@@ -14,7 +14,7 @@ class dashboard_wali_kelas_controller extends Controller
         return view('dashboard-wali-kelas', [
             'data_wali_kelas' => $data,
             'data_absen'=> $data_absen,
-            'tanggal_list' => $data_absen->pluck('tanggal')->unique()->sort()->values(),
+            'tanggal_list' => $data_absen->pluck('tanggal')->filter()->unique()->sort()->values(),
             'list_siswa' => $data_absen->unique('nisn_siswa')
         ]);
     }
@@ -23,12 +23,17 @@ class dashboard_wali_kelas_controller extends Controller
     {
     $nip = session('userID');
 
-    $data_absen = DB::table('absen')
-        ->join('siswa', 'absen.nisn', '=', 'siswa.nisn')
-        ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
-        ->where('wali_kelas.nip_wali_kelas', $nip)
-        ->select('absen.*', 'siswa.nama_siswa as nama_siswa', 'wali_kelas.id_kelas','siswa.nisn as nisn_siswa')
-        ->get();
+    $data_absen = DB::table('siswa')
+    ->leftJoin('absen', 'absen.nisn', '=', 'siswa.nisn')
+    ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
+    ->where('wali_kelas.nip_wali_kelas', $nip)
+    ->select(
+        'absen.*',
+        'siswa.nama_siswa as nama_siswa',
+        'wali_kelas.id_kelas',
+        'siswa.nisn as nisn_siswa'
+    )
+    ->get();
 
     return $data_absen;
     }
@@ -36,7 +41,7 @@ class dashboard_wali_kelas_controller extends Controller
     public function add_tanggal(Request $request)
     {
     $nip = session('userID');
-    $data_siswa = $this->get_absen_by_nip($nip);
+    $data_siswa = $this->get_absen_by_nip($nip)->unique('nisn_siswa');
 
     foreach ($data_siswa as $siswa) {
         $insertData[] =
@@ -49,5 +54,18 @@ class dashboard_wali_kelas_controller extends Controller
 
     DB::table('absen')->insert($insertData);
     return redirect()->back()->with('success', 'Data absen berhasil ditambahkan.');
+    }
+
+    public function edit_kehadiran(Request $request)
+    {
+    $data = $request->validate([
+    'nisn' => 'required', 
+    'tanggal' => 'required|date', 
+    'keterangan_absen' => 'nullable|string',
+    ]);
+
+    DB::table('absen')->updateOrInsert(['nisn'=>$data['nisn'],'tanggal'=>$data['tanggal']], ['keterangan_absen' => $data['keterangan_absen']]);
+
+    return redirect()->back()->with('success', 'Data kehadiran berhasil diperbarui.');
     }
 }

@@ -50,12 +50,13 @@
             @endif
             <div id="wrapper-top-bar-and-table">
                 <div class="top-bar">
-                    <input type="text" placeholder="Cari Tanggal Presensi" class="form-control w-50" />
+                    <input type="text" placeholder="Cari Nama Siswa" class="form-control w-50" id="search_bar_siswa"/>
                     <div id="button-wrapper" class="d-flex justify-content-end">
                         <button type="button" class="btn btn-warning" id="button-cetak" onclick="exportExcel()">Cetak
                             Presensi</button></div>
                 </div>
-                <table class="table table striped" id="table-presensi">
+                    @csrf
+                    <table class="table table striped" id="table-presensi">
                     <thead class="table-warning">
                         <tr>
                             <th>Nama Siswa</th>
@@ -71,7 +72,8 @@
                                         <path
                                             d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
                                     </svg>
-                                </button></th>
+                                </button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,37 +87,33 @@
                                         $item->tanggal == $tanggals
                                         );
                                     @endphp
-                                    <td>{{ $presensi->keterangan_absen ?? '-' }}</td>
+                                    <td>
+                                        <select class="form-select"
+                                            name="absen[{{ $siswa->nisn_siswa }}][{{ $tanggals }}]"
+                                            data-nisn ="{{ $siswa->nisn_siswa }}"
+                                            data-tanggal="{{ $tanggals }}"
+                                            onchange ="updateKehadiran(this)">
+                                            <option value="">-</option>
+                                            @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)
+                                                <option value="{{ $keterangan_absen }}"
+                                                    {{ ($presensi->keterangan_absen ?? '-') === $keterangan_absen ? 'selected' : '-' }}>
+                                                    {{ $keterangan_absen }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
                                 @endforeach
-                                <td></td> {{-- kosong untuk tombol --}}
                             </tr>
+                            @endforeach
                     </tbody>
                 </table>
-                @endforeach
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
         </script>
         <script src="{{ asset('js/dashboard-wali-kelas.js') }}"></script>
-        <script>
-            document.getElementById('button-cetak').addEventListener('click', function () {
-                alert('File presensi akan segera didownload');
-            });
-
-        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script>
-            function exportExcel() {
-                const table = document.getElementById("table-presensi");
-                const wb = XLSX.utils.table_to_book(table, {
-                    sheet: "Presensi",
-                    raw: true
-                });
-                XLSX.writeFile(wb, "presensi-siswa.xlsx");
-            }
-
-        </script>
 </body>
 
 </html>
