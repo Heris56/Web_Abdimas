@@ -18,6 +18,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -50,70 +51,19 @@
             @endif
             <div id="wrapper-top-bar-and-table">
                 <div class="top-bar">
-                    <input type="text" placeholder="Cari Nama Siswa" class="form-control w-50" id="search_bar_siswa"/>
+                    <input type="text" placeholder="Cari Nama Siswa" class="form-control w-50" id="search_siswa"/>
                     <div id="button-wrapper" class="d-flex justify-content-end">
                         <button type="button" class="btn btn-warning" id="button-cetak" onclick="exportExcel()">Cetak
-                            Presensi</button></div>
+                            Presensi</button>
+                    </div>
                 </div>
-                    @csrf
-                    <table class="table table striped" id="table-presensi">
-                    <thead class="table-warning">
-                        <tr>
-                            <th>Nama Siswa</th>
-                            @foreach($tanggal_list as $tanggals)
-                                <th>{{ $tanggals }}</th>
-                            @endforeach
-                            <th><button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                                    data-bs-target="#modal-input" id="button-input">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-calendar-plus" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7" />
-                                        <path
-                                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
-                                    </svg>
-                                </button>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($list_siswa as $siswa)
-                            <tr>
-                                <td>{{ $siswa->nama_siswa }}</td>
-                                @foreach($tanggal_list as $tanggals)
-                                    @php
-                                        $presensi = $data_absen->firstWhere(fn($item) =>
-                                        $item->nisn_siswa == $siswa->nisn_siswa &&
-                                        $item->tanggal == $tanggals
-                                        );
-                                    @endphp
-                                    <td>
-                                        <select class="form-select"
-                                            name="absen[{{ $siswa->nisn_siswa }}][{{ $tanggals }}]"
-                                            data-nisn ="{{ $siswa->nisn_siswa }}"
-                                            data-tanggal="{{ $tanggals }}"
-                                            onchange ="updateKehadiran(this)">
-                                            <option value="">-</option>
-                                            @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)
-                                                <option value="{{ $keterangan_absen }}"
-                                                    {{ ($presensi->keterangan_absen ?? '-') === $keterangan_absen ? 'selected' : '-' }}>
-                                                    {{ $keterangan_absen }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                @endforeach
-                            </tr>
-                            @endforeach
-                    </tbody>
-                </table>
+                @include('components.table-presensi')
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous">
         </script>
-        <script src="{{ asset('js/dashboard-wali-kelas.js') }}"></script>
+        <script src="{{ asset('js/dashboard_wali_kelas.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-</body>
-
+    </body>
 </html>

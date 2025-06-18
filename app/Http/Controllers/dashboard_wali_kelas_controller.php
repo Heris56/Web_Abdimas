@@ -68,4 +68,12 @@ class dashboard_wali_kelas_controller extends Controller
 
     return redirect()->back()->with('success', 'Data kehadiran berhasil diperbarui.');
     }
+
+
+    public function delete_tanggal(Request $request, $tanggal)
+    {
+        DB::table('absen')->where('tanggal', $tanggal)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+    }
 }

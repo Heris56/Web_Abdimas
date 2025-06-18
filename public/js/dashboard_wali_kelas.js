@@ -1,3 +1,5 @@
+console.log("Hello from dashboard-wali-kelas");
+
 document.getElementById('button-cetak').addEventListener('click', function () {
     alert('File presensi akan segera didownload');
 });
@@ -63,3 +65,54 @@ function updateKehadiran(selectElement) {
             console.error("Gagal update:", error);
         });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("search_siswa");
+    const rows = document.querySelectorAll("#table-presensi tbody tr");
+
+    if (!input) return;
+
+    input.addEventListener("keyup", function () {
+        const inputSearch = this.value.toLowerCase();
+        rows.forEach(row => {
+            const td = row.querySelector("td");
+            if (td) {
+                const namaSiswa = td.textContent.toLowerCase();
+                row.style.display = namaSiswa.includes(inputSearch) ? "" : "none";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+});
+
+const buttons = document.querySelectorAll(".btn-delete-tanggal");
+
+buttons.forEach(button => {
+    button.addEventListener("click", function () {
+        const tanggal = this.dataset.tanggal;
+
+        if (!confirm(`Yakin ingin menghapus presensi untuk tanggal ${tanggal}?`)) return;
+
+        fetch(`/dashboard/walikelas/delete_tanggal/${tanggal}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert("Gagal menghapus data.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Terjadi kesalahan saat menghapus.");
+            });
+    });
+});
