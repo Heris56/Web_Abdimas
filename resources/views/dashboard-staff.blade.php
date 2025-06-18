@@ -153,26 +153,15 @@
                                     <label for="{{ $key }}" class="form-label">{{ $label }}</label>
 
                                     <!-- set dropdown untuk pilih mapel dan kelas -->
-                                    @if (in_array($key, ['id_kelas', 'id_mapel']))
+                                    @if ($key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
-                                            @if ($key == 'id_kelas')
-                                                @forelse ($dropdowns['kelas'] as $item)
-                                                    <option value="{{ $item->id_kelas }}">{{ $item->id_kelas }}
-                                                        ({{ $item->jurusan }})
-                                                    </option>
-                                                @empty
-                                                    <option disabled>Tidak ada kelas tersedia</option>
-                                                @endforelse
-                                            @elseif ($key == 'id_mapel')
-                                                @forelse ($dropdowns['mapel'] as $item)
-                                                    <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}
-                                                    </option>
-                                                @empty
-                                                    <option disabled>Tidak ada mata pelajaran tersedia</option>
-                                                @endforelse
-                                            @endif
+                                            @forelse ($dropdowns['mapel'] as $item)
+                                                <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}</option>
+                                            @empty
+                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                            @endforelse
                                         </select>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>

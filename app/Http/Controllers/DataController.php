@@ -186,13 +186,19 @@ class DataController extends Controller
             }
 
             Log::info("Data successfully saved for type: {$type}");
-            return response()->json(['success' => true, 'message' => 'Data berhasil disimpan!']);
+            return redirect()->back()->with('success', 'Data berhasil disimpan!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error("Validation error for type {$type}: " . json_encode($e->errors()));
-            return response()->json(['success' => false, 'message' => $e->errors()], 422);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => $e->errors()], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             Log::error("Exception in storeData for type {$type}: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()], 500);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data!');
         }
     }
 }
