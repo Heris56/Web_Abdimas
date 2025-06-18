@@ -41,6 +41,8 @@ Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->na
 
 //Controller Wali Kelas
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
+Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class,'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class,'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
 
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
