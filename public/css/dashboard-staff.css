@@ -124,7 +124,7 @@ input.form-control:focus {
 }
 
 .head {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-head);
     font-family: var(--font-head);
 }
 
@@ -154,6 +154,13 @@ input.form-control:focus {
 .nav-link:hover {
     color: var(--color-dark);
     font-size: 1.1rem;
+}
+
+/* Active state: Override Bootstrap */
+.nav.nav-pills .nav-link.active,
+.nav.nav-pills .nav-link[aria-current="page"] {
+    color: var(--color-dark); /* Keep black text */
+    background-color: var(--color-accent); /* Remove Bootstrap’s blue background */
 }
 
 .nav-link::before {

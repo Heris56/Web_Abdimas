@@ -107,38 +107,46 @@
             <div class="head">Data</div>
 
             <ul class="nav nav-pills flex-column">
-                <ul class="nav nav-pills flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="{{ route('data.fetch', 'siswa') }}" class="nav-link" aria-current="page">
-                            <i class="bi bi-house-door me-2"></i> Siswa
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="{{ route('data.fetch', 'guru_mapel') }}" class="nav-link">
-                            <i class="bi bi-person-lines-fill me-2"></i> Guru Mapel
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="{{ route('data.fetch', 'wali_kelas') }}" class="nav-link">
-                            <i class="bi bi-person-lines-fill me-2"></i> Wali Kelas
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="{{ route('data.fetch', 'mapel') }}" class="nav-link">
-                            <i class="bi bi-journal-check me-2"></i> Mata Pelajaran
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="{{ route('data.fetch', 'kelas') }}" class="nav-link">
-                            <i class="bi bi-bar-chart-line me-2"></i> Kelas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-danger">
-                            <i class="bi bi-box-arrow-right me-2"></i> Logout
-                        </a>
-                    </li>
-                </ul>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'siswa') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'siswa' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'siswa' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-house-door me-2"></i> Siswa
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'guru_mapel') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'guru_mapel' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'guru_mapel' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-person-lines-fill me-2"></i> Guru Mapel
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'wali_kelas') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'wali_kelas' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'wali_kelas' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-person-lines-fill me-2"></i> Wali Kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'mapel') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'mapel' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'mapel' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-journal-check me-2"></i> Mata Pelajaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'kelas') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'kelas' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'kelas' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-bar-chart-line me-2"></i> Kelas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </li>
             </ul>
         </div>
 
