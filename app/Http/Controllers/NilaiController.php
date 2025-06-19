@@ -168,34 +168,49 @@ class NilaiController extends Controller
                 return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
             }
 
-            // Check if grade already exists
-            $exists = DB::table('nilai')
-                ->where('nisn', 'nisn', '=', $validated['nisn'])
-                ->where('id_mapel', 'id_kelas', '=', $id_mapel)
-                ->where('kegiatan', 'kegiatan', '=', $validated['kegiatan'])
-                ->where('tahun_pelajaran', 'tahun_pelajaran', '=', $validated['tahun_pelajaran'])
-                ->exists();
+            // Insert new grades for each kegiatan
+            DB::beginTransaction();
+            foreach ($request->nilai as $kegiatan => $nilai) {
+                if (!is_null($nilai)) {
+                    // Check if grade already exists
+                    $exists = DB::table('nilai')
+                        ->where('nisn', $validated['nisn'])
+                        ->where('id_mapel', $validated['id_mapel'])
+                        ->where('tahun_pelajaran', $validated['tahun_pelajaran'])
+                        ->where('nip_guru_mapel', $nip)
+                        ->where('kegiatan', $kegiatan)
+                        ->exists();
 
-            if ($exists) {
-                Log::warning('Grade already exists', ['nisn' => 'nisn', 'nilai' => 'nilai', 'kegiatan' => 'kegiatan', 'id_kelas' => 'id_kelas', 'tahun_pelajaran' => 'tahun_pelajaran']);
-                Log::warning('Nilai', ['nilai' => ['nisn']]);
-                return response()->json(['message' => 'Nilai untuk kegiatahan ini sudah ada'], 409);
+                    if ($exists) {
+                        Log::warning('Grade already exists', [
+                            'nisn' => $validated['nisn'],
+                            'id_mapel' => $validated['id_mapel'],
+                            'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                            'kegiatan' => $kegiatan,
+                        ]);
+                        continue; // Skip if record exists (input only, no update)
+                    }
+
+                    // Insert new grade
+                    DB::table('nilai')->insert([
+                        'nisn' => $validated['nisn'],
+                        'id_mapel' => $validated['id_mapel'],
+                        'nip_guru_mapel' => $nip,
+                        'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                        'kegiatan' => $kegiatan,
+                        'nilai' => $nilai,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
+            DB::commit();
 
-
-            // Insert new grade
-            DB::table('nilai')->insert([
+            Log::info('Grades inserted successfully', [
                 'nisn' => $validated['nisn'],
-                'id_mapel' => $id_mapel,
-                'nip_guru_mapel' => $nip,
-                'tahun_pelajaran' => $validated['tahun_pelajaran'] ?? '',
-                'kegiatan' => $validated['kegiatan'],
-                'nilai' => $validated['nilai'],
-                'created_at' => now(),
-                'updated_at' => now()
+                'id_mapel' => $validated['id_mapel'],
+                'tahun_pelajaran' => $validated['tahun_pelajaran'],
             ]);
-
-            Log::info('Grade inserted successfully', ['nisn' => $validated['nisn'], 'kegiatan' => $validated['kegiatan']]);
 
             return response()->json(['message' => 'Nilai berhasil disimpan']);
         } catch (\Illuminate\Validation\ValidationException $e) {

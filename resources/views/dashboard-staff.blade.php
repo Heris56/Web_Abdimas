@@ -10,6 +10,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
+    <!-- Conect Icons bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-staff.css') }}">
 
@@ -104,36 +107,38 @@
             <div class="head">Data</div>
 
             <ul class="nav nav-pills flex-column">
-                <li class="nav-item mb-2">
-                    <a href="{{ route('data.fetch', 'siswa') }}" class="nav-link" aria-current="page">
-                        <i class="bi bi-house-door me-2"></i> Siswa
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{{ route('data.fetch', 'guru_mapel') }}" class="nav-link">
-                        <i class="bi bi-person-lines-fill me-2"></i> Guru Mapel
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{{ route('data.fetch', 'wali_kelas') }}" class="nav-link">
-                        <i class="bi bi-person-lines-fill me-2"></i> Wali Kelas
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{{ route('data.fetch', 'mapel') }}" class="nav-link">
-                        <i class="bi bi-journal-check me-2"></i> Mata Pelajaran
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="{{ route('data.fetch', 'kelas') }}" class="nav-link">
-                        <i class="bi bi-bar-chart-line me-2"></i> Kelas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-danger">
-                        <i class="bi bi-box-arrow-right me-2"></i> Logout
-                    </a>
-                </li>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="{{ route('data.fetch', 'siswa') }}" class="nav-link" aria-current="page">
+                            <i class="bi bi-house-door me-2"></i> Siswa
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{{ route('data.fetch', 'guru_mapel') }}" class="nav-link">
+                            <i class="bi bi-person-lines-fill me-2"></i> Guru Mapel
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{{ route('data.fetch', 'wali_kelas') }}" class="nav-link">
+                            <i class="bi bi-person-lines-fill me-2"></i> Wali Kelas
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{{ route('data.fetch', 'mapel') }}" class="nav-link">
+                            <i class="bi bi-journal-check me-2"></i> Mata Pelajaran
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{{ route('data.fetch', 'kelas') }}" class="nav-link">
+                            <i class="bi bi-bar-chart-line me-2"></i> Kelas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-danger">
+                            <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
             </ul>
         </div>
 
@@ -158,7 +163,8 @@
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
                                             @forelse ($dropdowns['mapel'] as $item)
-                                                <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}</option>
+                                                <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}
+                                                </option>
                                             @empty
                                                 <option disabled>Tidak ada mata pelajaran tersedia</option>
                                             @endforelse
