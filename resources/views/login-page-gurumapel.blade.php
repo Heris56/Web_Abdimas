@@ -25,7 +25,7 @@
 
 <body>
     <!-- Navbar -->
-    <x-navbar></x-navbar>
+    <x-navbar>
     <!-- Wrapper untuk form masuk -->
     <div class="background container1">
         <div class="form-box container border">
