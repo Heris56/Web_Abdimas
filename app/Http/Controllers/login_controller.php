@@ -125,8 +125,8 @@ class login_controller extends Controller
                 return redirect()
                     ->route($success_login)
                     ->withCookies([
-                        cookie('userID', $id, 60),
-                        cookie('userRole', $role, 60)
+                        cookie('userID', $id, 1), // :1 == test ? >1 == final
+                        cookie('userRole', $role, 1) // :1 == test ? >1 == final
                     ])
                     ->with("success", "berhasil Login");
             } else {
