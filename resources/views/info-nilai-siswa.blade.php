@@ -102,27 +102,27 @@
                     </div>
 
                     @php
-        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
-        $grouped_data = [];
+                        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
+                        $grouped_data = [];
 
-        foreach ($data['grades'] as $item) {
-            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
+                        foreach ($data['grades'] as $item) {
+                            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
 
-            $grouped_data[$key] = [
-                'tanggal' => $item->tanggal,
-                'guru' => $item->nama_guru ?? 'Unknown',
-                'nilai' => []
-            ];
+                            $grouped_data[$key] = [
+                                'tanggal' => $item->tanggal,
+                                'guru' => $item->nama_guru ?? 'Unknown',
+                                'nilai' => []
+                            ];
 
-            foreach ($kegiatan_list as $kegiatan) {
-                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
-            }
-        }
+                            foreach ($kegiatan_list as $kegiatan) {
+                                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
+                            }
+                        }
 
-        // Urutkan berdasarkan tanggal terbaru
-        uasort($grouped_data, function ($a, $b) {
-            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
-        });
+                        // Urutkan berdasarkan tanggal terbaru
+                        uasort($grouped_data, function ($a, $b) {
+                            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+                        });
                     @endphp
 
                     <table class="table table-bordered mb-4">
@@ -154,29 +154,29 @@
             @else
 
                 @php
-    // Format lama - menyiapkan struktur data yang dikelompokkan
-    $data_nilai = [];
-    $jenis_kegiatan = [];
+                    // Format lama - menyiapkan struktur data yang dikelompokkan
+                    $data_nilai = [];
+                    $jenis_kegiatan = [];
 
-    foreach ($nilai as $item) {
-        $mapel = $item->nama_mapel;
-        $kegiatan = strtoupper($item->kegiatan);
+                    foreach ($nilai as $item) {
+                        $mapel = $item->nama_mapel;
+                        $kegiatan = strtoupper($item->kegiatan);
 
-        if (!isset($data_nilai[$mapel])) {
-            $data_nilai[$mapel] = [
-                'tanggal' => $item->tanggal,
-                'nilai' => []
-            ];
-        }
+                        if (!isset($data_nilai[$mapel])) {
+                            $data_nilai[$mapel] = [
+                                'tanggal' => $item->tanggal,
+                                'nilai' => []
+                            ];
+                        }
 
-        $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
+                        $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
 
-        if (!in_array($kegiatan, $jenis_kegiatan)) {
-            $jenis_kegiatan[] = $kegiatan;
-        }
-    }
+                        if (!in_array($kegiatan, $jenis_kegiatan)) {
+                            $jenis_kegiatan[] = $kegiatan;
+                        }
+                    }
 
-    sort($jenis_kegiatan);
+                    sort($jenis_kegiatan);
                 @endphp
 
                 <table class="table table-bordered">
@@ -205,7 +205,8 @@
                     <div class="avatar-wrapper">
                         <div class="avatar">
                             <div class="avatar-inner">
-                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture" class="avatar-img">
+                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture"
+                                    class="avatar-img">
                             </div>
                             <div class="avatar-border"></div>
                         </div>

@@ -93,10 +93,11 @@
                             <th scope="col">Catatan</th>
                         </tr>
                     </thead>
+                    
                     <tbody>
                         @foreach($presensi as $index => $presensiItem)
                             <tr>
-                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>{{ $index + 1 }}</th>
                                 <td>{{ $presensiItem->tanggal }}</td>
                                 <td>{{ $presensiItem->keterangan_absen }}</td>
                                 <td>
