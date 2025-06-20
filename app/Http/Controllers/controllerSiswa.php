@@ -178,14 +178,13 @@ class ControllerSiswa extends Controller
 
             // Group grades by subject
             $nilaiByMapel = $data_nilai->groupBy('nama_mapel')->map(function ($grades) {
-                $gradeValues = $grades->pluck('nilai')->filter()->values();
+                $guruMapel = $grades->first()->nama_guru ?? 'Tidak diketahui';
                 return [
                     'grades' => $grades,
-                    'average' => $gradeValues->count() > 0 ? round($gradeValues->avg(), 2) : 0,
-                    'highest' => $gradeValues->count() > 0 ? $gradeValues->max() : 0,
-                    'lowest' => $gradeValues->count() > 0 ? $gradeValues->min() : 0,
-                    'total_assignments' => $grades->count()
+                    'guru_mapel' => $guruMapel,
+                    'tahun_pelajaran' => $grades->first()->tahun_pelajaran,
                 ];
+                
             });
 
             // Handle AJAX requests
@@ -197,7 +196,7 @@ class ControllerSiswa extends Controller
                         'nilaiByMapel' => $nilaiByMapel,
                         'siswa' => $siswa,
                         'tahunAjaranList' => $tahunAjaranList,
-                        'tahunAjaranFilter' => $tahunAjaranFilter
+                        'tahunAjaranFilter' => $tahunAjaranFilter,
                     ]
                 ]);
             }
@@ -207,7 +206,7 @@ class ControllerSiswa extends Controller
                 'nilaiByMapel' => $nilaiByMapel,
                 'siswa' => $siswa,
                 'tahunAjaranList' => $tahunAjaranList,
-                'tahunAjaranFilter' => $tahunAjaranFilter
+                'tahunAjaranFilter' => $tahunAjaranFilter,
             ]);
 
         } catch (\Exception $e) {

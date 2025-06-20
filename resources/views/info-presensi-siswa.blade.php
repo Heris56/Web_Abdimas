@@ -25,34 +25,7 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
 
-    <!-- Tambahkan style untuk memperbaiki spacing -->
-    <style>
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            gap: 1.5rem;
-            /* Menambahkan jarak antar item */
-            margin-top: 1.5rem;
-        }
-
-        .stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 80px;
-        }
-
-        .stat-value {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-    </style>
+    
 </head>
 
 <body>
@@ -157,7 +130,7 @@
                     <div class="avatar-wrapper">
                         <div class="avatar">
                             <div class="avatar-inner">
-                                <img src="{{ asset('images/profile.jpg') }}" alt="Profile Picture" class="avatar-img">
+                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture" class="avatar-img">
                             </div>
                             <div class="avatar-border"></div>
                         </div>
