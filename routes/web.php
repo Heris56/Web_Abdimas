@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\NilaiController;
+use App\Http\Middleware\RedirectIfLoggedIn;
 use App\Http\Middleware\CheckLoginCookie;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,7 @@ Route::get('/welcome', function () {
 });
 
 // semua view
-Route::view('/', 'landing-page')->name('landing');
+Route::view('/', 'landing-page')->name('landing')->middleware(RedirectIfLoggedIn::class);
 Route::view('/loginsiswa', 'login-page-siswa')->name('login-siswa');
 Route::view('/loginwalikelas', 'login-page-walikelas')->name('login-walikelas');
 Route::view('/logingurumapel', 'login-page-gurumapel')->name('login-gurumapel');
