@@ -25,69 +25,7 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
 
-    <!-- Tambahkan style untuk memperbaiki spacing -->
-    <style>
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
 
-        .stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 80px;
-        }
-
-        .stat-value {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-
-        .summary-stats {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .summary-item {
-            text-align: center;
-            padding: 0.5rem;
-        }
-
-        .summary-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .summary-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-
-        .subject-stats {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-    </style>
 </head>
 
 <body>
@@ -154,12 +92,13 @@
                 @foreach($nilaiByMapel as $mapel => $data)
                     <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
                         <span class="head">{{ $mapel }}</span>
-                        <div class="subject-stats">
-                            Rata-rata: {{ $data['average'] }} |
-                            Tertinggi: {{ $data['highest'] }} |
-                            Terendah: {{ $data['lowest'] }} |
-                            Total Tugas: {{ $data['total_assignments'] }}
-                        </div>
+                        @isset($data['guru_mapel'])
+                            <div class="subject-stats">
+                                Guru Pengampu: {{ $data['guru_mapel'] }} ||
+                                Tahun Ajaran: {{ $data['tahun_pelajaran'] ?? 'Tidak Tersedia' }}
+                            </div>
+                        @endisset
+
                     </div>
 
                     @php
@@ -190,27 +129,27 @@
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Kegiatan</th>
+                                <th>Nilai</th>
                                 <th>Tanggal</th>
-                                <th>Guru</th>
-                                @foreach($kegiatan_list as $kegiatan)
-                                    <th>{{ strtoupper($kegiatan) }}</th>
-                                @endforeach
                             </tr>
                         </thead>
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach($grouped_data as $row)
-                                <tr>
-                                    <td>{{ $no++ }}</td>
-                                    <td>{{ $row['tanggal'] }}</td>
-                                    <td>{{ $row['guru'] }}</td>
-                                    @foreach($kegiatan_list as $kegiatan)
-                                        <td>{{ $row['nilai'][$kegiatan] }}</td>
-                                    @endforeach
-                                </tr>
+                                @foreach($row['nilai'] as $kegiatan => $nilai)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ strtoupper($kegiatan) }}</td>
+                                        <td>{{ $nilai }}</td>
+                                        <td>{{ $row['tanggal'] }}</td>
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
+
+
                 @endforeach
             @else
 
@@ -266,7 +205,7 @@
                     <div class="avatar-wrapper">
                         <div class="avatar">
                             <div class="avatar-inner">
-                                <img src="{{ asset('images/profile.jpg') }}" alt="Profile Picture" class="avatar-img">
+                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture" class="avatar-img">
                             </div>
                             <div class="avatar-border"></div>
                         </div>
