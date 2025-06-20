@@ -8,37 +8,48 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Connect CSS -->
+    <link rel="stylesheet" href="{{ asset('css/info-siswa.css') }}">
+
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('landing') }}">
-                <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="40" height="40"
-                    class="d-inline-block align-text-top">
-                SMK PGRI 35
-            </a>
-        </div>
+    <nav class="navbar container-fluid fixed-top">
+        <!-- navigate to home/dashboard by clicking logo/name -->
+        <a href="{{ route('info.presensi') }}" class="custom-back-button">
+            Kembali
+        </a>
     </nav>
 
-    <div class="container mt-5">
-        <h3 class="mb-4 text-center">Ganti Password Siswa</h3>
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @elseif(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="ganti-password-wrapper">
+
+        <h2>Ganti Password Siswa</h2>
+
+        @if (session('success'))
+            <div class="alert alert-success text-center">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger text-center">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger text-center">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}<br>
+                @endforeach
+            </div>
         @endif
 
         <form method="POST" action="{{ route('siswa.updatePassword') }}" class="mx-auto" style="max-width: 500px;">
             @csrf
             @method('PUT')
-
-            <div class="mb-3">
-                <label for="current_password" class="form-label">Password Lama</label>
-                <input type="password" class="form-control" id="current_password" name="current_password" required>
-            </div>
 
             <div class="mb-3">
                 <label for="new_password" class="form-label">Password Baru</label>
@@ -52,15 +63,29 @@
                     name="new_password_confirmation" required minlength="6">
             </div>
 
-            <div class="d-flex justify-content-between">
-                <a href="{{ route('info.nilai') }}" class="btn btn-secondary">Kembali</a>
-                <button type="submit" class="btn btn-primary">Perbarui Password</button>
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="showPasswordToggle">
+                <label class="form-check-label" for="showPasswordToggle">Tampilkan Password</label>
             </div>
+
+            <button type="submit" class="btn custom-ganti-password-btn w-100">Perbarui Password</button>
         </form>
+
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('showPasswordToggle').addEventListener('change', function () {
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('new_password_confirmation');
+            const type = this.checked ? 'text' : 'password';
+            newPassword.type = type;
+            confirmPassword.type = type;
+        });
+    </script>
+
 </body>
 
 </html>
