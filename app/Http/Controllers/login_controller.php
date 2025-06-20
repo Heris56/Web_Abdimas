@@ -102,36 +102,73 @@ class login_controller extends Controller
 
     public function checkhashmd5($success_login, $error_login, $password, $user)
     {
+
+        // ambil pass saat ini (either masih md5 atau nggak)
+        $storedPassword = $user->password;
+        $isAuthenticated = false;
+
         if (strlen($user->password) === 32) {
-            if (md5($password) === $user->password) {
-                if (property_exists($user, 'nisn') && $user->nisn) {
-                    $id = $user->nisn;
-                    $role = "siswa";
-                } elseif (property_exists($user, 'nip_wali_kelas') && $user->nip_wali_kelas) {
-                    $id = $user->nip_wali_kelas;
-                    $role = "waliKelas";
-                } elseif (property_exists($user, 'nip_guru_mapel') && $user->nip_guru_mapel) {
-                    $id = $user->nip_guru_mapel;
-                    $role = "guruMapel";
-                } else {
-                    return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
+            if (md5($password) === $storedPassword) {
+                $isAuthenticated = true;
+
+                //pass udah cocok, buatkan pass versi bycript
+                $newHashedPassword = Hash::make($password);
+                // dd($newHashedPassword);
+
+                $tablename = '';
+                if (property_exists($user, 'nisn')) {
+                    $tablename = 'siswa';
+                    $idColumn = 'nisn';
+                } elseif (property_exists($user, 'nip_wali_kelas')) {
+                    $tablename = 'wali_kelas';
+                    $idColumn = "nip_wali_kelas";
+                } elseif (property_exists($user, 'nip_guru_mapel')) {
+                    $tablename = 'guru_mapel';
+                    $idColumn = "nip_guru_mapel";
                 }
 
-                session([
-                    'userID' => $id,
-                    'userRole' => $role,
-                ]);
+                if ($tablename && isset($idColumn)) {
+                    DB::table($tablename)
+                        ->where($idColumn, $user->$idColumn)
+                        ->update(['password' => $newHashedPassword]);
+                }
 
-                return redirect()
-                    ->route($success_login)
-                    ->withCookies([
-                        cookie('userID', $id, 60),
-                        cookie('userRole', $role, 60)
-                    ])
-                    ->with("success", "berhasil Login");
-            } else {
-                return redirect()->route($error_login)->with("error", "Password salah");
             }
+        } else {
+            // Ini diasumsikan sebagai hash bcrypt atau format lain yang sudah aman
+            if (Hash::check($password, $storedPassword)) {
+                $isAuthenticated = true;
+            }
+        }
+
+        if ($isAuthenticated) {
+            //pass udah cocok 
+            if (property_exists($user, 'nisn') && $user->nisn) {
+                $id = $user->nisn;
+                $role = "siswa";
+            } elseif (property_exists($user, 'nip_wali_kelas') && $user->nip_wali_kelas) {
+                $id = $user->nip_wali_kelas;
+                $role = "waliKelas";
+            } elseif (property_exists($user, 'nip_guru_mapel') && $user->nip_guru_mapel) {
+                $id = $user->nip_guru_mapel;
+                $role = "guruMapel";
+            } else {
+                return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
+            }
+            session([
+                'userID' => $id,
+                'userRole' => $role,
+            ]);
+
+            return redirect()
+                ->route($success_login)
+                ->withCookies([
+                    cookie('userID', $id, 1), // :1 == test ? >1 == final
+                    cookie('userRole', $role, 1) // :1 == test ? >1 == final
+                ])
+                ->with("success", "berhasil Login");
+        } else {
+            return redirect()->route($error_login)->with("error", "Password salah");
         }
     }
 
