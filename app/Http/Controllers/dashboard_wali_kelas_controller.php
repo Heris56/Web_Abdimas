@@ -41,19 +41,31 @@ class dashboard_wali_kelas_controller extends Controller
     public function add_tanggal(Request $request)
     {
     $nip = session('userID');
-    $data_siswa = $this->get_absen_by_nip($nip)->unique('nisn_siswa');
+    
+    $tanggal_input = $request->input('tanggal');
 
-    foreach ($data_siswa as $siswa) {
-        $insertData[] =
-        [
-        'tanggal' => $request->input('tanggal'),
-        'nisn' => $siswa->nisn_siswa,
-        'keterangan_absen' => '-',
-        ];
+    $cek_ada = DB::table('absen')
+    ->join('siswa', 'absen.nisn', '=', 'siswa.nisn')
+    ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
+    ->where('wali_kelas.nip_wali_kelas', $nip)
+    ->where('absen.tanggal', $tanggal_input)
+    ->exists();
+    
+    if ($cek_ada) {
+        return redirect()->back()->with('error', 'Tanggal Absen sudah ada.');
+    }else {
+        $data_siswa = $this->get_absen_by_nip($nip)->unique('nisn_siswa');
+        foreach ($data_siswa as $siswa) {
+            $insertData[] =
+            [
+            'tanggal' => $request->input('tanggal'),
+            'nisn' => $siswa->nisn_siswa,
+            'keterangan_absen' => '-',
+            ];
+        }
+        DB::table('absen')->insert($insertData);
+        return redirect()->back()->with('success', 'Tanggal Absen berhasil ditambahkan.');
     }
-
-    DB::table('absen')->insert($insertData);
-    return redirect()->back()->with('success', 'Data absen berhasil ditambahkan.');
     }
 
     public function edit_kehadiran(Request $request)
