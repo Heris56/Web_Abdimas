@@ -52,7 +52,7 @@ body {
     background-color: var(--color-accent);
     height: 80px;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.5rem;
 }
 
 .logo {
@@ -91,6 +91,7 @@ input.form-control:focus {
     grid-template-columns: 0.3fr 1.7fr;
     grid-template-rows: 0.2fr 2fr;
     grid-auto-columns: 1fr;
+    padding: 0.5rem 1.5rem;
     gap: 0px 0px;
     grid-auto-flow: row;
     justify-items: stretch;
@@ -101,9 +102,9 @@ input.form-control:focus {
 
 .Tabs {
     grid-area: Tabs;
-    padding: 0.5rem 1.5rem;
     display: flex;
     align-items: center;
+    margin-bottom: 1rem;
 }
 
 .Tabs input {
@@ -112,11 +113,11 @@ input.form-control:focus {
 
 .Contents {
     grid-area: Contents;
-    padding: 0.5rem 1.5rem;
 }
 
 .Sidebar {
     grid-area: Sidebar;
+    margin-right: 1rem;
 }
 
 .Sidebar img {
@@ -160,7 +161,21 @@ input.form-control:focus {
 .nav.nav-pills .nav-link.active,
 .nav.nav-pills .nav-link[aria-current="page"] {
     color: var(--color-dark); /* Keep black text */
-    background-color: var(--color-accent); /* Remove Bootstrap’s blue background */
+    background-color: var(
+        --color-accent
+    ); /* Remove Bootstrap’s blue background */
+}
+
+/* Remove underline for active link */
+.nav.nav-pills .nav-link.active::before,
+.nav.nav-pills .nav-link[aria-current="page"]::before {
+    content: none;
+}
+
+/* Prevent underline on hover for active link */
+.nav.nav-pills .nav-link.active:hover::before,
+.nav.nav-pills .nav-link[aria-current="page"]:hover::before {
+    content: none; /* No underline when hovering active link */
 }
 
 .nav-link::before {
