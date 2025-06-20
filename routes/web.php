@@ -49,6 +49,10 @@ Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa'
 //Controllersiswa
 Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
 Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai.ajax');
+Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
+Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'])->name('siswa.formGantiPassword');
+
+
 
 //Controller Wali Kelas
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
