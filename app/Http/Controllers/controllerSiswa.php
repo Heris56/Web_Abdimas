@@ -12,9 +12,11 @@ class ControllerSiswa extends Controller
 {
     public function getHistorySiswa()
     {
-        $nisn = session('userId'); // Menggunakan session userID seperti di NilaiController
+        // This method seems to be an older version or not fully integrated.
+        // The showPresensi method is more comprehensive.
+        // Consider deprecating or integrating its logic into showPresensi.
+        $nisn = session('userId');
 
-        // Ambil riwayat presensi siswa
         $history = DB::table('history_siswa')
             ->join('absen', 'history_siswa.id_absen', '=', 'absen.id_absen')
             ->where('history_siswa.nisn', $nisn)
@@ -30,7 +32,6 @@ class ControllerSiswa extends Controller
             ->get()
             ->groupBy('semester');
 
-        // Ambil data siswa
         $siswa = DB::table('siswa')
             ->join('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
             ->where('siswa.nisn', $nisn)
@@ -45,13 +46,45 @@ class ControllerSiswa extends Controller
 
         return view('info-presensi-siswa', [
             'presensiBySemester' => $history,
-            'siswa' => $siswa
+            'siswa' => $siswa,
+            'isGuest' => false // Explicitly set for authenticated route if this method is still used
         ]);
     }
 
+    public function showGuestInfoSiswa(Request $request)
+    {
+        $request->validate([
+            'inputNISN' => 'required|numeric',
+        ]);
+
+        $nisn = $request->input('inputNISN');
+
+        $siswaExists = DB::table('siswa')->where('nisn', $nisn)->exists();
+        if (!$siswaExists) {
+            return redirect()->route('cari')->with('error', 'NISN tidak ditemukan.');
+        }
+
+        // Determine which tab to show (presensi or nilai)
+        $tab = $request->input('tab', 'presensi'); // Default to presensi
+
+        if ($tab === 'nilai') {
+            return $this->fetchNilaiSiswa($request->merge(['nisn_guest' => $nisn, 'isGuest' => true]));
+        }
+
+        return $this->showPresensi($request->merge(['nisn_guest' => $nisn, 'isGuest' => true]));
+    }
+
+
     public function showPresensi(Request $request)
     {
-        $nisn = session('userID');
+        $nisn = $request->input('nisn_guest') ?? session('userID'); // Prioritize guest NISN if available
+
+        // If no NISN is found (neither from guest nor session), redirect to login
+        if (!$nisn) {
+            return redirect()->route('login-siswa')->with('error', 'Please login to view attendance data.');
+        }
+
+        $isGuest = $request->boolean('isGuest', false); // Get the isGuest flag
 
         // Ambil data siswa
         $siswa = DB::table('siswa')
@@ -65,6 +98,10 @@ class ControllerSiswa extends Controller
                 'kelas.jurusan'
             )
             ->first();
+
+        if (!$siswa) {
+            return redirect()->route('cari')->with('error', 'Student data not found for the provided NISN.');
+        }
 
         // Dapatkan daftar tahun ajaran yang tersedia
         $tahunAjaranList = DB::table('siswa')
@@ -91,27 +128,28 @@ class ControllerSiswa extends Controller
             'presensi' => $data_absen,
             'siswa' => $siswa,
             'tahunAjaranList' => $tahunAjaranList,
-            'tahunAjaranFilter' => $tahunAjaranFilter
+            'tahunAjaranFilter' => $tahunAjaranFilter,
+            'isGuest' => $isGuest // Pass the isGuest flag to the view
         ]);
     }
-
-
 
 
     public function fetchNilaiSiswa(Request $request)
     {
         try {
-            $nisn = session('userID');
+            $nisn = $request->input('nisn_guest') ?? session('userID'); // Prioritize guest NISN if available
 
+            // If no NISN is found (neither from guest nor session), redirect to login
             if (!$nisn) {
-                Log::warning('fetchNilaiSiswa: No NISN found in session');
                 if ($request->ajax()) {
                     return response()->json(['error' => 'Session expired'], 401);
                 }
-                return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+                return redirect()->route('login-siswa')->with('error', 'Session expired. Please login again.');
             }
 
-            Log::info('Fetching nilai for student', ['nisn' => $nisn]);
+            $isGuest = $request->boolean('isGuest', false); // Get the isGuest flag
+
+            Log::info('Fetching nilai for student', ['nisn' => $nisn, 'isGuest' => $isGuest]);
 
             // Get student information
             $siswa = DB::table('siswa')
@@ -131,7 +169,7 @@ class ControllerSiswa extends Controller
                 if ($request->ajax()) {
                     return response()->json(['error' => 'Student data not found'], 404);
                 }
-                return redirect()->back()->with('error', 'Student data not found.');
+                return redirect()->route('cari')->with('error', 'Student data not found.');
             }
 
             // Get list of available academic years
@@ -144,7 +182,7 @@ class ControllerSiswa extends Controller
 
             // Get selected academic year from request or use student's default
             $tahunAjaranFilter = $request->input('tahun_ajaran');
-            
+
 
             // Get student grades with filters
             $data_nilai = DB::table('nilai')
@@ -153,18 +191,17 @@ class ControllerSiswa extends Controller
                 ->where('nilai.nisn', $nisn)
                 ->whereNotNull('mapel.nama_mapel')
                 ->when($tahunAjaranFilter && $tahunAjaranFilter !== 'all', function ($query) use ($tahunAjaranFilter) {
-                    // Filter berdasarkan tahun pelajaran yang tepat
                     return $query->where('nilai.tahun_pelajaran', $tahunAjaranFilter);
                 })
                 ->select(
-                    'nilai.id_nilai', 
+                    'nilai.id_nilai',
                     'mapel.nama_mapel',
                     'mapel.id_mapel',
                     'nilai.kegiatan',
                     'nilai.nilai',
                     'nilai.tanggal',
                     'nilai.tahun_pelajaran',
-                    'nilai.semester', 
+                    'nilai.semester',
                     'guru_mapel.nama_guru'
                 )
                 ->orderBy('nilai.tahun_pelajaran', 'desc')
@@ -184,7 +221,7 @@ class ControllerSiswa extends Controller
                     'guru_mapel' => $guruMapel,
                     'tahun_pelajaran' => $grades->first()->tahun_pelajaran,
                 ];
-                
+
             });
 
             // Handle AJAX requests
@@ -207,6 +244,7 @@ class ControllerSiswa extends Controller
                 'siswa' => $siswa,
                 'tahunAjaranList' => $tahunAjaranList,
                 'tahunAjaranFilter' => $tahunAjaranFilter,
+                'isGuest' => $isGuest // Pass the isGuest flag to the view
             ]);
 
         } catch (\Exception $e) {
@@ -229,17 +267,21 @@ class ControllerSiswa extends Controller
 
     public function formGantiPassword()
     {
+        // This method should only be accessible by logged-in users.
+        // It's already protected by middleware.
         return view('ganti-password-siswa');
     }
 
     public function updatePassword(Request $request)
     {
+        // This method should only be accessible by logged-in users.
+        // It's already protected by middleware.
         $request->validate([
             'current_password' => 'required',
             'new_password' => 'required|confirmed|min:6',
         ]);
 
-        $siswa = auth()->guard('siswa')->user(); // Sesuaikan jika tidak pakai guard
+        $siswa = auth()->guard('siswa')->user(); // Adjust if not using guard
 
         if (!Hash::check($request->current_password, $siswa->password)) {
             return back()->with('error', 'Password lama tidak cocok.');
@@ -250,6 +292,4 @@ class ControllerSiswa extends Controller
 
         return back()->with('success', 'Password berhasil diperbarui.');
     }
-
-
 }

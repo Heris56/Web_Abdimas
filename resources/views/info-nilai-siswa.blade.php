@@ -5,17 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Masuk ke SMK Telkom</title>
-    <!-- External buat background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
-    <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
-    <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/info-siswa.css') }}">
 
-    <!-- Import Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -29,20 +25,23 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     <nav class="navbar container-fluid fixed-top">
-        <!-- navigate to home/dashboard by clicking logo/name -->
         <a class="logo" href="{{ route('landing') }}">
             <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
                 class="logo-img d-inline-block" />
             SMK PGRI 35
         </a>
 
-        <!-- Button login/register -->
         <div class="navbar-button ms-auto">
-            <a href="{{ route('login-siswa') }}">
-                Logout
-            </a>
+            @if($isGuest)
+                <a href="{{ route('login-siswa') }}">
+                    Login
+                </a>
+            @else
+                <a href="{{ route('login-siswa') }}"> {{-- Assuming login-siswa route handles logout as well or you have a dedicated logout route --}}
+                    Logout
+                </a>
+            @endif
         </div>
     </nav>
 
@@ -50,10 +49,11 @@
         <div class="Tabs">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('info.presensi') }}">Presensi</a>
+                    {{-- Adjust links based on whether it's a guest or logged-in user --}}
+                    <a class="nav-link" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('info.nilai') }}">Nilai</a>
+                    <a class="nav-link" aria-current="page" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
                 </li>
             </ul>
         </div>
@@ -87,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Table by Subject -->
             @if(isset($nilaiByMapel) && count($nilaiByMapel) > 0)
                 @foreach($nilaiByMapel as $mapel => $data)
                     <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
@@ -201,7 +200,6 @@
         <div class="Profile">
             <div class="profile-card">
                 <div class="card-content">
-                    <!-- Avatar Circle -->
                     <div class="avatar-wrapper">
                         <div class="avatar">
                             <div class="avatar-inner">
@@ -211,7 +209,6 @@
                         </div>
                     </div>
 
-                    <!-- Profile Info -->
                     <div class="profile-info">
                         <h2 class="name">{{ $siswa->nama_siswa ?? 'Nama Siswa' }}</h2>
                         <p class="title">{{ $siswa->nisn ?? 'NISN' }}</p>
@@ -231,22 +228,22 @@
                             </div>
                         </div>
                     </div>
+                    @if(!$isGuest) {{-- Only show Ganti Password for logged-in users --}}
                     <div class="text-center mt-3">
                         <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
                             Ganti Password
                         </a>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Connect Bootstrap bundle-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-    <!-- Connect Custom JS -->
     <script src="{{ asset('js/darryl.js') }}"></script>
 
     <script>
@@ -283,15 +280,25 @@
         }
         function filterByTahunAjaran() {
             const selectedTahun = document.getElementById('filterTahunAjaran').value;
+            const nisn = "{{ $siswa->nisn }}"; // Get NISN from PHP
+            const isGuest = "{{ $isGuest ? 'true' : 'false' }}"; // Get isGuest from PHP
 
-            // Jika memilih "Semua Tahun Ajaran", reload halaman tanpa filter
-            if (selectedTahun === 'all') {
-                window.location.href = "{{ route('info.nilai') }}?tahun_ajaran=all";
-                return;
+            let url;
+            if (isGuest === 'true') {
+                url = "{{ route('guest.info.siswa') }}?inputNISN=" + nisn + "&tab=nilai&tahun_ajaran=" + selectedTahun;
+            } else {
+                url = "{{ route('info.nilai') }}?tahun_ajaran=" + selectedTahun;
             }
 
-            // Redirect ke URL dengan parameter tahun ajaran
-            window.location.href = "{{ route('info.nilai') }}?tahun_ajaran=" + selectedTahun;
+            // If selecting "Semua Tahun Ajaran", reload page without filter
+            if (selectedTahun === 'all') {
+                if (isGuest === 'true') {
+                    url = "{{ route('guest.info.siswa') }}?inputNISN=" + nisn + "&tab=nilai"; // No tahun_ajaran filter for 'all'
+                } else {
+                    url = "{{ route('info.nilai') }}?tahun_ajaran=all"; // Ensure 'all' is passed to clear filter if needed by backend
+                }
+            }
+            window.location.href = url;
         }
     </script>
 
