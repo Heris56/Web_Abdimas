@@ -45,6 +45,23 @@
 
   <!-- Connect Custom JS -->
   <script src="{{ asset('js/darryl.js') }}"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cek session flash message dari Laravel dan tampilkan dengan alert()
+      @if (session('success'))
+        alert("Berhasil: {{ session('success') }}");
+      @endif
+
+      @if (session('error'))
+        alert("Error: {{ session('error') }}");
+      @endif
+
+      @if (session('warning'))
+        alert("Peringatan: {{ session('warning') }}");
+      @endif
+    });
+  </script>
 </body>
 
 </html>
