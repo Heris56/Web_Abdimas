@@ -1,22 +1,8 @@
-@import 'app.css';
-
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-}
-
 .container1 {
-    height: 100vh;
-    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: hsl(var(--background));
+    background-color: var(--background);
 }
 
 .form-box {
@@ -24,13 +10,13 @@ html, body {
     height: fit-content;
     margin: 0;
     padding: 2rem;
-    background-color: hsl(var(--card));
-    color: hsl(var(--card-foreground));
+    background-color: var(--card);
+    color: var(--card-foreground);
     border-radius: var(--radius);
 }
 
 .navbar {
-    background-color: hsl(var(--primary));
+    background-color: var(--primary);
     height: 80px;
     align-items: center;
     padding: 0.5rem 1rem;
@@ -42,7 +28,7 @@ html, body {
     text-decoration: none;
     font-weight: bold;
     font-size: var(--font-size-lg);
-    color: hsl(var(--primary-foreground));
+    color: var(--primary-foreground);
 }
 
 .logo-img {
@@ -52,8 +38,8 @@ html, body {
 /* Button navbar controls */
 .navbar-button a {
     text-decoration: none;
-    color: hsl(var(--secondary-foreground));
-    background-color: hsl(var(--secondary));
+    color: var(--secondary-foreground);
+    background-color: var(--secondary);
     padding: 0.875rem 1rem;
     border-radius: var(--radius);
 }
@@ -65,40 +51,23 @@ html, body {
 .head {
     font-size: var(--font-size-head);
     font-family: var(--font-head);
-    color: hsl(var(--foreground));
+    color: var(--foreground);
 }
 
 .subhead {
     font-size: var(--font-size-lg);
-    color: hsl(var(--foreground));
+    color: var(--foreground);
 }
 
 .form-label {
     font-size: var(--font-size-md);
-    color: hsl(var(--foreground));
-}
-
-/* Input controls */
-input.form-control {
-    height: 3rem;
-    font-size: var(--font-size-base);
-    border: 1px solid hsl(var(--border));
-    border-radius: 4px;
-    background-color: hsl(var(--input));
-    color: hsl(var(--foreground));
-    outline: none;
-}
-
-input.form-control:focus {
-    box-shadow: 0 0 0 3px hsl(var(--ring));
-    border: 1px solid hsl(var(--primary));
-    background-color: hsl(var(--input));
+    color: var(--foreground);
 }
 
 /* Button masuk controls */
 .btn {
-    background-color: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     width: 100%;
     height: 3rem;
     padding: 0.75rem 1.5rem;
@@ -107,7 +76,9 @@ input.form-control:focus {
 }
 
 .btn:hover {
-    background-color: hsl(var(--primary) / 0.9); /* Slightly darker primary for hover */
+    background-color: hsl(
+        44 98% 50% / 0.9
+    ); /* Adjusted to use HSL directly for primary hover */
 }
 
 .btn:active {

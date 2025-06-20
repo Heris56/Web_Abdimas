@@ -26,17 +26,16 @@ Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.wal
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 
 // view all user
-Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
+Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function () {
     Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi');
     Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
-   
 });
 
-Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function(){
+Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function () {
     Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
 });
 
-Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function(){
+Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function () {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 });
 
@@ -57,8 +56,8 @@ Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'
 
 //Controller Wali Kelas
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
-Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class,'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
-Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class,'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
+Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class, 'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
 
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');

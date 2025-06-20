@@ -1,15 +1,87 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+:root {
+    /* color settings */
+    --background: hsl(44 30% 100%);
+    --foreground: hsl(44 76% 1%);
+    --muted: hsl(44 22% 95%);
+    --muted-foreground: hsl(44 0% 34%);
+    --popover: hsl(0 0% 99%);
+    --popover-foreground: hsl(0 0% 0%);
+    --card: hsl(0 0% 99%);
+    --card-foreground: hsl(0 0% 0%);
+    --border: hsl(44 15% 94%);
+    --input: hsl(44 15% 94%);
+    --primary: hsl(44 98% 50%);
+    --primary-foreground: hsl(44 98% 10%);
+    --secondary: hsl(44 18% 92%);
+    --secondary-foreground: hsl(44 18% 12%);
+    --accent: hsl(44 26% 85%);
+    --accent-foreground: hsl(44 26% 25%);
+    --destructive: hsl(2 84% 40%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --ring: hsl(44 98% 50%);
+    --chart-1: hsl(44 98% 50%);
+    --chart-2: hsl(44 18% 92%);
+    --chart-3: hsl(44 26% 85%);
+    --chart-4: hsl(44 18% 95%);
+    --chart-5: hsl(44 101% 50%);
+    --radius: 0.5rem;
+
+    /* fonts settings */
+    --font-head: "Poppins", sans-serif;
+    --font-body: "Lato", sans-serif;
+
+    --font-size-sm: 0.875rem; /* 14px for hints */
+    --font-size-base: 1rem; /* 16px for default/input */
+    --font-size-md: 1.125rem; /* 18px for label */
+    --font-size-lg: 1.5rem; /* 24px for title/subheading */
+    --font-size-head: 2rem; /* 32px for heading*/
+    --font-size-hero: 3rem; /* 48px for hero section */
+}
+
+.dark {
+    --background: hsl(44 58% 0%);
+    --foreground: hsl(44 25% 98%);
+    --muted: hsl(44 22% 5%);
+    --muted-foreground: hsl(44 0% 66%);
+    --popover: hsl(0 0% 1%);
+    --popover-foreground: hsl(44 25% 99%);
+    --card: hsl(0 0% 1%);
+    --card-foreground: hsl(44 25% 99%);
+    --border: hsl(44 15% 14%);
+    --input: hsl(44 15% 14%);
+    --primary: hsl(44 98% 50%);
+    --primary-foreground: hsl(44 98% 10%);
+    --secondary: hsl(44 3% 15%);
+    --secondary-foreground: hsl(44 3% 75%);
+    --accent: hsl(44 9% 24%);
+    --accent-foreground: hsl(44 9% 84%);
+    --destructive: hsl(2 84% 56%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --ring: hsl(44 98% 50%);
+    --chart-1: hsl(44 98% 50%);
+    --chart-2: hsl(44 3% 15%);
+    --chart-3: hsl(44 9% 24%);
+    --chart-4: hsl(44 3% 18%);
+    --chart-5: hsl(44 101% 50%);
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    background-color: var(--background);
+    color: var(--background);
+}
 
 body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #333;
+    /* navbar 80px + margin 20px */
+    padding-top: 6.25rem;
+    height: 100%;
+    width: 100%;
 }
 
 .error-container {
@@ -50,3 +122,43 @@ body {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
+/* START NAVBAR CONTROLLS */
+
+.navbar {
+    background-color: var(--primary);
+    height: 80px;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-button a {
+    text-decoration: none;
+    color: var(--secondary-foreground);
+    background-color: var(--secondary);
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius);
+}
+
+.navbar-button:active {
+    transform: scale(0.97);
+}
+
+/* END NAVBAR CONTROLLS */
+
+/* START INPUT CONTROLLS */
+input.form-control {
+    height: 3rem;
+    font-size: var(--font-size-base);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background-color: transparent;
+    color: var(--foreground);
+    outline: none;
+}
+
+input.form-control:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    border: 1px solid var(--primary);
+    background-color: var(--input);
+}
+/* END INPUT CONTROLLS */
