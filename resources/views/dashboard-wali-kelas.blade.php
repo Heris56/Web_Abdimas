@@ -22,6 +22,18 @@
 </head>
 
 <body>
+    @if(session('error'))
+    <script>
+        alert('{{ session('error') }}');
+    </script>
+    @endif
+
+    @if(session('success'))
+    <script>
+        alert('{{ session('success') }}');
+    </script>
+    @endif
+
     @php
         $wali = $data_wali_kelas->first();
         $data_absen = $data_absen;
