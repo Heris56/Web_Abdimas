@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class ControllerSiswa extends Controller
@@ -226,5 +226,30 @@ class ControllerSiswa extends Controller
             return redirect()->back()->with('error', 'Failed to load student grades. Please try again.');
         }
     }
+
+    public function formGantiPassword()
+    {
+        return view('ganti-password-siswa');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|confirmed|min:6',
+        ]);
+
+        $siswa = auth()->guard('siswa')->user(); // Sesuaikan jika tidak pakai guard
+
+        if (!Hash::check($request->current_password, $siswa->password)) {
+            return back()->with('error', 'Password lama tidak cocok.');
+        }
+
+        $siswa->password = Hash::make($request->new_password);
+        $siswa->save();
+
+        return back()->with('success', 'Password berhasil diperbarui.');
+    }
+
 
 }

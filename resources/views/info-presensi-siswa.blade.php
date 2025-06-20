@@ -84,7 +84,7 @@
                     @endif
                 </div>
 
-                <table class="table table-bordered">
+                <table class="table table-bordered mb-4">
                     <thead>
                         <tr>
                             <th scope="col">No</th>
@@ -155,6 +155,11 @@
                                 <span class="stat-label">Jurusan</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
+                            Ganti Password
+                        </a>
                     </div>
                 </div>
             </div>
