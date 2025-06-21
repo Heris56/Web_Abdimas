@@ -25,11 +25,18 @@ Route::view('/main-page', 'main-page')->name('main');
 Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 
-// view all user
+// Guest access routes
+Route::get('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa');
+// ADD THIS NEW LINE FOR POST SUBMISSIONS
+Route::post('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa.post');
+
+// view all user (Authenticated routes)
 Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
     Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi');
     Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
-   
+    // These routes are moved here to be protected by the authentication middleware
+    Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'])->name('siswa.formGantiPassword');
+    Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
 });
 
 Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function(){
@@ -46,14 +53,6 @@ Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'
 Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
-
-//Controllersiswa
-Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
-Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai.ajax');
-Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
-Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'])->name('siswa.formGantiPassword');
-
-
 
 //Controller Wali Kelas
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
