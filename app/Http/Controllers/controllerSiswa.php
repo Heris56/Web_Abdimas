@@ -12,11 +12,9 @@ class ControllerSiswa extends Controller
 {
     public function getHistorySiswa()
     {
-        // This method seems to be an older version or not fully integrated.
-        // The showPresensi method is more comprehensive.
-        // Consider deprecating or integrating its logic into showPresensi.
-        $nisn = session('userId');
+        $nisn = session('userId'); // Menggunakan session userID seperti di NilaiController
 
+        // Ambil riwayat presensi siswa
         $history = DB::table('history_siswa')
             ->join('absen', 'history_siswa.id_absen', '=', 'absen.id_absen')
             ->where('history_siswa.nisn', $nisn)
@@ -32,6 +30,7 @@ class ControllerSiswa extends Controller
             ->get()
             ->groupBy('semester');
 
+        // Ambil data siswa
         $siswa = DB::table('siswa')
             ->join('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
             ->where('siswa.nisn', $nisn)
@@ -77,14 +76,13 @@ class ControllerSiswa extends Controller
 
     public function showPresensi(Request $request)
     {
-        $nisn = $request->input('nisn_guest') ?? session('userID'); // Prioritize guest NISN if available
+        $nisn = $request->input('nisn_guest') ?? session('userID');
 
-        // If no NISN is found (neither from guest nor session), redirect to login
         if (!$nisn) {
             return redirect()->route('login-siswa')->with('error', 'Please login to view attendance data.');
         }
 
-        $isGuest = $request->boolean('isGuest', false); // Get the isGuest flag
+        $isGuest = $request->boolean('isGuest', false);
 
         // Ambil data siswa
         $siswa = DB::table('siswa')
@@ -129,7 +127,7 @@ class ControllerSiswa extends Controller
             'siswa' => $siswa,
             'tahunAjaranList' => $tahunAjaranList,
             'tahunAjaranFilter' => $tahunAjaranFilter,
-            'isGuest' => $isGuest // Pass the isGuest flag to the view
+            'isGuest' => $isGuest
         ]);
     }
 
@@ -137,17 +135,17 @@ class ControllerSiswa extends Controller
     public function fetchNilaiSiswa(Request $request)
     {
         try {
-            $nisn = $request->input('nisn_guest') ?? session('userID'); // Prioritize guest NISN if available
+            $nisn = $request->input('nisn_guest') ?? session('userID');
 
-            // If no NISN is found (neither from guest nor session), redirect to login
             if (!$nisn) {
+                Log::warning('fetchNilaiSiswa: No NISN found in session');
                 if ($request->ajax()) {
                     return response()->json(['error' => 'Session expired'], 401);
                 }
                 return redirect()->route('login-siswa')->with('error', 'Session expired. Please login again.');
             }
 
-            $isGuest = $request->boolean('isGuest', false); // Get the isGuest flag
+            $isGuest = $request->boolean('isGuest', false);
 
             Log::info('Fetching nilai for student', ['nisn' => $nisn, 'isGuest' => $isGuest]);
 
@@ -191,6 +189,7 @@ class ControllerSiswa extends Controller
                 ->where('nilai.nisn', $nisn)
                 ->whereNotNull('mapel.nama_mapel')
                 ->when($tahunAjaranFilter && $tahunAjaranFilter !== 'all', function ($query) use ($tahunAjaranFilter) {
+                    // Filter berdasarkan tahun pelajaran yang tepat
                     return $query->where('nilai.tahun_pelajaran', $tahunAjaranFilter);
                 })
                 ->select(
@@ -244,7 +243,7 @@ class ControllerSiswa extends Controller
                 'siswa' => $siswa,
                 'tahunAjaranList' => $tahunAjaranList,
                 'tahunAjaranFilter' => $tahunAjaranFilter,
-                'isGuest' => $isGuest // Pass the isGuest flag to the view
+                'isGuest' => $isGuest
             ]);
 
         } catch (\Exception $e) {
@@ -267,15 +266,11 @@ class ControllerSiswa extends Controller
 
     public function formGantiPassword()
     {
-        // This method should only be accessible by logged-in users.
-        // It's already protected by middleware.
         return view('ganti-password-siswa');
     }
 
     public function updatePassword(Request $request)
     {
-        // This method should only be accessible by logged-in users.
-        // It's already protected by middleware.
         $request->validate([
             'new_password' => 'required|confirmed|min:6',
         ]);

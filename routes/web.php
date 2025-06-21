@@ -25,8 +25,10 @@ Route::view('/main-page', 'main-page')->name('main');
 Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 
-// Guest access route
+// Guest access routes
 Route::get('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa');
+// ADD THIS NEW LINE FOR POST SUBMISSIONS
+Route::post('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa.post');
 
 // view all user (Authenticated routes)
 Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
