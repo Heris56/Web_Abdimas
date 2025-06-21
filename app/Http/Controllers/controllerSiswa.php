@@ -277,18 +277,24 @@ class ControllerSiswa extends Controller
         // This method should only be accessible by logged-in users.
         // It's already protected by middleware.
         $request->validate([
-            'current_password' => 'required',
             'new_password' => 'required|confirmed|min:6',
         ]);
 
-        $siswa = auth()->guard('siswa')->user(); // Adjust if not using guard
+        $nisn = session('userID');
 
-        if (!Hash::check($request->current_password, $siswa->password)) {
-            return back()->with('error', 'Password lama tidak cocok.');
+        // Pastikan NISN ada
+        $siswa = DB::table('siswa')->where('nisn', $nisn)->first();
+
+        if (!$siswa) {
+            return back()->with('error', 'Data siswa tidak ditemukan.');
         }
 
-        $siswa->password = Hash::make($request->new_password);
-        $siswa->save();
+        // Update password ke hash bcrypt
+        DB::table('siswa')
+            ->where('nisn', $nisn)
+            ->update([
+                'password' => Hash::make($request->new_password)
+            ]);
 
         return back()->with('success', 'Password berhasil diperbarui.');
     }
