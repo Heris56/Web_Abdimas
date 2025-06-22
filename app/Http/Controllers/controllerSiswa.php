@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ControllerSiswa extends Controller
 {
@@ -101,35 +102,48 @@ class ControllerSiswa extends Controller
             return redirect()->route('cari')->with('error', 'Student data not found for the provided NISN.');
         }
 
-        // Dapatkan daftar tahun ajaran yang tersedia
-        $tahunAjaranList = DB::table('siswa')
-            ->where('nisn', $nisn)
-            ->select('tahun_ajaran')
-            ->distinct()
-            ->pluck('tahun_ajaran');
-
-        // Filter tahun ajaran dari request atau gunakan tahun ajaran siswa saat ini
-        $tahunAjaranFilter = $request->input('tahun_ajaran', $siswa->tahun_ajaran);
-
-        // Ambil data presensi dengan filter
+        // Ambil data presensi
         $data_absen = DB::table('absen')
             ->join('siswa', 'absen.nisn', '=', 'siswa.nisn')
             ->where('siswa.nisn', $nisn)
-            ->when($tahunAjaranFilter && $tahunAjaranFilter !== 'all', function ($query) use ($tahunAjaranFilter) {
-                return $query->where('siswa.tahun_ajaran', $tahunAjaranFilter);
-            })
-            ->select('absen.*', 'siswa.nama_siswa as nama_siswa')
+            ->select('absen.*', 'siswa.nama_siswa', 'siswa.tahun_ajaran')
             ->orderBy('absen.tanggal', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $tanggal = \Carbon\Carbon::parse($item->tanggal);
+                $bulan = $tanggal->month;
+                $tahun = $tanggal->year;
+
+                $item->semester = ($bulan >= 1 && $bulan <= 6) ? '2' : '1'; // Genap = 2, Ganjil = 1
+    
+                // Tahun ajaran berdasarkan bulan
+                $tahun_awal = ($bulan >= 7) ? $tahun : $tahun - 1;
+                $tahun_akhir = $tahun_awal + 1;
+                $item->tahun_ajaran_label = "$tahun_awal/$tahun_akhir - {$item->semester}";
+
+                return $item;
+            });
+
+        // Filter jika ada input tahun_ajaran_label
+        $tahunSemesterFilter = $request->input('tahun_ajaran');
+        if ($tahunSemesterFilter && $tahunSemesterFilter !== 'all') {
+            $data_absen = $data_absen->filter(function ($item) use ($tahunSemesterFilter) {
+                return $item->tahun_ajaran_label === $tahunSemesterFilter;
+            })->values();
+        }
+
+        // Ambil daftar unik tahun ajaran + semester
+        $tahunSemesterList = $data_absen->pluck('tahun_ajaran_label')->unique()->sort()->values();
 
         return view('info-presensi-siswa', [
             'presensi' => $data_absen,
             'siswa' => $siswa,
-            'tahunAjaranList' => $tahunAjaranList,
-            'tahunAjaranFilter' => $tahunAjaranFilter,
+            'tahunAjaranList' => $tahunSemesterList,
+            'tahunAjaranFilter' => $tahunSemesterFilter ?? 'all',
             'isGuest' => $isGuest
         ]);
     }
+
 
 
     public function fetchNilaiSiswa(Request $request)
@@ -138,16 +152,10 @@ class ControllerSiswa extends Controller
             $nisn = $request->input('nisn_guest') ?? session('userID');
 
             if (!$nisn) {
-                Log::warning('fetchNilaiSiswa: No NISN found in session');
-                if ($request->ajax()) {
-                    return response()->json(['error' => 'Session expired'], 401);
-                }
                 return redirect()->route('login-siswa')->with('error', 'Session expired. Please login again.');
             }
 
             $isGuest = $request->boolean('isGuest', false);
-
-            Log::info('Fetching nilai for student', ['nisn' => $nisn, 'isGuest' => $isGuest]);
 
             // Get student information
             $siswa = DB::table('siswa')
@@ -158,39 +166,42 @@ class ControllerSiswa extends Controller
                     'siswa.nama_siswa',
                     'siswa.tahun_ajaran',
                     'kelas.id_kelas',
-                    'kelas.jurusan',
+                    'kelas.jurusan'
                 )
                 ->first();
 
             if (!$siswa) {
-                Log::warning('Student not found', ['nisn' => $nisn]);
-                if ($request->ajax()) {
-                    return response()->json(['error' => 'Student data not found'], 404);
-                }
                 return redirect()->route('cari')->with('error', 'Student data not found.');
             }
 
-            // Get list of available academic years
-            $tahunAjaranList = DB::table('nilai')
+            // Daftar gabungan tahun pelajaran dan semester (mis. "2024/2025 - 1")
+            $semesterList = DB::table('nilai')
                 ->where('nisn', $nisn)
-                ->select('tahun_pelajaran')
+                ->select(DB::raw("CONCAT(tahun_pelajaran, ' - ', CASE WHEN semester = 'Ganjil' THEN '1' ELSE '2' END) AS tahun_semester"))
                 ->distinct()
-                ->orderBy('tahun_pelajaran', 'desc')
-                ->pluck('tahun_pelajaran');
+                ->orderBy('tahun_semester', 'desc')
+                ->pluck('tahun_semester');
 
-            // Get selected academic year from request or use student's default
-            $tahunAjaranFilter = $request->input('tahun_ajaran');
+            $tahunSemesterFilter = $request->input('tahun_ajaran'); // input: "2024/2025 - 1"
+            $tahunAjaranFilter = null;
+            $semesterFilter = null;
 
+            if ($tahunSemesterFilter && $tahunSemesterFilter !== 'all') {
+                [$tahunAjaranFilter, $semesterAngka] = explode(' - ', $tahunSemesterFilter);
+                $semesterFilter = $semesterAngka === '1' ? 'Ganjil' : 'Genap';
+            }
 
-            // Get student grades with filters
+            // Ambil data nilai
             $data_nilai = DB::table('nilai')
                 ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
                 ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
                 ->where('nilai.nisn', $nisn)
                 ->whereNotNull('mapel.nama_mapel')
-                ->when($tahunAjaranFilter && $tahunAjaranFilter !== 'all', function ($query) use ($tahunAjaranFilter) {
-                    // Filter berdasarkan tahun pelajaran yang tepat
+                ->when($tahunAjaranFilter, function ($query) use ($tahunAjaranFilter) {
                     return $query->where('nilai.tahun_pelajaran', $tahunAjaranFilter);
+                })
+                ->when($semesterFilter, function ($query) use ($semesterFilter) {
+                    return $query->where('nilai.semester', $semesterFilter);
                 })
                 ->select(
                     'nilai.id_nilai',
@@ -207,23 +218,33 @@ class ControllerSiswa extends Controller
                 ->orderBy('mapel.nama_mapel')
                 ->orderBy('nilai.tanggal', 'desc')
                 ->get();
-            Log::info('Student data fetched successfully', [
-                'nisn' => $nisn,
-                'total_grades' => $data_nilai->count()
-            ]);
 
-            // Group grades by subject
+            // Group nilai by mapel
             $nilaiByMapel = $data_nilai->groupBy('nama_mapel')->map(function ($grades) {
                 $guruMapel = $grades->first()->nama_guru ?? 'Tidak diketahui';
+                $tahunPelajaran = $grades->first()->tahun_pelajaran ?? null;
+                $semester = $grades->first()->semester ?? null;
+
+                // Konversi semester ke angka (asumsi semester string "Ganjil"/"Genap")
+                $semesterAngka = null;
+                if ($semester === 'Ganjil') {
+                    $semesterAngka = '1';
+                } elseif ($semester === 'Genap') {
+                    $semesterAngka = '2';
+                }
+
+                // Gabungkan tahun ajaran dan semester
+                $tahunPelajaranFull = $tahunPelajaran;
+                if ($tahunPelajaran && $semesterAngka) {
+                    $tahunPelajaranFull = $tahunPelajaran . ' - ' . $semesterAngka;
+                }
                 return [
                     'grades' => $grades,
                     'guru_mapel' => $guruMapel,
-                    'tahun_pelajaran' => $grades->first()->tahun_pelajaran,
+                    'tahun_pelajaran' => $tahunPelajaranFull,
                 ];
-
             });
 
-            // Handle AJAX requests
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
@@ -231,8 +252,9 @@ class ControllerSiswa extends Controller
                         'nilai' => $data_nilai,
                         'nilaiByMapel' => $nilaiByMapel,
                         'siswa' => $siswa,
-                        'tahunAjaranList' => $tahunAjaranList,
-                        'tahunAjaranFilter' => $tahunAjaranFilter,
+                        'semesterList' => $semesterList,
+                        'tahunAjaranFilter' => $tahunSemesterFilter,
+                        'isGuest' => $isGuest,
                     ]
                 ]);
             }
@@ -241,28 +263,23 @@ class ControllerSiswa extends Controller
                 'nilai' => $data_nilai,
                 'nilaiByMapel' => $nilaiByMapel,
                 'siswa' => $siswa,
-                'tahunAjaranList' => $tahunAjaranList,
-                'tahunAjaranFilter' => $tahunAjaranFilter,
-                'isGuest' => $isGuest
+                'semesterList' => $semesterList,
+                'tahunAjaranFilter' => $tahunSemesterFilter,
+                'isGuest' => $isGuest,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Error in fetchNilaiSiswa', [
                 'nisn' => $nisn ?? 'unknown',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage()
             ]);
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Failed to fetch student grades. Please try again.'
-                ], 500);
-            }
-
-            return redirect()->back()->with('error', 'Failed to load student grades. Please try again.');
+            return $request->ajax()
+                ? response()->json(['error' => 'Terjadi kesalahan saat memuat nilai.'], 500)
+                : redirect()->back()->with('error', 'Terjadi kesalahan saat memuat nilai.');
         }
     }
+
 
     public function formGantiPassword()
     {
