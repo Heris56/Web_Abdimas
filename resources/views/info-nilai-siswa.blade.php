@@ -38,7 +38,8 @@
                     Login
                 </a>
             @else
-                <a href="{{ route('login-siswa') }}"> {{-- Assuming login-siswa route handles logout as well or you have a dedicated logout route --}}
+                <a href="{{ route('login-siswa') }}"> {{-- Assuming login-siswa route handles logout as well or you have a
+                    dedicated logout route --}}
                     Logout
                 </a>
             @endif
@@ -50,10 +51,12 @@
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
                     {{-- Adjust links based on whether it's a guest or logged-in user --}}
-                    <a class="nav-link" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
+                    <a class="nav-link"
+                        href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
+                    <a class="nav-link" aria-current="page"
+                        href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
                 </li>
             </ul>
         </div>
@@ -67,8 +70,8 @@
                         <option value="all" {{ request('tahun_ajaran') == 'all' || !request()->has('tahun_ajaran') ? 'selected' : '' }}>
                             Semua Tahun Ajaran
                         </option>
-                        @if(isset($tahunAjaranList))
-                            @foreach($tahunAjaranList as $tahun)
+                        @if(isset($semesterList))
+                            @foreach($semesterList as $tahun)
                                 <option value="{{ $tahun }}" {{ request('tahun_ajaran') == $tahun ? 'selected' : '' }}>
                                     {{ $tahun }}
                                 </option>
@@ -87,41 +90,53 @@
                 </div>
             </div>
 
+            @if(request('tahun_ajaran') && request('tahun_ajaran') !== 'all')
+                @php
+                    [$tahunAjaran, $semester] = explode(' - ', request('tahun_ajaran'));
+                    $semesterText = $semester === '1' ? 'Ganjil' : 'Genap';
+                @endphp
+            @endif
+
+
             @if(isset($nilaiByMapel) && count($nilaiByMapel) > 0)
                 @foreach($nilaiByMapel as $mapel => $data)
                     <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
                         <span class="head">{{ $mapel }}</span>
                         @isset($data['guru_mapel'])
+                            @php
+                                $tahunPelajaran = $data['tahun_pelajaran'] ?? 'Tidak Tersedia';
+                            @endphp
                             <div class="subject-stats">
-                                Guru Pengampu: {{ $data['guru_mapel'] }} ||
-                                Tahun Ajaran: {{ $data['tahun_pelajaran'] ?? 'Tidak Tersedia' }}
+                                Guru Pengampu: {{ $data['guru_mapel'] }}
+                                @if(request('tahun_ajaran') && request('tahun_ajaran') !== 'all')
+                                    || Tahun Ajaran: {{ $tahunPelajaran }}
+                                @endif
                             </div>
                         @endisset
-
                     </div>
 
                     @php
-        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
-        $grouped_data = [];
+                        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
+                        $grouped_data = [];
 
-        foreach ($data['grades'] as $item) {
-            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
+                        foreach ($data['grades'] as $item) {
+                            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
 
-            $grouped_data[$key] = [
-                'tanggal' => $item->tanggal,
-                'guru' => $item->nama_guru ?? 'Unknown',
-                'nilai' => []
-            ];
+                            $grouped_data[$key] = [
+                                'tanggal' => $item->tanggal,
+                                'guru' => $item->nama_guru ?? 'Unknown',
+                                'nilai' => []
+                            ];
 
-            foreach ($kegiatan_list as $kegiatan) {
-                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
-            }
-        }
+                            foreach ($kegiatan_list as $kegiatan) {
+                                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
+                            }
+                        }
 
-        // Urutkan berdasarkan tanggal terbaru
-        uasort($grouped_data, function ($a, $b) {
-            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
-        });
+                        // Urutkan berdasarkan tanggal terbaru
+                        uasort($grouped_data, function ($a, $b) {
+                            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+                        });
                     @endphp
 
                     <table class="table table-bordered mb-4">
@@ -153,29 +168,29 @@
             @else
 
                 @php
-    // Format lama - menyiapkan struktur data yang dikelompokkan
-    $data_nilai = [];
-    $jenis_kegiatan = [];
+                    // Format lama - menyiapkan struktur data yang dikelompokkan
+                    $data_nilai = [];
+                    $jenis_kegiatan = [];
 
-    foreach ($nilai as $item) {
-        $mapel = $item->nama_mapel;
-        $kegiatan = strtoupper($item->kegiatan);
+                    foreach ($nilai as $item) {
+                        $mapel = $item->nama_mapel;
+                        $kegiatan = strtoupper($item->kegiatan);
 
-        if (!isset($data_nilai[$mapel])) {
-            $data_nilai[$mapel] = [
-                'tanggal' => $item->tanggal,
-                'nilai' => []
-            ];
-        }
+                        if (!isset($data_nilai[$mapel])) {
+                            $data_nilai[$mapel] = [
+                                'tanggal' => $item->tanggal,
+                                'nilai' => []
+                            ];
+                        }
 
-        $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
+                        $data_nilai[$mapel]['nilai'][$kegiatan] = $item->nilai;
 
-        if (!in_array($kegiatan, $jenis_kegiatan)) {
-            $jenis_kegiatan[] = $kegiatan;
-        }
-    }
+                        if (!in_array($kegiatan, $jenis_kegiatan)) {
+                            $jenis_kegiatan[] = $kegiatan;
+                        }
+                    }
 
-    sort($jenis_kegiatan);
+                    sort($jenis_kegiatan);
                 @endphp
 
                 <table class="table table-bordered">
@@ -230,11 +245,11 @@
                         </div>
                     </div>
                     @if(!$isGuest) {{-- Only show Ganti Password for logged-in users --}}
-                    <div class="text-center mt-3">
-                        <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
-                            Ganti Password
-                        </a>
-                    </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
+                                Ganti Password
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>

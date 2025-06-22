@@ -65,19 +65,20 @@
                     <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
                         <option value="all">Semua Tahun Ajaran</option>
                         @if(isset($tahunAjaranList))
-                            @foreach($tahunAjaranList as $tahun)
-                                <option value="{{ $tahun }}" {{ $tahunAjaranFilter == $tahun ? 'selected' : '' }}>
-                                    {{ $tahun }}
+                            @foreach($tahunAjaranList as $tahunSemester)
+                                <option value="{{ $tahunSemester }}" {{ $tahunAjaranFilter == $tahunSemester ? 'selected' : '' }}>
+                                    {{ $tahunSemester }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
+
                 </div>
             </div>
 
             @if(isset($presensi) && count($presensi) > 0)
                 <!-- Table Presensi -->
-                <div class="header mb-2">
+                <div class="subject-section">
                     <span class="head">Riwayat Presensi</span>
                     @if($tahunAjaranFilter !== 'all')
                         <span class="badge bg-primary ms-2">{{ $tahunAjaranFilter }}</span>
