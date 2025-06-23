@@ -78,7 +78,7 @@ class dashboard_wali_kelas_controller extends Controller
 
     DB::table('absen')->updateOrInsert(['nisn'=>$data['nisn'],'tanggal'=>$data['tanggal']], ['keterangan_absen' => $data['keterangan_absen']]);
 
-    return redirect()->back()->with('success', 'Data kehadiran berhasil diperbarui.');
+    return response()->json(['success' => true, 'message' => 'Data kehadiran berhasil diperbarui.']);
     }
 
 
@@ -87,5 +87,29 @@ class dashboard_wali_kelas_controller extends Controller
         DB::table('absen')->where('tanggal', $tanggal)->delete();
 
         return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+    }
+
+    public function formGantiPassword()
+    {
+        return view('ganti-password-waliKelas');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $nip = session('userID');
+
+        $ceknip = DB::table('wali_kelas')->where('nip_wali_kelas', $nip)->exists();
+
+        if (!$ceknip) {
+            return redirect()->back()->with('error', 'NIP tidak ditemukan.');
+        }else{
+            $hashedPassword = Hash::make($request->input('password'));
+            DB::table('wali_kelas')->where('nip_wali_kelas', $nip)->update(['password' => $hashedPassword]);
+            return redirect()->route('dashboard-wali-kelas')->with('success', 'Password berhasil diubah.');
+        }
     }
 }

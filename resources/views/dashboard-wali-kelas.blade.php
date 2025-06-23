@@ -19,21 +19,10 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="route-edit-kehadiran" content="{{ route('dashboard.walikelas.edit-kehadiran') }}">
 </head>
 
 <body>
-    @if(session('error'))
-    <script>
-        alert('{{ session('error') }}');
-    </script>
-    @endif
-
-    @if(session('success'))
-    <script>
-        alert('{{ session('success') }}');
-    </script>
-    @endif
-
     @php
         $wali = $data_wali_kelas->first();
         $data_absen = $data_absen;
@@ -59,16 +48,45 @@
                             NIP: {{ $wali->nip_wali_kelas }}
                         </H5>
                     </div>
+                    <div id="button-ganti-password">
+                        <a href="{{ route('dashboard.walikelas.ganti-password') }}">
+                        <button type="button" class="btn btn-warning">
+                            Ganti Password
+                        </button>
+                        </a>
+                    </div>
             </div>
             @endif
+
             <div id="wrapper-top-bar-and-table">
                 <div class="top-bar">
                     <input type="text" placeholder="Cari Nama Siswa" class="form-control w-50" id="search_siswa"/>
                     <div id="button-wrapper" class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                                    data-bs-target="#modal-input" id="button-input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-calendar-plus" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7" />
+                                        <path
+                                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                            </svg>
+                        </button>
                         <button type="button" class="btn btn-warning" id="button-cetak" onclick="exportExcel()">Cetak
-                            Presensi</button>
+                        Presensi</button>
                     </div>
                 </div>
+                @if(session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if(session('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('success') }}
+                </div>
+                @endif
                 @include('components.table-presensi')
             </div>
         </div>
