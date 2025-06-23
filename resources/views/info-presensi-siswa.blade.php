@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1, user-scalable=yes" />
     <title>Masuk ke SMK Telkom</title>
     <!-- External buat background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
@@ -65,19 +65,20 @@
                     <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
                         <option value="all">Semua Tahun Ajaran</option>
                         @if(isset($tahunAjaranList))
-                            @foreach($tahunAjaranList as $tahun)
-                                <option value="{{ $tahun }}" {{ $tahunAjaranFilter == $tahun ? 'selected' : '' }}>
-                                    {{ $tahun }}
+                            @foreach($tahunAjaranList as $tahunSemester)
+                                <option value="{{ $tahunSemester }}" {{ $tahunAjaranFilter == $tahunSemester ? 'selected' : '' }}>
+                                    {{ $tahunSemester }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
+
                 </div>
             </div>
 
             @if(isset($presensi) && count($presensi) > 0)
                 <!-- Table Presensi -->
-                <div class="header mb-2">
+                <div class="subject-section">
                     <span class="head">Riwayat Presensi</span>
                     @if($tahunAjaranFilter !== 'all')
                         <span class="badge bg-primary ms-2">{{ $tahunAjaranFilter }}</span>
@@ -93,10 +94,11 @@
                             <th scope="col">Catatan</th>
                         </tr>
                     </thead>
+                    
                     <tbody>
                         @foreach($presensi as $index => $presensiItem)
                             <tr>
-                                <th scope="row">{{ $index + 1 }}</th>
+                                <td>{{ $index + 1 }}</th>
                                 <td>{{ $presensiItem->tanggal }}</td>
                                 <td>{{ $presensiItem->keterangan_absen }}</td>
                                 <td>

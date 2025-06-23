@@ -5,7 +5,7 @@
                         <tr>
                             <th>Nama Siswa</th>
                             @foreach($tanggal_list as $tanggals)
-                                <th style="min-width: 200px;>
+                                <th style="min-width: 200px;">
                                     <div class="d-flex flex-column align-items-center justify-content-center text-center">
                                         <button type="button" class="btn btn-outline-danger btn-delete-tanggal" data-tanggal="{{ $tanggals }}" style="width: 100px;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-x-fill" viewBox="0 0 16 16">
@@ -17,17 +17,6 @@
                                     </div>
                                 </th>
                             @endforeach
-                            <th><button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                                    data-bs-target="#modal-input" id="button-input">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-calendar-plus" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7" />
-                                        <path
-                                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
-                                    </svg>
-                                </button>
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,7 +39,7 @@
                                             <option value="">-</option>
                                             @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)
                                                 <option value="{{ $keterangan_absen }}"
-                                                    {{ ($presensi->keterangan_absen ?? '-') === $keterangan_absen ? 'selected' : '-' }}>
+                                                    {{ ($presensi->keterangan_absen ?? '') === $keterangan_absen ? 'selected' : '' }}>
                                                     {{ $keterangan_absen }}
                                                 </option>
                                             @endforeach

@@ -44,12 +44,16 @@ function updateKehadiran(selectElement) {
     const nisn = selectElement.dataset.nisn;
     const tanggal = selectElement.dataset.tanggal;
     const keterangan_absen = selectElement.value;
+    const editKehadiranURL = document.querySelector('meta[name="route-edit-kehadiran"]').getAttribute('content');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    fetch("{{ route('dashboard.walikelas.edit-kehadiran') }}", {
+    console.log({ nisn, tanggal, keterangan_absen });
+
+    fetch(editKehadiranURL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            "X-CSRF-TOKEN": csrfToken
         },
         body: JSON.stringify({
             nisn: nisn,
@@ -87,7 +91,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const buttons = document.querySelectorAll(".btn-delete-tanggal");
-
 buttons.forEach(button => {
     button.addEventListener("click", function () {
         const tanggal = this.dataset.tanggal;

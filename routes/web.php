@@ -25,10 +25,16 @@ Route::view('/main-page', 'main-page')->name('main');
 Route::view('/dashboard/walikelas', 'dashboard-wali-kelas')->name('dashboard.walikelas');
 Route::view('/cari-data-siswa', 'cari-data-siswa')->name('cari');
 
-// view all user
-Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function () {
+// Guest access routes
+Route::get('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa');
+// ADD THIS NEW LINE FOR POST SUBMISSIONS
+Route::post('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])->name('guest.info.siswa.post');
+
+// view all user (Authenticated routes)
+Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
     Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi');
     Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
+
 });
 
 Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function () {
@@ -46,16 +52,12 @@ Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 
-//Controllersiswa
-Route::get('/presensi/{nisn}', [controllerSiswa::class, 'getHistorySiswa'])->name('presensi.nisn');
-Route::post('/info/nilai/ajax', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai.ajax');
-Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
-Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'])->name('siswa.formGantiPassword');
-
-
-
 //Controller Wali Kelas
+Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
+Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class,'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class,'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
+Route::put('/dashboard/walikelas/update-password',[dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class, 'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganti Password - Siswa</title>
+    <title>Ganti Password - Wali Kelas</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +17,7 @@
     <!-- Navbar -->
     <nav class="navbar container-fluid fixed-top">
         <!-- navigate to home/dashboard by clicking logo/name -->
-        <a href="{{ route('info.presensi') }}" class="custom-back-button">
+        <a href="{{ route('dashboard-wali-kelas') }}" class="custom-back-button">
             Kembali
         </a>
     </nav>
@@ -25,7 +25,7 @@
 
     <div class="ganti-password-wrapper">
 
-        <h2>Ganti Password Siswa</h2>
+        <h2>Ganti Password Wali Kelas</h2>
 
         @if (session('success'))
             <div class="alert alert-success text-center">
@@ -47,7 +47,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('siswa.updatePassword') }}" class="mx-auto" style="max-width: 500px;">
+        <form method="PUT" action="{{route('gantiPassword.walikelas')}}" class="mx-auto" style="max-width: 500px;">
             @csrf
             @method('PUT')
 
@@ -67,10 +67,8 @@
                 <input class="form-check-input" type="checkbox" id="showPasswordToggle">
                 <label class="form-check-label" for="showPasswordToggle">Tampilkan Password</label>
             </div>
-
             <button type="submit" class="btn custom-ganti-password-btn w-100">Perbarui Password</button>
         </form>
-
     </div>
 
     <!-- Bootstrap JS -->

@@ -58,7 +58,7 @@ table th {
     padding-bottom: 50px;
     outline: 2px solid yellow;
     padding: 10px;
-    width: fit-content;
+    /* width: fit-content; */
     border-radius: 10pt;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
@@ -78,4 +78,8 @@ table th {
 
 #button-input {
     width: 50px;
+}
+
+#button-ganti-password {
+    margin-top: 30px;
 }
