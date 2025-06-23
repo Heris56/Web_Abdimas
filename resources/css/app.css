@@ -1,16 +1,87 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+:root {
+    /* color settings */
+    --background: hsl(44 30% 100%);
+    --foreground: hsl(44 76% 1%);
+    --muted: hsl(44 22% 95%);
+    --muted-foreground: hsl(44 0% 34%);
+    --popover: hsl(0 0% 99%);
+    --popover-foreground: hsl(0 0% 0%);
+    --card: hsl(0 0% 99%);
+    --card-foreground: hsl(0 0% 0%);
+    --border: hsl(44 15% 94%);
+    --input: hsl(44 15% 94%);
+    --primary: hsl(44 98% 50%);
+    --primary-foreground: hsl(44 98% 10%);
+    --secondary: hsl(44 18% 92%);
+    --secondary-foreground: hsl(44 18% 12%);
+    --accent: hsl(44 26% 85%);
+    --accent-foreground: hsl(44 26% 25%);
+    --destructive: hsl(2 84% 40%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --ring: hsl(44 98% 50%);
+    --chart-1: hsl(44 98% 50%);
+    --chart-2: hsl(44 18% 92%);
+    --chart-3: hsl(44 26% 85%);
+    --chart-4: hsl(44 18% 95%);
+    --chart-5: hsl(44 101% 50%);
+    --radius: 0.5rem;
 
-/* public/css/404.css */
+    /* fonts settings */
+    --font-head: "Poppins", sans-serif;
+    --font-body: "Lato", sans-serif;
+
+    --font-size-sm: 0.875rem; /* 14px for hints */
+    --font-size-base: 1rem; /* 16px for default/input */
+    --font-size-md: 1.125rem; /* 18px for label */
+    --font-size-lg: 1.5rem; /* 24px for title/subheading */
+    --font-size-head: 2rem; /* 32px for heading*/
+    --font-size-hero: 3rem; /* 48px for hero section */
+}
+
+.dark {
+    --background: hsl(44 58% 0%);
+    --foreground: hsl(44 25% 98%);
+    --muted: hsl(44 22% 5%);
+    --muted-foreground: hsl(44 0% 66%);
+    --popover: hsl(0 0% 1%);
+    --popover-foreground: hsl(44 25% 99%);
+    --card: hsl(0 0% 1%);
+    --card-foreground: hsl(44 25% 99%);
+    --border: hsl(44 15% 14%);
+    --input: hsl(44 15% 14%);
+    --primary: hsl(44 98% 50%);
+    --primary-foreground: hsl(44 98% 10%);
+    --secondary: hsl(44 3% 15%);
+    --secondary-foreground: hsl(44 3% 75%);
+    --accent: hsl(44 9% 24%);
+    --accent-foreground: hsl(44 9% 84%);
+    --destructive: hsl(2 84% 56%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --ring: hsl(44 98% 50%);
+    --chart-1: hsl(44 98% 50%);
+    --chart-2: hsl(44 3% 15%);
+    --chart-3: hsl(44 9% 24%);
+    --chart-4: hsl(44 3% 18%);
+    --chart-5: hsl(44 101% 50%);
+}
+
+html,
 body {
+    height: 100%;
+    width: 100%;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #333;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    background-color: var(--background);
+    color: var(--background);
+}
+
+body {
+    /* navbar 80px + margin 20px */
+    padding-top: 6.25rem;
+    height: 100%;
+    width: 100%;
 }
 
 .error-container {
@@ -51,3 +122,372 @@ body {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
+/* START NAVBAR CONTROLLS */
+
+.navbar {
+    background-color: var(--primary);
+    height: 80px;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-button a {
+    text-decoration: none;
+    color: var(--secondary-foreground);
+    background-color: var(--secondary);
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius);
+}
+
+.navbar-button:active {
+    transform: scale(0.97);
+}
+
+/* END NAVBAR CONTROLLS */
+
+/* START INPUT CONTROLLS */
+.form-label {
+    font-size: var(--font-size-md);
+    color: var(--foreground);
+}
+
+.form-hint {
+    font-size: var(--font-size-sm);
+    color: var(--muted-foreground);
+}
+
+input.form-control {
+    height: 3rem;
+    font-size: var(--font-size-base);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background-color: var(--input);
+    color: var(--foreground);
+    outline: none;
+}
+
+input.form-control::placeholder {
+    color: var(--muted-foreground);
+}
+
+input.form-control:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    border: 1px solid var(--primary);
+    background-color: var(--input);
+}
+/* END INPUT CONTROLLS */
+
+.head {
+    font-size: var(--font-size-head);
+    font-family: var(--font-head);
+    color: var(--foreground);
+}
+
+.subhead {
+    font-size: var(--font-size-lg);
+    color: var(--foreground);
+}
+
+/* START BUTTON CONTROLS */
+/* Base button styles for .btn (full-width, larger buttons) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 3rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Primary button (full-width) */
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.btn-primary:hover {
+    background-color: hsl(44 98% 50% / 0.9);
+    color: var(--primary-foreground);
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+.btn-primary:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Secondary button (full-width) */
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn-secondary:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.btn-secondary:active {
+    transform: scale(0.97);
+}
+
+.btn-secondary:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Accent button (full-width) */
+.btn-accent {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.btn-accent:hover {
+    background-color: hsl(44 26% 85% / 0.9);
+}
+
+.btn-accent:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.btn-accent:active {
+    transform: scale(0.97);
+}
+
+.btn-accent:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Destructive button (full-width) */
+.btn-destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+.btn-destructive:hover {
+    background-color: hsl(2 84% 40% / 0.9);
+    .dark & {
+        background-color: hsl(2 84% 56% / 0.9);
+    }
+}
+
+.btn-destructive:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.btn-destructive:active {
+    transform: scale(0.97);
+}
+
+.btn-destructive:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Muted button (full-width) */
+.btn-muted {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+}
+
+.btn-muted:hover {
+    background-color: hsl(44 22% 95% / 0.9);
+    .dark & {
+        background-color: hsl(44 22% 5% / 0.9);
+    }
+}
+
+.btn-muted:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.btn-muted:active {
+    transform: scale(0.97);
+}
+
+.btn-muted:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Base button styles for .button-* (smaller, inline buttons) */
+.button {
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-body);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Primary button (inline) */
+.button-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.button-primary:hover {
+    background-color: hsl(44 98% 50% / 0.9);
+}
+
+.button-primary:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.button-primary:active {
+    transform: scale(0.97);
+}
+
+.button-primary:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Secondary button (inline) */
+.button-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+}
+
+.button-secondary:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.button-secondary:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.button-secondary:active {
+    transform: scale(0.97);
+}
+
+.button-secondary:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Accent button (inline) */
+.button-accent {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+}
+
+.button-accent:hover {
+    background-color: hsl(44 26% 85% / 0.9);
+}
+
+.button-accent:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.button-accent:active {
+    transform: scale(0.97);
+}
+
+.button-accent:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Destructive button (inline) */
+.button-destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+}
+
+.button-destructive:hover {
+    background-color: hsl(2 84% 40% / 0.9);
+    .dark & {
+        background-color: hsl(2 84% 56% / 0.9);
+    }
+}
+
+.button-destructive:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.button-destructive:active {
+    transform: scale(0.97);
+}
+
+.button-destructive:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+
+/* Muted button (inline) */
+.button-muted {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+}
+
+.button-muted:hover {
+    background-color: hsl(44 22% 95% / 0.9);
+    .dark & {
+        background-color: hsl(44 22% 5% / 0.9);
+    }
+}
+
+.button-muted:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+}
+
+.button-muted:active {
+    transform: scale(0.97);
+}
+
+.button-muted:disabled {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+    cursor: not-allowed;
+}
+/* END BUTTON CONTROLS */
+
+.menu-item {
+    border-bottom: 1px solid var(--muted);
+    padding: 0.5rem 0;
+}
