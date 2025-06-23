@@ -55,10 +55,11 @@ Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas'
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
 
 //Controller Wali Kelas
+Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class,'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class,'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
-
+Route::put('/dashboard/walikelas/update-password',[dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
