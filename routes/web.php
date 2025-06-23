@@ -34,14 +34,16 @@ Route::post('/guest/info/siswa', [controllerSiswa::class, 'showGuestInfoSiswa'])
 Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
     Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi');
     Route::get('/info/nilai', [controllerSiswa::class, 'fetchNilaiSiswa'])->name('info.nilai');
-
+    // These routes are moved here to be protected by the authentication middleware
+    Route::get('/siswa/ganti-password', [controllerSiswa::class, 'formGantiPassword'])->name('siswa.formGantiPassword');
+    Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
 });
 
-Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function () {
+Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function() {
     Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
 });
 
-Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function () {
+Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function() {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 });
 
