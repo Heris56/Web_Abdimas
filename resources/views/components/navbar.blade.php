@@ -34,7 +34,7 @@
             </div>
         @else
             <div class="btn-group">
-                <button type="button" class="button btn-foreground custom-dropdown-toggle" data-bs-toggle="dropdown"
+                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown"
                     data-bs-display="static" aria-expanded="false">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>

@@ -372,7 +372,7 @@ input.form-control:focus {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: var(--radius);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
     font-family: var(--font-body);
     cursor: pointer;
     text-decoration: none;
@@ -559,3 +559,32 @@ input.form-control:focus {
     font-size: 16px;
 }
 /* END SEARCH BAR CONTROLS */
+
+/* START DROPDOWN CONTROLS */
+/* Dropdown Button */
+.dropdown-text {
+    margin: 0 8px; /* Replaces inline margins */
+}
+
+/* Dropdown Menu */
+.custom-dropdown-menu {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Dropdown Items */
+.custom-dropdown-item {
+    font-size: var(--font-size-base);
+    background-color: var(--card);
+    padding: 10px 20px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-dropdown-item:hover {
+    background-color: var(--secondary); /* Light gray hover */
+    color: var(--secondary-foreground); /* Primary color text on hover */
+}
+/* END DROPDOWN CONTROLS */
+
