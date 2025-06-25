@@ -87,6 +87,23 @@
                     {{ session('success') }}
                 </div>
                 @endif
+
+                @if(session('error') || session('success'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            setTimeout(function() {
+                                document.querySelectorAll('.alert').forEach(function(alert) {
+                                    alert.style.transition = 'Opacity 0.5s ease';
+                                    alert.style.opacity = '0';
+                                    setTimeout(function() {
+                                        alert.remove();
+                                    }, 500);
+                                });
+                            }, 10000);
+                        });
+                    </script>
+                @endif
+
                 @include('components.table-presensi')
             </div>
         </div>
