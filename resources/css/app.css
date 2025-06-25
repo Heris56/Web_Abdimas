@@ -493,3 +493,44 @@ input.form-control:focus {
     border-bottom: 1px solid var(--muted);
     padding: 0.5rem 0;
 }
+
+/* START SEARCH BAR CONTROLS */
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-container input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px 0 0 20px; /* rounded kiri only */
+    outline: none;
+    font-size: 16px;
+    width: 400px; /* panjang search bar */
+    transition: border-color 0.3s ease;
+}
+
+.search-container input[type="text"]:focus {
+    border-color: var(--input); /* Bootstrap primary color */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.search-container button {
+    padding: 8px 12px;
+    border: 1px solid var(--card-foreground);
+    border-left: none; /* Remove left border to align with input */
+    border-radius: 0 20px 20px 0; /* Rounded right corners */
+    background-color: var(--primary-foreground);
+    color: var(--background);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-container button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+.search-container button i {
+    font-size: 16px;
+}
+/* END SEARCH BAR CONTROLS */

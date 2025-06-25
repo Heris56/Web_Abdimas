@@ -46,3 +46,6 @@ window.exportExcel = function (sheetName, fileName) {
     XLSX.writeFile(wb, `${fileName}.xlsx`);
     window.showToast(`${sheetName} sukses tercetak!`, "text-bg-success");
 };
+
+// START SEARCH BUTTON CONTROLS
+// END SEARCH BUTTON CONTROLS
