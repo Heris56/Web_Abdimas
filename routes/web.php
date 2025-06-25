@@ -39,11 +39,11 @@ Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function(){
     Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
 });
 
-Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function(){
+Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function() {
     Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
 });
 
-Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function(){
+Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function() {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 });
 
@@ -60,12 +60,16 @@ Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class,'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class,'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
 Route::put('/dashboard/walikelas/update-password',[dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
+Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class, 'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
+
 // dashboard/guru-mapel
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 
 // staff
+Route::view('/login/staff', 'login-page-staff')->name('login-staff');
 // Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
 Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
 Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
