@@ -47,7 +47,7 @@
             </div>
         @endif
 
-        <form method="PUT" action="{{route('gantiPassword.walikelas')}}" class="mx-auto" style="max-width: 500px;">
+        <form method="POST" action="{{route('gantiPassword.walikelas')}}" class="mx-auto" style="max-width: 500px;">
             @csrf
             @method('PUT')
 
