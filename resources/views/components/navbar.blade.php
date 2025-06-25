@@ -8,7 +8,7 @@
     <a class="logo" href="{{ route('landing') }}">
         <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
             class="logo-img d-inline-block" />
-            SMK PGRI 35
+        SMK PGRI 35
     </a>
 
     <div class="search-container ms-auto">
@@ -34,15 +34,18 @@
             </div>
         @else
             <div class="btn-group">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown"
                     data-bs-display="static" aria-expanded="false">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    <span style="margin-left: 16px; margin-right:8px">Masuk ke akun SMK PGRI 35</span>
+                    <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-lg-end">
-                    <li><button class="dropdown-item" type="button">Masuk sebagai Guru Mapel</button></li>
-                    <li><button class="dropdown-item" type="button">Masuk sebagai Wali Kelas</button></li>
-                    <li><button class="dropdown-item" type="button">Masuk sebagai Siswa</button></li>
+                <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
+                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Guru
+                            Mapel</button></li>
+                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Wali
+                            Kelas</button></li>
+                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Siswa</button>
+                    </li>
                 </ul>
             </div>
         @endif
