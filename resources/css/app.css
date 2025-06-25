@@ -98,6 +98,7 @@ body {
 }
 
 .error-message {
+    color: var(--destructive);
     font-size: 36px;
     margin: 10px 0;
 }
@@ -251,7 +252,6 @@ input.form-control:focus {
 }
 
 .btn-foreground:focus {
-    box-shadow: 0 0 0 3px var(--ring);
     background-color: #2a1f01;
     outline: none;
 }
@@ -370,7 +370,6 @@ input.form-control:focus {
 
 /* Base button styles for .button-* (smaller, inline buttons) */
 .button {
-    display: inline-block;
     align-items: center;
     justify-content: center;
     height: 2.5rem;
@@ -541,8 +540,8 @@ input.form-control:focus {
 }
 
 .search-container input[type="text"]:focus {
-    border-color: var(--border); /* Bootstrap primary color */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    border-color: var(--border) ;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
 }
 
 .search-container button {
