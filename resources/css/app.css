@@ -1,28 +1,28 @@
 :root {
     /* color settings */
-    --background: hsl(44 30% 100%);
-    --foreground: hsl(44 76% 1%);
-    --muted: hsl(44 22% 95%);
-    --muted-foreground: hsl(44 0% 34%);
-    --popover: hsl(0 0% 99%);
-    --popover-foreground: hsl(0 0% 0%);
-    --card: hsl(0 0% 99%);
-    --card-foreground: hsl(0 0% 0%);
-    --border: hsl(44 15% 94%);
-    --input: hsl(44 15% 94%);
+    --background: hsl(44 45% 98%);
+    --foreground: hsl(44 55% 4%);
+    --muted: hsl(44 11% 94%);
+    --muted-foreground: hsl(44 10% 27%);
+    --popover: hsl(44 45% 97%);
+    --popover-foreground: hsl(44 55% 3%);
+    --card: hsl(44 45% 97%);
+    --card-foreground: hsl(44 55% 3%);
+    --border: hsl(44 14% 89%);
+    --input: hsl(44 14% 89%);
     --primary: hsl(44 98% 50%);
     --primary-foreground: hsl(44 98% 10%);
-    --secondary: hsl(44 18% 92%);
-    --secondary-foreground: hsl(44 18% 12%);
-    --accent: hsl(44 26% 85%);
-    --accent-foreground: hsl(44 26% 25%);
-    --destructive: hsl(2 84% 40%);
-    --destructive-foreground: hsl(0 0% 100%);
+    --secondary: hsl(44 4% 81%);
+    --secondary-foreground: hsl(44 4% 21%);
+    --accent: hsl(44 4% 81%);
+    --accent-foreground: hsl(44 4% 21%);
+    --destructive: hsl(16 90% 21%);
+    --destructive-foreground: hsl(16 90% 81%);
     --ring: hsl(44 98% 50%);
     --chart-1: hsl(44 98% 50%);
-    --chart-2: hsl(44 18% 92%);
-    --chart-3: hsl(44 26% 85%);
-    --chart-4: hsl(44 18% 95%);
+    --chart-2: hsl(44 4% 81%);
+    --chart-3: hsl(44 4% 81%);
+    --chart-4: hsl(44 4% 84%);
     --chart-5: hsl(44 101% 50%);
     --radius: 0.5rem;
 
@@ -39,29 +39,29 @@
 }
 
 .dark {
-    --background: hsl(44 58% 0%);
+    --background: hsl(44 45% 0%);
     --foreground: hsl(44 25% 98%);
-    --muted: hsl(44 22% 5%);
-    --muted-foreground: hsl(44 0% 66%);
+    --muted: hsl(0 11% 6%);
+    --muted-foreground: hsl(0 10% 73%);
     --popover: hsl(0 0% 1%);
     --popover-foreground: hsl(44 25% 99%);
     --card: hsl(0 0% 1%);
     --card-foreground: hsl(44 25% 99%);
-    --border: hsl(44 15% 14%);
-    --input: hsl(44 15% 14%);
+    --border: hsl(44 14% 13%);
+    --input: hsl(44 14% 13%);
     --primary: hsl(44 98% 50%);
     --primary-foreground: hsl(44 98% 10%);
-    --secondary: hsl(44 3% 15%);
-    --secondary-foreground: hsl(44 3% 75%);
-    --accent: hsl(44 9% 24%);
-    --accent-foreground: hsl(44 9% 84%);
-    --destructive: hsl(2 84% 56%);
-    --destructive-foreground: hsl(0 0% 100%);
+    --secondary: hsl(0 0% 8%);
+    --secondary-foreground: hsl(0 0% 68%);
+    --accent: hsl(0 0% 8%);
+    --accent-foreground: hsl(0 0% 68%);
+    --destructive: hsl(16 90% 56%);
+    --destructive-foreground: hsl(0 0% 0%);
     --ring: hsl(44 98% 50%);
     --chart-1: hsl(44 98% 50%);
-    --chart-2: hsl(44 3% 15%);
-    --chart-3: hsl(44 9% 24%);
-    --chart-4: hsl(44 3% 18%);
+    --chart-2: hsl(0 0% 8%);
+    --chart-3: hsl(0 0% 8%);
+    --chart-4: hsl(0 0% 11%);
     --chart-5: hsl(44 101% 50%);
 }
 
@@ -82,6 +82,7 @@ body {
     padding-top: 6.25rem;
     height: 100%;
     width: 100%;
+    background-color: var(--background);
 }
 
 .error-container {
@@ -92,7 +93,7 @@ body {
 .error-code {
     font-size: 120px;
     font-weight: bold;
-    color: #ff4d4d; /* Red accent color */
+    color: var(--destructive); /* Red accent color */
     margin: 0;
 }
 
@@ -230,6 +231,29 @@ input.form-control:focus {
     background-color: var(--muted);
     color: var(--muted-foreground);
     cursor: not-allowed;
+}
+
+/* Primary foreground (full-width) */
+.btn-foreground {
+    background-color: var(--primary-foreground);
+    color: var(--background);
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-foreground:hover {
+    background-color: #2a1f01;
+    color: var(--background);
+}
+
+.btn-foreground:focus {
+    box-shadow: 0 0 0 3px var(--ring);
+    background-color: #2a1f01;
+    outline: none;
+}
+
+.btn-foreground:active {
+    background-color: #1c1500;
+    transform: scale(0.97);
 }
 
 /* Secondary button (full-width) */
@@ -498,10 +522,11 @@ input.form-control:focus {
 .search-container {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .search-container input[type="text"] {
-    padding: 8px 12px;
+    padding: 7px 12px;
     border: 1px solid var(--border);
     border-radius: 20px 0 0 20px; /* rounded kiri only */
     outline: none;
@@ -511,13 +536,13 @@ input.form-control:focus {
 }
 
 .search-container input[type="text"]:focus {
-    border-color: var(--input); /* Bootstrap primary color */
+    border-color: var(--border); /* Bootstrap primary color */
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
 .search-container button {
-    padding: 8px 12px;
-    border: 1px solid var(--card-foreground);
+    padding: 7px 12px;
+    border: 1px solid #2a1f01;
     border-left: none; /* Remove left border to align with input */
     border-radius: 0 20px 20px 0; /* Rounded right corners */
     background-color: var(--primary-foreground);
@@ -527,7 +552,7 @@ input.form-control:focus {
 }
 
 .search-container button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #2a1f01; /* Darker shade on hover */
 }
 
 .search-container button i {
