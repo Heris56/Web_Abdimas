@@ -164,8 +164,9 @@ input.form-control {
     font-size: var(--font-size-base);
     border: 1px solid var(--border);
     border-radius: 4px;
-    background-color: var(--input);
+    background-color: transparent;
     color: var(--foreground);
+    transition: box-shadow 0.2s ease;
     outline: none;
 }
 
@@ -174,9 +175,9 @@ input.form-control::placeholder {
 }
 
 input.form-control:focus {
-    box-shadow: 0 0 0 3px var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
     border: 1px solid var(--primary);
-    background-color: var(--input);
+    background-color: transparent;
 }
 /* END INPUT CONTROLLS */
 
