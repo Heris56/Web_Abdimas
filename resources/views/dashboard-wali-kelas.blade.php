@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Presensi</title>
+    @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('css/login-page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard-wali-kelas.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
