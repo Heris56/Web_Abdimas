@@ -23,15 +23,16 @@
     <div class="navbar-button ms-auto">
         @if (session('username'))
             <div class="btn-group">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
-                    data-bs-display="static" aria-expanded="false">
+                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown" data-bs-display="static"
+                    aria-expanded="false">
                     <i class="bi bi-person-fill"></i>
                     {{ session('username') }}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-lg-end">
-                    <li><button class="dropdown-item" type="button">Action</button></li>
-                    <li><button class="dropdown-item" type="button">Another action</button></li>
-                    <li><button class="dropdown-item" type="button">Something else here</button></li>
+                <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="dropdown-item destructive-dropdown-item">Logout</button>
+                    </form>
                 </ul>
             </div>
         @else
@@ -42,11 +43,13 @@
                     <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Guru
-                            Mapel</button></li>
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Wali
-                            Kelas</button></li>
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Siswa</button>
+                    <li><button class="dropdown-item custom-dropdown-item" type="button"
+                            onclick="window.location.href='/logingurumapel'">Masuk sebagai Guru Mapel</button></li>
+                    <li><button class="dropdown-item custom-dropdown-item" type="button"
+                            onclick="window.location.href='/loginwalikelas'">Masuk sebagai Wali Kelas</button></li>
+                    <li><button class="dropdown-item custom-dropdown-item" type="button"
+                            onclick="window.location.href='/loginsiswa'">Masuk sebagai Siswa</button></li>
+
                     </li>
                 </ul>
             </div>
