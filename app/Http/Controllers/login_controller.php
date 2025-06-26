@@ -135,7 +135,6 @@ class login_controller extends Controller
                         ->where($idColumn, $user->$idColumn)
                         ->update(['password' => $newHashedPassword]);
                 }
-
             }
         } else {
             // Ini diasumsikan sebagai hash bcrypt atau format lain yang sudah aman
@@ -190,6 +189,11 @@ class login_controller extends Controller
     {
         session()->forget('username');
         session()->flush();
-        return redirect('/')->with('success', 'Berhasil Logout dari Akun!');
+        return redirect()->route('landing')
+            ->withCookies([
+                cookie('userID', ''), // :1 == test ? >1 == final
+                cookie('userRole', '') // :1 == test ? >1 == final
+            ])
+            ->with("success", "berhasil Login");
     }
 }
