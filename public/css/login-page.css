@@ -36,3 +36,8 @@
 .logo-img {
     margin-right: 0.5rem;
 }
+
+body {
+    /* timpa padding untuk login page */
+    padding-top: 8rem !important;
+}

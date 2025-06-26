@@ -145,6 +145,7 @@ body {
     transform: scale(0.97);
 }
 
+/* Warna "SMK PGRI 35" */
 a span {
     color: var(--primary-foreground);
 }
