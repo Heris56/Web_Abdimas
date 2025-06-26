@@ -13,10 +13,10 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
     {{-- global css --}}
-    @vite(['resources/css/app.css'])
+    {{-- @vite(['resources/css/app.css']) --}}
 
     <!-- global js -->
-    @vite(['resources/js/app.js'])
+    {{-- @vite(['resources/js/app.js']) --}}
 
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/landing-page.css') }}">
@@ -33,6 +33,20 @@
 </head>
 
 <body>
+    {{-- uncomment kalo misalnya pake global css --}}
+    {{-- <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            font-size: var(--font-size-base);
+            background-color: var(--background);
+            color: var(--background);
+        }
+    </style> --}}
     <!-- Wrapper -->
     <div class="container1">
         <div class="background"></div>
