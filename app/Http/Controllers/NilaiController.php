@@ -65,6 +65,7 @@ class NilaiController extends Controller
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
                 'nilai.tahun_pelajaran',
+                'nilai.semester',
                 'guru_mapel.nama_guru'
             );
 
@@ -99,6 +100,7 @@ class NilaiController extends Controller
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
                 'nilai.tahun_pelajaran',
+                'nilai.semester',
                 'guru_mapel.nama_guru'
             )
             ->get();
