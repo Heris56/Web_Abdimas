@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
-Route::get('/welcome', function () {
-    return view('welcome');
-});
+// Route::get('/welcome', function () {
+//     return view('welcome');
+// });
 
 // semua view
 Route::view('/', 'landing-page')->name('landing')->middleware(RedirectIfLoggedIn::class);
@@ -53,6 +53,9 @@ Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'
 Route::post('/login/walikelas', [login_controller::class, 'auth_login_walikelas'])->name('login.walikelas');
 Route::get('/api/kelas', [login_controller::class, 'getkelas'])->name('getkelas');
 Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa');
+
+// logout
+Route::post('/logout', [login_controller::class, 'logout'])->name('logout');
 
 //Controller Wali Kelas
 Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');

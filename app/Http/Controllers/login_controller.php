@@ -185,4 +185,11 @@ class login_controller extends Controller
         //     return redirect()->route('login-siswa')->with("success", "berhasil Login");
         // }
     }
+
+    public function logout()
+    {
+        session()->forget('username');
+        session()->flush();
+        return redirect('/')->with('success', 'Berhasil Logout dari Akun!');
+    }
 }

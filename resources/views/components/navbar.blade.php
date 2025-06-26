@@ -23,13 +23,16 @@
     <div class="navbar-button ms-auto">
         @if (session('username'))
             <div class="btn-group">
-                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown"
-                    data-bs-display="static" aria-expanded="false">
+                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown" data-bs-display="static"
+                    aria-expanded="false">
                     <i class="bi bi-person-fill"></i>
                     {{ session('username') }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
-                    <li><button class="dropdown-item destructive-dropdown-item" type="button">Logout</button></li>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="dropdown-item destructive-dropdown-item">Logout</button>
+                    </form>
                 </ul>
             </div>
         @else
