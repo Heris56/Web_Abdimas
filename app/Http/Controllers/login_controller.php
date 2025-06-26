@@ -93,6 +93,9 @@ class login_controller extends Controller
 
         $user = DB::table('guru_mapel')->where('nip_guru_mapel', $username)->first();
 
+        // simpan nama user ke session untuk navbar
+        session(['username' => $user->nama_guru]);
+
         if ($user) {
             return $this->checkhashmd5('nilai.fetch', 'login-gurumapel', $password, $user);
         } else {
@@ -142,7 +145,7 @@ class login_controller extends Controller
         }
 
         if ($isAuthenticated) {
-            //pass udah cocok 
+            //pass udah cocok
             if (property_exists($user, 'nisn') && $user->nisn) {
                 $id = $user->nisn;
                 $role = "siswa";
