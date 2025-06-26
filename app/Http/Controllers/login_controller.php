@@ -194,6 +194,6 @@ class login_controller extends Controller
                 cookie('userID', ''), // :1 == test ? >1 == final
                 cookie('userRole', '') // :1 == test ? >1 == final
             ])
-            ->with("success", "berhasil Login");
+            ->with("success", "Berhasil Logout");
     }
 }
