@@ -43,11 +43,13 @@
                     <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Guru
-                            Mapel</button></li>
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Wali
-                            Kelas</button></li>
-                    <li><button class="dropdown-item custom-dropdown-item" type="button">Masuk sebagai Siswa</button>
+                    <li><a class="dropdown-item custom-dropdown-item" href="{{ url('/logingurumapel') }}">Masuk sebagai Guru
+                            Mapel</a></li>
+                    <li><a class="dropdown-item custom-dropdown-item" href="{{ url('/loginwalikelas') }}">Masuk sebagai Wali
+                            Kelas</a></li>
+                    <li><a class="dropdown-item custom-dropdown-item" href="{{ url('/loginsiswa') }}">Masuk sebagai
+                            Siswa</a></li>
+
                     </li>
                 </ul>
             </div>
