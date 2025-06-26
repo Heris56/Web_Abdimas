@@ -1,6 +1,8 @@
 <head>
     <!-- Conect Icons bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {{-- global css --}}
+    @vite(['resources/css/app.css'])
 </head>
 
 <nav class="navbar container-fluid fixed-top">
@@ -8,7 +10,7 @@
     <a class="logo" href="{{ route('landing') }}">
         <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
             class="logo-img d-inline-block" />
-        SMK PGRI 35
+        <span>SMK PGRI 35</span>
     </a>
 
     <div class="search-container ms-auto">
@@ -34,8 +36,8 @@
             </div>
         @else
             <div class="btn-group">
-                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown"
-                    data-bs-display="static" aria-expanded="false">
+                <button type="button" class="button btn-foreground" data-bs-toggle="dropdown" data-bs-display="static"
+                    aria-expanded="false">
                     <i class="bi bi-box-arrow-in-right"></i>
                     <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>
                 </button>

@@ -121,7 +121,15 @@
                                 <td>{{ $row->nisn }}</td>
                                 <td>{{ $row->nama_siswa }}</td>
                                 <td>{{ $row->id_kelas }}</td>
-                                <td>{{ $row->tahun_pelajaran }}</td>
+                                <td>
+                                    @if ($row->semester === 'Ganjil')
+                                        {{ $row->tahun_pelajaran }}-1
+                                    @elseif ($row->semester === 'Genap')
+                                        {{ $row->tahun_pelajaran }}-2
+                                    @else
+                                        {{ $row->tahun_pelajaran }}
+                                    @endif
+                                </td>
                                 @foreach ($kegiatanList as $kegiatan)
                                     @php
                                         $alias = str_replace(' ', '_', strtolower($kegiatan));
