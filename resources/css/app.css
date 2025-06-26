@@ -16,8 +16,8 @@
     --secondary-foreground: hsl(44 4% 21%);
     --accent: hsl(44 4% 81%);
     --accent-foreground: hsl(44 4% 21%);
-    --destructive: hsl(16 90% 21%);
-    --destructive-foreground: hsl(16 90% 81%);
+    --destructive: #C54111;
+    --destructive-foreground: hsl(44 45% 98%);
     --ring: hsl(44 98% 50%);
     --chart-1: hsl(44 98% 50%);
     --chart-2: hsl(44 4% 81%);
@@ -593,6 +593,20 @@ input.form-control:focus {
 .custom-dropdown-item:hover {
     background-color: var(--secondary); /* Light gray hover */
     color: var(--secondary-foreground); /* Primary color text on hover */
+}
+
+/* destructive dropdown item */
+.destructive-dropdown-item {
+    font-size: var(--font-size-base);
+    background-color: var(--card);
+    color: var(--destructive);
+    padding: 10px 20px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.destructive-dropdown-item:hover {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
 }
 /* END DROPDOWN CONTROLS */
 
