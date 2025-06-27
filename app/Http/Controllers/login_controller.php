@@ -74,6 +74,8 @@ class login_controller extends Controller
 
         $user = DB::table('wali_kelas')->where('nip_wali_kelas', $username)->first();
 
+        session(['username' => $user->nama]);
+
         if ($user) {
             return $this->checkhashmd5('dashboard-wali-kelas', 'login-walikelas', $password, $user);
         } else {
