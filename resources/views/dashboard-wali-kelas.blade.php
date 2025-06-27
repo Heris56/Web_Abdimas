@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Presensi</title>
     @vite(['resources/css/app.css'])
-    <link rel="stylesheet" href="{{ asset('css/login-page.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard-wali-kelas.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -63,7 +62,7 @@
                 <div class="top-bar">
                     <input type="text" placeholder="Cari Nama Siswa" class="form-control w-50" id="search_siswa"/>
                     <div id="button-wrapper" class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                     data-bs-target="#modal-input" id="button-input">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-calendar-plus" viewBox="0 0 16 16">
