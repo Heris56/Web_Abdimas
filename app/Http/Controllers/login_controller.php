@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 
 class login_controller extends Controller
 {
@@ -189,11 +190,9 @@ class login_controller extends Controller
     {
         session()->forget('username');
         session()->flush();
+        Cookie::queue(Cookie::forget('userID'));
+        Cookie::queue(Cookie::forget('userRole'));
         return redirect()->route('landing')
-            ->withCookies([
-                cookie('userID', ''), // :1 == test ? >1 == final
-                cookie('userRole', '') // :1 == test ? >1 == final
-            ])
             ->with("success", "Berhasil Logout");
     }
 }
