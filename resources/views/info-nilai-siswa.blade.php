@@ -35,13 +35,14 @@
         <div class="navbar-button ms-auto">
             @if($isGuest)
                 <a href="{{ route('login-siswa') }}">
-                    Login
+                    Masuk
                 </a>
             @else
-                <a href="{{ route('login-siswa') }}"> {{-- Assuming login-siswa route handles logout as well or you have a
-                    dedicated logout route --}}
-                    Logout
-                </a>
+            <form action="{{ route('logout') }}", method="post">
+                @csrf
+                <button class="btn btn-danger" type="submit">Keluar</button>
+            </form>
+               
             @endif
         </div>
     </nav>

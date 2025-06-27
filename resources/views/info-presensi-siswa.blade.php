@@ -41,9 +41,16 @@
 
         <!-- Button login/register -->
         <div class="navbar-button ms-auto">
-            <a href="{{ route('login-siswa') }}">
-                Logout
-            </a>
+             @if($isGuest)
+                <a href="{{ route('login-siswa') }}">
+                    Masuk
+                </a>
+            @else
+            <form action="{{ route('logout') }}", method="post">
+                @csrf
+                <button class="btn btn-danger" type="submit">Keluar</button>
+            </form>
+            @endif
         </div>
     </nav>
 
@@ -51,10 +58,10 @@
         <div class="Tabs">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ route('info.presensi') }}">Presensi</a>
+                    <a class="nav-link" aria-current="page" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('info.nilai') }}">Nilai</a>
+                    <a class="nav-link" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
                 </li>
             </ul>
         </div>
