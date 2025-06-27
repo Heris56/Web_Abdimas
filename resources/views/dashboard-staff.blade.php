@@ -69,6 +69,7 @@
                         @foreach ($columns as $key => $label)
                             <th>{{ $label }}</th>
                         @endforeach
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,6 +79,18 @@
                             @foreach ($columns as $key => $label)
                                 <td>{{ $item->$key ?? '-' }}</td>
                             @endforeach
+                            <td class="text-center">
+                                <button 
+                                class="btn btn-primary" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#UpdateNilaiModal"
+                                @foreach ($columns as $key => $label)
+                                    data-{{ $key }}="{{ $item->$key ?? '-' }}"
+                                @endforeach
+                                >
+                                    Perbarui 
+                                </button>
+                            </td>
                         </tr>
                     @empty
                         <tr>
@@ -134,6 +147,73 @@
                 </li>
             </ul>
         </div>
+
+        <div class="modal fade" id="UpdateNilaiModal" tabindex="-1" aria-labelledby="UpdateNilaiModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="UpdateNilaiModalLabel">Update Data {{ $buttonText }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                {{-- Perhatikan perubahan pada action form. ID akan diisi oleh JS --}}
+                <form id="updateForm" method="POST">
+                    @csrf
+                    @method('PUT') {{-- Gunakan method PUT/PATCH untuk update --}}
+
+                    {{-- Tambahkan input hidden untuk menyimpan ID yang akan diupdate --}}
+                    <input type="hidden" name="id_to_update" id="updateItemId">
+
+                    @foreach ($columns as $key => $label)
+                        <div class="mb-3">
+                            <label for="update_{{ $key }}" class="form-label">{{ $label }}</label>
+
+                            @if ($key == 'id_mapel')
+                                <select class="form-select @error($key) is-invalid @enderror"
+                                    id="update_{{ $key }}" name="{{ $key }}" required>
+                                    <option selected disabled>Pilih {{ $label }}</option>
+                                    @forelse ($dropdowns['mapel'] as $item)
+                                        <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}</option>
+                                    @empty
+                                        <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                    @endforelse
+                                </select>
+                                @error($key)
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                            @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
+                                <select class="form-select @error($key) is-invalid @enderror"
+                                    id="update_{{ $key }}" name="{{ $key }}" required>
+                                    <option selected disabled>Pilih {{ $label }}</option>
+                                    <option value="aktif">aktif</option>
+                                    <option value="nonaktif">nonaktif</option>
+                                </select>
+                                @error($key)
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+
+                            @else
+                                <input
+                                    type="{{ in_array($key, ['nisn', 'nip_guru_mapel', 'nip_wali_kelas']) ? 'number' : 'text' }}"
+                                    class="form-control @error($key) is-invalid @enderror"
+                                    id="update_{{ $key }}" name="{{ $key }}" required>
+                                @error($key)
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
+                        </div>
+                    @endforeach
+
+                    <div class="mt-4 mb-2 text-end btns simpan-nilai">
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel"
             aria-hidden="true">
