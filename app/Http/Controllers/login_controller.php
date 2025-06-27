@@ -53,6 +53,8 @@ class login_controller extends Controller
         $password = $request->input('inputPassword');
 
         $user = DB::table('siswa')->where('nisn', $username)->first();
+        session(['username' => $user->nama_siswa]);
+
 
         if ($user) {
             return $this->checkhashmd5('info.presensi', 'login-siswa', $password, $user);
