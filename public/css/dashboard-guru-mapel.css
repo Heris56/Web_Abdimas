@@ -133,7 +133,7 @@ input.form-control:focus {
     gap: 2rem;
 }
 
-.nav-link {
+/* .nav-link {
     color: #cbcac9;
     position: relative;
 }
@@ -185,7 +185,7 @@ input.form-control:focus {
 .nav-link:hover::before {
     transform: scaleX(1);
     background: var(--color-accent);
-}
+} */
 /* end tab button controls */
 
 /* profile card controls */
