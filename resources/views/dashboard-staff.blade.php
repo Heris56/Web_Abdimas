@@ -84,6 +84,7 @@
                                 class="btn btn-primary" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#UpdateNilaiModal"
+                                 data-id="{{ $item->id_kolom_utama ?? '' }}"
                                 @foreach ($columns as $key => $label)
                                     data-{{ $key }}="{{ $item->$key ?? '-' }}"
                                 @endforeach
@@ -148,7 +149,7 @@
             </ul>
         </div>
 
-        <div class="modal fade" id="UpdateNilaiModal" tabindex="-1" aria-labelledby="UpdateNilaiModalLabel"
+    <div class="modal fade" id="UpdateNilaiModal" tabindex="-1" aria-labelledby="UpdateNilaiModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -157,13 +158,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body">
-                {{-- Perhatikan perubahan pada action form. ID akan diisi oleh JS --}}
+                {{-- Berikan ID pada form untuk JavaScript --}}
                 <form id="updateForm" method="POST">
                     @csrf
-                    @method('PUT') {{-- Gunakan method PUT/PATCH untuk update --}}
+                    @method('PUT') {{-- Gunakan method PUT atau PATCH untuk update --}}
 
-                    {{-- Tambahkan input hidden untuk menyimpan ID yang akan diupdate --}}
-                    <input type="hidden" name="id_to_update" id="updateItemId">
+                    {{-- Input hidden untuk menyimpan ID item yang akan diupdate --}}
+                    <input type="hidden" name="item_id" id="updateItemId">
 
                     @foreach ($columns as $key => $label)
                         <div class="mb-3">
@@ -172,12 +173,10 @@
                             @if ($key == 'id_mapel')
                                 <select class="form-select @error($key) is-invalid @enderror"
                                     id="update_{{ $key }}" name="{{ $key }}" required>
-                                    <option selected disabled>Pilih {{ $label }}</option>
-                                    @forelse ($dropdowns['mapel'] as $item)
-                                        <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}</option>
-                                    @empty
-                                        <option disabled>Tidak ada mata pelajaran tersedia</option>
-                                    @endforelse
+                                    <option value="" selected disabled>Pilih {{ $label }}</option>
+                                    @foreach ($dropdowns['mapel'] as $mapelItem) {{-- Ubah $item menjadi $mapelItem untuk menghindari konflik --}}
+                                        <option value="{{ $mapelItem->id_mapel }}">{{ $mapelItem->nama_mapel }}</option>
+                                    @endforeach
                                 </select>
                                 @error($key)
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -186,9 +185,9 @@
                             @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
                                 <select class="form-select @error($key) is-invalid @enderror"
                                     id="update_{{ $key }}" name="{{ $key }}" required>
-                                    <option selected disabled>Pilih {{ $label }}</option>
-                                    <option value="aktif">aktif</option>
-                                    <option value="nonaktif">nonaktif</option>
+                                    <option value="" selected disabled>Pilih {{ $label }}</option>
+                                    <option value="aktif">Aktif</option>
+                                    <option value="nonaktif">Nonaktif</option>
                                 </select>
                                 @error($key)
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -290,6 +289,61 @@
                 </div>
             </div>
         </div>
+
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dapatkan referensi ke modal update
+        const updateModal = document.getElementById('UpdateNilaiModal');
+
+        // Tambahkan event listener saat modal akan ditampilkan (Bootstrap event)
+        updateModal.addEventListener('show.bs.modal', function (event) {
+            // Dapatkan tombol yang memicu modal
+            const button = event.relatedTarget;
+
+            // Dapatkan ID dari data-id attribute tombol
+            const itemId = button.getAttribute('data-id');
+
+            // Dapatkan referensi ke form dan input hidden ID di modal
+            const updateForm = document.getElementById('updateForm');
+            const updateItemIdInput = document.getElementById('updateItemId');
+
+            // Isi input hidden dengan ID item
+            updateItemIdInput.value = itemId;
+
+            // Atur action URL untuk form update
+            // Sesuaikan dengan route Laravel Anda, contoh: /data/update/{type}/{id}
+            const type = "{{ $type }}"; // Ambil $type dari Blade
+            updateForm.action = `/data/update/${type}/${itemId}`; // Sesuaikan dengan route update Anda
+
+            // Loop melalui semua kolom yang ada di `$columns` (dari PHP)
+            // Ini akan secara otomatis mencari dan mengisi input/select yang sesuai
+            const columns = @json($columns); // Ambil array $columns dari PHP ke JavaScript
+            for (const key in columns) {
+                if (columns.hasOwnProperty(key)) {
+                    const value = button.getAttribute('data-' + key); // Ambil nilai dari data-attribute
+                    const inputElement = document.getElementById('update_' + key);
+
+                    if (inputElement) {
+                        if (inputElement.tagName === 'SELECT') {
+                            // Untuk elemen <select>
+                            // Cari opsi yang cocok berdasarkan nilai dan set sebagai selected
+                            const options = inputElement.options;
+                            for (let i = 0; i < options.length; i++) {
+                                if (options[i].value == value) { // Gunakan '==' untuk perbandingan longgar
+                                    options[i].selected = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            // Untuk elemen <input>
+                            inputElement.value = value;
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 
         <script>
             document.getElementById('button-cetak').addEventListener('click', function() {
