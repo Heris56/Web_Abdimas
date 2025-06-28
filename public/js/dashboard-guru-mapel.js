@@ -5,10 +5,11 @@ $.ajaxSetup({
 });
 
 $(document).ready(function () {
-    // Initialize with first mapel
-    if ($("#mapelFilter").find("option").length > 1) {
-        $("#mapelFilter").val($("#mapelFilter option:nth-child(2)").val());
-        fetchFilteredData($("#mapelFilter").val(), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+    // Initialize with first mapel tab
+    const $firstTab = $("#mapelTabs .nav-link").first();
+    if ($firstTab.length) {
+        $firstTab.addClass("active");
+        fetchFilteredData($firstTab.data("mapel"), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
     }
 
     // Handle form submission for input nilai
@@ -44,7 +45,9 @@ $(document).ready(function () {
                 showToast('Nilai berhasil disimpan!', 'text-bg-success');
                 $('#inputNilaiModal').modal('hide');
                 $('#inputNilaiForm')[0].reset();
-                fetchFilteredData($("#mapelFilter").val() || '', $("#tahunFilter").val() || '', $("#kelasFilter").val() || '');
+                // Use active tab's mapel
+                const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
+                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
             },
             error: function (xhr, status, error) {
                 console.error('Input nilai error:', { status, error, responseText: xhr.responseText });
@@ -54,17 +57,24 @@ $(document).ready(function () {
         });
     });
 
-    // Handle filter changes
-    $("#mapelFilter, #tahunFilter, #kelasFilter").on("change", function () {
-        var mapel = $("#mapelFilter").val() || "";
-        var tahun = $("#tahunFilter").val() || "";
-        var kelas = $("#kelasFilter").val() || "";
+    // Handle tab clicks
+    $("#mapelTabs .nav-link").on("click", function () {
+        const mapel = $(this).data("mapel");
+        console.log("Tab clicked:", { mapel });
+        fetchFilteredData(mapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+    });
+
+    // Handle kelas and tahun filter changes
+    $("#tahunFilter, #kelasFilter").on("change", function () {
+        const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
+        const tahun = $("#tahunFilter").val() || "";
+        const kelas = $("#kelasFilter").val() || "";
         console.log("Filter change triggered:", {
-            mapel: mapel,
+            mapel: activeMapel,
             tahun_pelajaran: tahun,
             id_kelas: kelas,
         });
-        fetchFilteredData(mapel, tahun, kelas);
+        fetchFilteredData(activeMapel, tahun, kelas);
     });
 
     function fetchFilteredData(mapel, tahun, kelas) {
@@ -84,8 +94,7 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("AJAX success:", response);
                 updateTable(response);
-                // Maintain filter states
-                $("#mapelFilter").val(mapel);
+                // Maintain kelas and tahun filter states
                 $("#tahunFilter").val(tahun);
                 $("#kelasFilter").val(kelas);
             },
@@ -213,11 +222,9 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("AJAX success:", response);
                 showToast("Sukses Update Data!", "text-bg-success");
-                fetchFilteredData(
-                    $("#mapelFilter").val() || "",
-                    $("#tahunFilter").val() || "",
-                    $("#kelasFilter").val() || ""
-                );
+                // Use active tab's mapel
+                const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
+                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
             },
             error: function (xhr, status, error) {
                 console.error("AJAX error:", {

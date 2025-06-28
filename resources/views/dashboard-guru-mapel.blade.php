@@ -52,31 +52,38 @@
 
         <div class="Contents">
             <!-- Filter -->
+            <div class="col-md-4">
+                <span class="filter-head">Nilai mata pelajaran</span>
+                <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
+                    @foreach ($mapelList as $index => $mapel)
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
+                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab" data-mapel="{{ $mapel }}"
+                                type="button" role="tab" aria-controls="mapel-{{ $index }}"
+                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                {{ $mapel }}
+                            </button>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
             <div class="row">
-                <div class="col-md-4">
-                    <label for="mapelFilter" class="form-label">Filter by Mapel:</label>
-                    <select id="mapelFilter" class="form-select">
-                        <option value="">All Mapel</option>
-                        @foreach ($mapelList as $mapel)
-                            <option value="{{ $mapel }}">{{ $mapel }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="tahunFilter" class="form-label">Filter by Tahun Ajaran:</label>
-                    <select id="tahunFilter" class="form-select">
-                        <option value="">All Tahun Ajaran</option>
-                        @foreach ($tahunPelajaranList as $tahun)
-                            <option value="{{ $tahun }}">{{ $tahun }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-auto">
                     <label for="kelasFilter" class="form-label">Filter by Kelas:</label>
                     <select id="kelasFilter" class="form-select">
                         <option value="">All Kelas</option>
                         @foreach ($kelasList as $kelas)
                             <option value="{{ $kelas }}">{{ $kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-auto">
+                    <label for="tahunFilter" class="form-label">Filter by Tahun Ajaran:</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">All Tahun Ajaran</option>
+                        @foreach ($tahunPelajaranList as $tahun)
+                            <option value="{{ $tahun }}">{{ $tahun }}</option>
                         @endforeach
                     </select>
                 </div>
