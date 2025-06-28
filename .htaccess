@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+
+# Opsional: Menonaktifkan listing direktori untuk keamanan
+# Ini mencegah orang melihat daftar file jika mereka mencoba mengakses folder kosong.
+Options -Indexes
