@@ -13,12 +13,14 @@
         <span>SMK PGRI 35</span>
     </a>
 
-    <div class="search-container ms-auto">
-        <form action="/action_page.php">
-            <input type="text" placeholder="Search.." name="search">
-            <button type="submit"><i class="bi bi-search"></i></i></button>
-        </form>
-    </div>
+    @if ($showSearch ?? false)
+        <div class="search-container ms-auto">
+            <form action="/action_page.php">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit"><i class="bi bi-search"></i></i></button>
+            </form>
+        </div>
+    @endif
 
     <div class="navbar-button ms-auto">
         @if (session('username'))
