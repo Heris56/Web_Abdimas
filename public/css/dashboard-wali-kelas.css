@@ -11,9 +11,10 @@ body {
     flex-direction: column;
 }
 
-#content-wrapper {
+/* gaperlu karena udah ada padding dari global css */
+/* #content-wrapper {
     padding: 100px;
-}
+} */
 
 .main-content {
     flex: 1;

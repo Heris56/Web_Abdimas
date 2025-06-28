@@ -8,17 +8,19 @@
 <nav class="navbar container-fluid fixed-top">
     <!-- navigate to home/dashboard by clicking logo/name -->
     <a class="logo" href="{{ route('landing') }}">
-        <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
+        <img src="{{ asset('images/navlogo.png') }}" alt="Logo" width="64" height="64"
             class="logo-img d-inline-block" />
         <span>SMK PGRI 35</span>
     </a>
 
-    <div class="search-container ms-auto">
-        <form action="/action_page.php">
-            <input type="text" placeholder="Search.." name="search">
-            <button type="submit"><i class="bi bi-search"></i></i></button>
-        </form>
-    </div>
+    @if ($showSearch ?? false)
+        <div class="search-container ms-auto">
+            <form action="/action_page.php">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit"><i class="bi bi-search"></i></i></button>
+            </form>
+        </div>
+    @endif
 
     <div class="navbar-button ms-auto">
         @if (session('username'))

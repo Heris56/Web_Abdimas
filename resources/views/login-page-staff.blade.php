@@ -31,7 +31,7 @@
 
 <body>
     <!-- Navbar -->
-    <x-navbar></x-navbar>
+    <x-navbar :showSearch="true" />
     <!-- Wrapper untuk form masuk -->
     <div class="container1">
         <div class="form-box">
