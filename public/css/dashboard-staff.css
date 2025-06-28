@@ -34,41 +34,6 @@ body {
     padding-top: 6.25rem;
 }
 
-/* Navbar section */
-/* Button navbar controls */
-.navbar-button a {
-    text-decoration: none;
-    color: var(--text-dark);
-    background-color: var(--color-light);
-    padding: 0.875rem 1rem;
-    border-radius: 0.5rem;
-}
-
-.navbar-button:active {
-    transform: scale(0.97);
-}
-
-.navbar {
-    background-color: var(--color-accent);
-    height: 80px;
-    align-items: center;
-    padding: 0.5rem 1.5rem;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: var(--font-size-lg);
-    color: inherit;
-}
-
-.logo-img {
-    margin-right: 0.5rem;
-}
-/* End navbar section */
-
 /* Input controls */
 input.form-control {
     height: 3rem;
@@ -122,11 +87,6 @@ input.form-control:focus {
 
 .Sidebar img {
     width: 300px;
-}
-
-.head {
-    font-size: var(--font-size-head);
-    font-family: var(--font-head);
 }
 
 /* tab button controls */

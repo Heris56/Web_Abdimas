@@ -148,6 +148,22 @@ body {
 /* Warna "SMK PGRI 35" */
 a span {
     color: var(--primary-foreground);
+    font-size: var(--font-size-head);
+    font-family: var(--font-head);
+    font-weight: bold;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: var(--font-size-lg);
+    color: inherit;
+}
+
+.logo-img {
+    margin-right: 0.5rem;
 }
 /* END NAVBAR CONTROLLS */
 
