@@ -1,4 +1,3 @@
-// Set header supaya ga perlu manggil _token lagi untuk AJAX operation
 $.ajaxSetup({
     headers: {
         "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -6,7 +5,13 @@ $.ajaxSetup({
 });
 
 $(document).ready(function () {
-    // untuk menangani request form input nilai
+    // Initialize with first mapel
+    if ($("#mapelFilter").find("option").length > 1) {
+        $("#mapelFilter").val($("#mapelFilter option:nth-child(2)").val());
+        fetchFilteredData($("#mapelFilter").val(), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+    }
+
+    // Handle form submission for input nilai
     $('#inputNilaiForm').on('submit', function (e) {
         e.preventDefault();
         var nisn = $('#nisnSelect').val();
@@ -39,7 +44,7 @@ $(document).ready(function () {
                 showToast('Nilai berhasil disimpan!', 'text-bg-success');
                 $('#inputNilaiModal').modal('hide');
                 $('#inputNilaiForm')[0].reset();
-                fetchFilteredData($('#mapelFilter').val() || '', $('#tahunFilter').val() || '', kelas);
+                fetchFilteredData($("#mapelFilter").val() || '', $("#tahunFilter").val() || '', $("#kelasFilter").val() || '');
             },
             error: function (xhr, status, error) {
                 console.error('Input nilai error:', { status, error, responseText: xhr.responseText });
@@ -49,7 +54,7 @@ $(document).ready(function () {
         });
     });
 
-    // ganti ganti filter
+    // Handle filter changes
     $("#mapelFilter, #tahunFilter, #kelasFilter").on("change", function () {
         var mapel = $("#mapelFilter").val() || "";
         var tahun = $("#tahunFilter").val() || "";
@@ -79,7 +84,7 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("AJAX success:", response);
                 updateTable(response);
-                // Biar filternya tetap
+                // Maintain filter states
                 $("#mapelFilter").val(mapel);
                 $("#tahunFilter").val(tahun);
                 $("#kelasFilter").val(kelas);
@@ -104,13 +109,13 @@ $(document).ready(function () {
         var $tableContainer = $("#tableContainer");
         $tableContainer.empty();
 
-        // Update header table dengan nilai baru
+        // Update header table with new value
         var headerHtml =
             data.data_nilai.length > 0
-                ? `<div class="header mb-2 mt-2"><span class="head">${data.nama_mapel}</span></div>`
+                ? `<div class="header mb-2 mt-2"><span class="head">${data.nama_mapel || 'Semua Mapel'}</span></div>`
                 : '<div class="alert alert-danger mt-4">Tidak ada data yang tersedia!</div>';
 
-        // Update table dengan nilai baru
+        // Update table with new values
         var tableHtml = `
             <table class="table table-bordered" id="nilaiTable">
                 <thead>
@@ -159,7 +164,7 @@ $(document).ready(function () {
         attachEditableListeners();
     }
 
-    // Function agar cellnya clickable
+    // Make cells editable
     function attachEditableListeners() {
         $(".editable").on("click", function () {
             var $cell = $(this);
@@ -181,7 +186,7 @@ $(document).ready(function () {
         });
     }
 
-    // simpan value yang sudah terupdate
+    // Save updated value
     function saveValue($cell, $input, nisn, field) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
@@ -213,7 +218,6 @@ $(document).ready(function () {
                     $("#tahunFilter").val() || "",
                     $("#kelasFilter").val() || ""
                 );
-                window.location.reload();
             },
             error: function (xhr, status, error) {
                 console.error("AJAX error:", {
@@ -227,16 +231,16 @@ $(document).ready(function () {
         });
     }
 
-    // notif untuk memberi tau status fungsi update
+    // Show toast notification
     function showToast(message, className) {
         console.log("Toast:", message, className);
         const toastElement = document.getElementById("notificationToast");
         const toastBody = document.getElementById("toastMessage");
 
-        // update isi notif
+        // Update toast content
         toastBody.textContent = message;
 
-        // ganti warna untuk notif sesuai status
+        // Update toast color based on status
         toastElement.classList.remove(
             "text-bg-primary",
             "text-bg-success",
@@ -244,7 +248,7 @@ $(document).ready(function () {
         );
         toastElement.classList.add(className);
 
-        // tutup notif dalam 3 detik
+        // Auto-close toast after 3 seconds
         const toast = new bootstrap.Toast(toastElement, {
             delay: 3000,
         });
