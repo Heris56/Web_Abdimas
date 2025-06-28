@@ -35,10 +35,9 @@ html, body{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/images/background-landing.jpg');
+  background-image: url('/images/logo_pgri.jpeg');
   background-size: cover;
   background-position: center;
-  transform: scaleX(-1);
 }
 
 .main-content{
