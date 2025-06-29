@@ -118,12 +118,6 @@ $(document).ready(function () {
         var $tableContainer = $("#tableContainer");
         $tableContainer.empty();
 
-        // Update header table with new value
-        var headerHtml =
-            data.data_nilai.length > 0
-                ? `<div class="header mb-2 mt-2"><span class="head">${data.nama_mapel || 'Semua Mapel'}</span></div>`
-                : '<div class="alert alert-danger mt-4">Tidak ada data yang tersedia!</div>';
-
         // Update table with new values
         var tableHtml = `
             <table class="table table-bordered" id="nilaiTable">
@@ -169,7 +163,7 @@ $(document).ready(function () {
             </table>
         `;
 
-        $tableContainer.html(headerHtml + tableHtml);
+        $tableContainer.html(tableHtml);
         attachEditableListeners();
     }
 

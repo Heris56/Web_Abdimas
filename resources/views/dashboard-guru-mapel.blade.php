@@ -36,24 +36,13 @@
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
-            <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
-            <div class="btns input-nilai me-3">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
-                    Input Nilai
-                </a>
-            </div>
-
-            <div class="btns cetak-nilai">
-                <a href="{{ route('login-siswa') }}">
-                    Cetak Nilai
-                </a>
-            </div>
+            <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
+            <input type="text" class="form-control ms-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
         </div>
 
         <div class="Contents">
             <!-- Filter -->
-            <div class="col-md-4">
-                <span class="filter-head">Nilai mata pelajaran</span>
+            <div class="row-md-auto">
                 <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
                     @foreach ($mapelList as $index => $mapel)
                         <li class="nav-item" role="presentation">
@@ -67,9 +56,10 @@
                     @endforeach
                 </ul>
             </div>
-            <div class="row">
-                <div class="col-md-auto">
-                    <label for="kelasFilter" class="form-label">Filter by Kelas:</label>
+
+            <div class="row-md-auto mt-4 mb-4 d-flex">
+                <div class="col-md-auto d-flex align-items-center">
+                    <label for="kelasFilter" class="form-label">Kelas</label>
                     <select id="kelasFilter" class="form-select">
                         <option value="">All Kelas</option>
                         @foreach ($kelasList as $kelas)
@@ -78,61 +68,79 @@
                     </select>
                 </div>
 
-                <div class="col-md-auto">
-                    <label for="tahunFilter" class="form-label">Filter by Tahun Ajaran:</label>
-                    <select id="tahunFilter" class="form-select">
+                <div class="col-md-auto d-flex align-items-center">
+                    <label for="tahunFilter" class="form-label text-nowrap">Tahun Ajaran</label>
+                    <select id="tahunFilter" class="form-select ">
                         <option value="">All Tahun Ajaran</option>
                         @foreach ($tahunPelajaranList as $tahun)
                             <option value="{{ $tahun }}">{{ $tahun }}</option>
                         @endforeach
                     </select>
                 </div>
+
+                <div class="col-md-auto ms-auto">
+                    <div class="btns input-nilai me-3">
+                        <a class="btn button-primary" href="#" data-bs-toggle="modal"
+                            data-bs-target="#inputNilaiModal">
+                            Input Nilai
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-auto">
+                    <div class="btns cetak-nilai">
+                        <a class="btn button-secondary" href="{{ route('login-siswa') }}">
+                            Cetak Nilai
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <!-- Table -->
-            <div id="tableContainer">
-                <div class="header mb-2 mt-2"><span class="head">Semua Mapel</span></div>
 
-                <table class="table table-bordered" id="nilaiTable">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>NISN</th>
-                            <th>Nama Siswa</th>
-                            <th>Kelas</th>
-                            <th>Tahun Ajaran</th>
-                            @foreach ($kegiatanList as $kegiatan)
-                                <th>{{ $kegiatan }}</th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($data_nilai as $i => $row)
+            <div class="row-md-auto">
+                <!-- Table -->
+                <div id="tableContainer">
+                    <table class="table table-bordered" id="nilaiTable">
+                        <thead>
                             <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{{ $row->nisn }}</td>
-                                <td>{{ $row->nama_siswa }}</td>
-                                <td>{{ $row->id_kelas }}</td>
-                                <td>
-                                    @if ($row->semester === 'Ganjil')
-                                        {{ $row->tahun_pelajaran }}-1
-                                    @elseif ($row->semester === 'Genap')
-                                        {{ $row->tahun_pelajaran }}-2
-                                    @else
-                                        {{ $row->tahun_pelajaran }}
-                                    @endif
-                                </td>
+                                <th>No</th>
+                                <th>NISN</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Tahun Ajaran</th>
                                 @foreach ($kegiatanList as $kegiatan)
-                                    @php
-                                        $alias = str_replace(' ', '_', strtolower($kegiatan));
-                                    @endphp
-                                    <td class="editable" data-nisn="{{ $row->nisn }}"
-                                        data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
+                                    <th>{{ $kegiatan }}</th>
                                 @endforeach
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($data_nilai as $i => $row)
+                                <tr>
+                                    <td>{{ $i + 1 }}</td>
+                                    <td>{{ $row->nisn }}</td>
+                                    <td>{{ $row->nama_siswa }}</td>
+                                    <td>{{ $row->id_kelas }}</td>
+                                    <td>
+                                        @if ($row->semester === 'Ganjil')
+                                            {{ $row->tahun_pelajaran }}-1
+                                        @elseif ($row->semester === 'Genap')
+                                            {{ $row->tahun_pelajaran }}-2
+                                        @else
+                                            {{ $row->tahun_pelajaran }}
+                                        @endif
+                                    </td>
+                                    @foreach ($kegiatanList as $kegiatan)
+                                        @php
+                                            $alias = str_replace(' ', '_', strtolower($kegiatan));
+                                        @endphp
+                                        <td class="editable" data-nisn="{{ $row->nisn }}"
+                                            data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
