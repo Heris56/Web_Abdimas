@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException; // Import ValidationException untuk penanganan error
 
 class DataController extends Controller
 {
@@ -201,6 +202,85 @@ class DataController extends Controller
                 return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()], 500);
             }
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data!');
+        }
+    }
+
+    public function Updatedata(Request $request, $type, $id)
+    {
+        $id = trim($id);
+        Log::info("updateData called for type: {$type}, ID: {$id}, Input: " . json_encode($request->all()));
+        try {
+            if (!isset($this->rules[$type])) {
+                Log::error("No validation rules defined for type: {$type}");
+                return response()->json(['success' => false, 'message' => "Invalid type: {$type}"], 400);
+            }
+
+            $validationRules = $this->rules[$type];
+            $primaryKey = ''; // Inisialisasi
+
+            switch ($type) {
+                case 'siswa':
+                    $primaryKey = 'nisn';
+                    // 'unique:table,column,except_id,id_column'
+                    $validationRules['nisn'] = 'required|numeric|min:5|unique:siswa,nisn,' . $id . ',' . $primaryKey;
+                    break;
+                case 'kelas':
+                    $primaryKey = 'id_kelas';
+                    $validationRules['id_kelas'] = 'required|string|max:10|unique:kelas,id_kelas,' . $id . ',' . $primaryKey;
+                    break;
+                case 'guru_mapel':
+                    $primaryKey = 'nip_guru_mapel';
+                    $validationRules['nip_guru_mapel'] = 'required|string|max:20|unique:guru_mapel,nip_guru_mapel,' . $id . ',' . $primaryKey;
+                    break;
+                case 'wali_kelas':
+                    $primaryKey = 'nip_wali_kelas';
+                    $validationRules['nip_wali_kelas'] = 'required|string|max:20|unique:wali_kelas,nip_wali_kelas,' . $id . ',' . $primaryKey;
+                    break;
+                case 'mapel':
+                    $primaryKey = 'id_mapel';
+                    $validationRules['id_mapel'] = 'required|string|max:10|unique:mapel,id_mapel,' . $id . ',' . $primaryKey;
+                    break;
+                default:
+                    Log::error("Unexpected type for update in switch: {$type}");
+                    return redirect()->back()->with('error', "Tipe data tidak valid untuk update: {$type}");
+            }
+
+            Log::info("DEBUG - Resolved Primary Key: {$primaryKey}");
+            Log::info("DEBUG - Value of Primary Key from Form (\$validatedData[\$primaryKey]): " . ($request->input($primaryKey) ?? 'N/A'));
+            Log::info("DEBUG - Value from URL (\$id): {$id}");
+
+            // Lakukan validasi dengan aturan yang sudah dimodifikasi
+            $validatedData = $request->validate($validationRules);
+
+            $table = $type;
+
+            // Password akan di-generate ulang dari primary key yang di-submit via form
+            if (in_array($type, ['siswa', 'guru_mapel', 'wali_kelas'])) {
+                // Gunakan nilai primary key dari $validatedData (mungkin nilai baru jika diubah)
+                // Jika primary key memang bagian dari input form yang di-validate
+                $validatedData['password'] = md5($validatedData[$primaryKey]);
+            }
+
+            // Lakukan update data
+            // Gunakan $primaryKey dan $id untuk menargetkan record yang benar
+            $updateResult = DB::table($table)->where($primaryKey, $id)->update($validatedData);
+
+            // update() method mengembalikan jumlah baris yang terpengaruh.
+            // Jika 0, bisa jadi tidak ada perubahan yang terdeteksi atau ID tidak ditemukan.
+            if ($updateResult === 0) {
+                Log::warning("No changes detected or update failed for type {$type} ID {$id}. Data: " . json_encode($validatedData));
+                return redirect()->back()->with('info', 'Tidak ada perubahan yang disimpan atau data sudah terbaru.');
+            }
+
+            Log::info("Data successfully updated for type: {$type}, ID: {$id}");
+            return redirect()->back()->with('success', 'Data berhasil diperbarui!');
+        } catch (ValidationException $e) {
+            Log::error("Validation error for update type {$type}: " . json_encode($e->errors()));
+            // Laravel akan otomatis mengisi errors ke session dan mengembalikan input
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error("Exception in updateData for type {$type}: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
     }
 }
