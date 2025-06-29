@@ -165,11 +165,13 @@
                             </div>
                         </div>
                     </div>
+                    @if(!$isGuest) {{-- Only show Ganti Password for logged-in users --}}
                     <div class="text-center mt-3">
                         <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
                             Ganti Password
                         </a>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
