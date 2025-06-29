@@ -44,6 +44,35 @@
 
     {{-- import navbar --}}
     <x-navbar />
+    {{-- ini buat session success atau gagal --}}
+    @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(session('success'))
+    <div class="alert alert-success" role="alert">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('error') || session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(function() {
+                    document.querySelectorAll('.alert').forEach(function(alert) {
+                        alert.style.transition = 'Opacity 0.5s ease';
+                        alert.style.opacity = '0';
+                        setTimeout(function() {
+                            alert.remove();
+                        }, 500);
+                    });
+                }, 10000);
+            });
+        </script>
+    @endif
+    {{-- end of alert session --}}
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
@@ -84,10 +113,22 @@
                                 class="btn btn-primary" 
                                 data-bs-toggle="modal" 
                                 data-bs-target="#UpdateNilaiModal"
-                                 data-id="{{ $item->id_kolom_utama ?? '' }}"
+                                data-id="
+                                    @if($type == 'siswa'){{ $item->nisn }}
+                                    @elseif($type == 'kelas'){{ $item->id_kelas }}
+                                    @elseif($type == 'guru_mapel'){{ $item->nip_guru_mapel }}
+                                    @elseif($type == 'wali_kelas'){{ $item->nip_wali_kelas }}
+                                    @elseif($type == 'mapel'){{ $item->id_mapel }}
+                                    @else{{ '' }}@endif
+                                "
+                                {{-- Loop untuk menambahkan semua data kolom sebagai data-* attributes --}}
                                 @foreach ($columns as $key => $label)
-                                    data-{{ $key }}="{{ $item->$key ?? '-' }}"
+                                    {{-- Menggunakan $item->$key langsung, pastikan nilainya ada --}}
+                                    data-{{ $key }}="{{ $item->$key ?? '' }}"
                                 @endforeach
+                                {{-- Tambahkan juga foreign key atau primary key yang mungkin tidak langsung di $columns untuk dropdown --}}
+                                @if (!in_array('id_kelas', array_keys($columns))) data-id_kelas="{{ $item->id_kelas ?? '' }}" @endif
+                                @if (!in_array('id_mapel', array_keys($columns))) data-id_mapel="{{ $item->id_mapel ?? '' }}" @endif
                                 >
                                     Perbarui 
                                 </button>
@@ -163,18 +204,19 @@
                     @csrf
                     @method('PUT') {{-- Gunakan method PUT atau PATCH untuk update --}}
 
-                    {{-- Input hidden untuk menyimpan ID item yang akan diupdate --}}
+                    {{-- Input hidden untuk menyimpan ID item yang akan diupdate. Nama 'item_id' akan dibaca oleh controller --}}
                     <input type="hidden" name="item_id" id="updateItemId">
 
                     @foreach ($columns as $key => $label)
                         <div class="mb-3">
                             <label for="update_{{ $key }}" class="form-label">{{ $label }}</label>
 
+                            {{-- Sesuaikan id untuk setiap input --}}
                             @if ($key == 'id_mapel')
                                 <select class="form-select @error($key) is-invalid @enderror"
                                     id="update_{{ $key }}" name="{{ $key }}" required>
                                     <option value="" selected disabled>Pilih {{ $label }}</option>
-                                    @foreach ($dropdowns['mapel'] as $mapelItem) {{-- Ubah $item menjadi $mapelItem untuk menghindari konflik --}}
+                                    @foreach ($dropdowns['mapel'] as $mapelItem)
                                         <option value="{{ $mapelItem->id_mapel }}">{{ $mapelItem->nama_mapel }}</option>
                                     @endforeach
                                 </select>
@@ -290,56 +332,82 @@
             </div>
         </div>
 
-        <script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Dapatkan referensi ke modal update
         const updateModal = document.getElementById('UpdateNilaiModal');
 
-        // Tambahkan event listener saat modal akan ditampilkan (Bootstrap event)
         updateModal.addEventListener('show.bs.modal', function (event) {
-            // Dapatkan tombol yang memicu modal
             const button = event.relatedTarget;
 
-            // Dapatkan ID dari data-id attribute tombol
+            // Ambil ID dari data-id attribute tombol (ini sudah diperbaiki di Blade)
             const itemId = button.getAttribute('data-id');
 
-            // Dapatkan referensi ke form dan input hidden ID di modal
             const updateForm = document.getElementById('updateForm');
             const updateItemIdInput = document.getElementById('updateItemId');
 
-            // Isi input hidden dengan ID item
             updateItemIdInput.value = itemId;
 
-            // Atur action URL untuk form update
-            // Sesuaikan dengan route Laravel Anda, contoh: /data/update/{type}/{id}
             const type = "{{ $type }}"; // Ambil $type dari Blade
-            updateForm.action = `/data/update/${type}/${itemId}`; // Sesuaikan dengan route update Anda
+            updateForm.action = `/dashboard/staff/data/update/${type}/${itemId}`; // Sesuai dengan route Anda
 
-            // Loop melalui semua kolom yang ada di `$columns` (dari PHP)
-            // Ini akan secara otomatis mencari dan mengisi input/select yang sesuai
-            const columns = @json($columns); // Ambil array $columns dari PHP ke JavaScript
-            for (const key in columns) {
-                if (columns.hasOwnProperty(key)) {
-                    const value = button.getAttribute('data-' + key); // Ambil nilai dari data-attribute
-                    const inputElement = document.getElementById('update_' + key);
+            // Ambil array $columns dari PHP (ini hanya untuk tahu kolom apa saja yang ada)
+            const columnsFromPhp = @json(array_keys($columns)); // Kita hanya perlu nama key (nama kolom)
 
-                    if (inputElement) {
-                        if (inputElement.tagName === 'SELECT') {
-                            // Untuk elemen <select>
-                            // Cari opsi yang cocok berdasarkan nilai dan set sebagai selected
-                            const options = inputElement.options;
-                            for (let i = 0; i < options.length; i++) {
-                                if (options[i].value == value) { // Gunakan '==' untuk perbandingan longgar
-                                    options[i].selected = true;
-                                    break;
-                                }
+            // Loop melalui semua kunci kolom yang ada di tampilan
+            columnsFromPhp.forEach(key => {
+                let actualInputKey = key; // Asumsi default: nama kolom di DB sama dengan nama input
+
+                // Khusus untuk kolom yang ditampilkan (hasil join) tapi inputnya adalah ID
+                if (key === 'nama_kelas') {
+                    actualInputKey = 'id_kelas';
+                } else if (key === 'nama_mapel') {
+                    actualInputKey = 'id_mapel';
+                }
+
+                // Ambil nilai dari data-attribute yang sesuai dengan actualInputKey (misal data-id_kelas)
+                // Jika data-attribute untuk key asli tidak ada, coba ambil dari actualInputKey
+                let value = button.getAttribute('data-' + actualInputKey);
+                // Fallback jika value masih null/undefined (misal data-nama_kelas tapi mau id_kelas)
+                if (value === null && key !== actualInputKey) {
+                    value = button.getAttribute('data-' + key); // Coba ambil dari data-nama_kelas jika ada
+                }
+
+
+                const inputElement = document.getElementById('update_' + actualInputKey);
+
+                if (inputElement) {
+                    if (inputElement.tagName === 'SELECT') {
+                        // Untuk elemen <select>
+                        let found = false;
+                        for (let i = 0; i < inputElement.options.length; i++) {
+                            // Perbandingan longgar untuk memastikan cocok
+                            if (inputElement.options[i].value == value) {
+                                inputElement.options[i].selected = true;
+                                found = true;
+                                break;
                             }
-                        } else {
-                            // Untuk elemen <input>
-                            inputElement.value = value;
                         }
+                        // Opsional: Jika tidak ada opsi yang cocok, atur kembali ke placeholder
+                        if (!found && value !== null && value !== '') {
+                            inputElement.value = ''; // Mengatur ke nilai default/placeholder jika tidak ada match
+                        }
+                    } else {
+                        // Untuk elemen <input>
+                        inputElement.value = value;
                     }
                 }
+            });
+
+            // Penanganan khusus untuk dropdown 'status' dan 'status_tahun_ajaran'
+            // Karena ini adalah select dengan opsi statis
+            const selectStatus = document.getElementById('update_status');
+            if (selectStatus && button.hasAttribute('data-status')) {
+                selectStatus.value = button.getAttribute('data-status');
+            }
+
+            const selectStatusTA = document.getElementById('update_status_tahun_ajaran');
+            if (selectStatusTA && button.hasAttribute('data-status_tahun_ajaran')) {
+                selectStatusTA.value = button.getAttribute('data-status_tahun_ajaran');
             }
         });
     });
