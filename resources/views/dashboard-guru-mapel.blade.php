@@ -57,11 +57,11 @@
                 </ul>
             </div>
 
-            <div class="row-md-auto mt-4 mb-4 d-flex">
+            <div class="row-md-auto mt-3 mb-3 d-flex text-center">
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="kelasFilter" class="form-label">Kelas</label>
-                    <select id="kelasFilter" class="form-select">
-                        <option value="">All Kelas</option>
+                    <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
+                    <select id="kelasFilter" class="form-select me-2">
+                        <option value="">Semua Kelas</option>
                         @foreach ($kelasList as $kelas)
                             <option value="{{ $kelas }}">{{ $kelas }}</option>
                         @endforeach
@@ -69,9 +69,9 @@
                 </div>
 
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="tahunFilter" class="form-label text-nowrap">Tahun Ajaran</label>
-                    <select id="tahunFilter" class="form-select ">
-                        <option value="">All Tahun Ajaran</option>
+                    <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">Semua Tahun Ajaran</option>
                         @foreach ($tahunPelajaranList as $tahun)
                             <option value="{{ $tahun }}">{{ $tahun }}</option>
                         @endforeach
@@ -99,8 +99,8 @@
 
             <div class="row-md-auto">
                 <!-- Table -->
-                <div id="tableContainer">
-                    <table class="table table-bordered" id="nilaiTable">
+                <div id="tableContainer" class="table-responsive">
+                    <table class="table table-bordered table-sm" id="nilaiTable">
                         <thead>
                             <tr>
                                 <th>No</th>

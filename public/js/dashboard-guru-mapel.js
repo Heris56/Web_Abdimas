@@ -120,7 +120,7 @@ $(document).ready(function () {
 
         // Update table with new values
         var tableHtml = `
-            <table class="table table-bordered" id="nilaiTable">
+            <table class="table table-bordered table-sm" id="nilaiTable">
                 <thead>
                     <tr>
                         <th>No</th>
