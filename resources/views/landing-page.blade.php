@@ -5,18 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SMK PGRI 35</title>
-    <!-- External buat background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
 
     <!-- Conect CSS bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
     {{-- global css --}}
-    {{-- @vite(['resources/css/app.css']) --}}
+    @vite(['resources/css/app.css'])
 
     <!-- global js -->
     {{-- @vite(['resources/js/app.js']) --}}
+
+    <!-- Conect Icons bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/landing-page.css') }}">
@@ -33,31 +34,61 @@
 </head>
 
 <body>
-    {{-- uncomment kalo misalnya pake global css --}}
-    {{-- <style>
-        html,
+    <style>
         body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
             padding: 0;
-            font-family: var(--font-body);
-            font-size: var(--font-size-base);
-            background-color: var(--background);
-            color: var(--background);
         }
-    </style> --}}
+    </style>
     <!-- Wrapper -->
     <div class="container1">
         <div class="background"></div>
 
-        <div class="main-content">
-            <div class="container">
-                {{-- <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri"> --}}
-                <a href="{{ route('cari') }}"><button>Cari Info Siswa</button></a>
-                <a href="{{ route('login-siswa') }}"><button>Masuk ke akun Siswa</button></a>
-                <a href="{{ route('login-walikelas') }}"><button>Masuk ke akun Wali Kelas</button></a>
-                <a href="{{ route('login-gurumapel') }}"><button>Masuk ke akun Guru</button></a>
+        <div class="main-content d-flex flex-column">
+            <div class="row-md-auto">
+                <span class="hero">SISTEM INFORMASI AKADEMIK</span>
+            </div>
+
+            <div class="row-md-auto">
+                <span class="hero">SMK PGRI 35</span>
+            </div>
+
+            <div class="mt-4 row-md-auto">
+                <div class="col container">
+                    {{-- <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri"> --}}
+                    <a href="{{ route('cari') }}" class="btn"><button>Cari Info Siswa</button></a>
+                    <a href="{{ route('login-siswa') }}" class="btn"><button>Masuk ke akun Siswa</button></a>
+                    <a href="{{ route('login-walikelas') }}" class="btn"><button>Masuk ke akun Wali
+                            Kelas</button></a>
+                    <a href="{{ route('login-gurumapel') }}" class="btn"><button>Masuk ke akun Guru</button></a>
+                </div>
+            </div>
+
+            <div class="row align-items-center justify-content-start mt-4 mb-2">
+                <div><span>Menemukan kesalahan? Hubungi kami!</span></div>
+            </div>
+
+            <div class="row align-items-center justify-content-start mb-2">
+                <div class="col-auto"><i class="bi bi-facebook"></i></div>
+                <div class="col-auto">:</div>
+                <div class="col text-start">0981284762387</div>
+            </div>
+
+            <div class="row align-items-center justify-content-start mb-2">
+                <div class="col-auto"><i class="bi bi-whatsapp"></i></div>
+                <div class="col-auto">:</div>
+                <div class="col text-start">0981284762387</div>
+            </div>
+
+            <div class="row align-items-center justify-content-start mb-2">
+                <div class="col-auto"><i class="bi bi-telegram"></i></div>
+                <div class="col-auto">:</div>
+                <div class="col text-start">0981284762387</div>
+            </div>
+
+            <div class="row align-items-center justify-content-start mb-2">
+                <div class="col-auto"><i class="bi bi-instagram"></i></div>
+                <div class="col-auto">:</div>
+                <div class="col text-start">0981284762387</div>
             </div>
         </div>
     </div>
