@@ -53,8 +53,6 @@ class login_controller extends Controller
         $password = $request->input('inputPassword');
 
         $user = DB::table('siswa')->where('nisn', $username)->first();
-        session(['username' => $user->nama_siswa]);
-
 
         if ($user) {
             return $this->checkhashmd5('info.presensi', 'login-siswa', $password, $user);
@@ -76,8 +74,6 @@ class login_controller extends Controller
 
         $user = DB::table('wali_kelas')->where('nip_wali_kelas', $username)->first();
 
-        session(['username' => $user->nama]);
-
         if ($user) {
             return $this->checkhashmd5('dashboard-wali-kelas', 'login-walikelas', $password, $user);
         } else {
@@ -97,9 +93,6 @@ class login_controller extends Controller
         $password = $request->input('inputPassword');
 
         $user = DB::table('guru_mapel')->where('nip_guru_mapel', $username)->first();
-
-        // simpan nama user ke session untuk navbar
-        session(['username' => $user->nama_guru]);
 
         if ($user) {
             return $this->checkhashmd5('nilai.fetch', 'login-gurumapel', $password, $user);
@@ -153,18 +146,22 @@ class login_controller extends Controller
             if (property_exists($user, 'nisn') && $user->nisn) {
                 $id = $user->nisn;
                 $role = "siswa";
+                $username = $user->nama_siswa;
             } elseif (property_exists($user, 'nip_wali_kelas') && $user->nip_wali_kelas) {
                 $id = $user->nip_wali_kelas;
                 $role = "waliKelas";
+                $username = $user->nama;
             } elseif (property_exists($user, 'nip_guru_mapel') && $user->nip_guru_mapel) {
                 $id = $user->nip_guru_mapel;
                 $role = "guruMapel";
+                $username = $user->nama_guru;
             } else {
                 return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
             }
             session([
-                'userID' => $id,
-                'userRole' => $role,
+                'userID' => $id, // id user
+                'userRole' => $role, // untuk role user
+                'username' => $username // simpan nama user ke session untuk navbar
             ]);
 
             return redirect()
