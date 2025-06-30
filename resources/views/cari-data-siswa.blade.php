@@ -21,19 +21,22 @@
 </head>
 
 <body>
-    <nav class="navbar container-fluid fixed-top">
-        <a class="logo" href="{{ route('landing') }}">
-            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
-                class="logo-img d-inline-block" />
-            SMK PGRI 35
-        </a>
+    <x-navbar />
 
-        <div class="navbar-button ms-auto">
-            <a href="{{ route('login-siswa') }}">
-                Login
-            </a>
-        </div>
-    </nav>
+    {{-- timpa padding/margin --}}
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            font-size: var(--font-size-base);
+            background-color: var(--background);
+            color: var(--background);
+        }
+    </style>
 
     <div class="background container1">
         <div class="form-box container">
