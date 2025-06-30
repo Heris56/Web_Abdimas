@@ -20,32 +20,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-
-
 </head>
 
 <body>
-    <nav class="navbar container-fluid fixed-top">
-        <a class="logo" href="{{ route('landing') }}">
-            <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo" width="64" height="64"
-                class="logo-img d-inline-block" />
-            SMK PGRI 35
-        </a>
-
-        <div class="navbar-button ms-auto">
-            @if($isGuest)
-                <a href="{{ route('login-siswa') }}">
-                    Masuk
-                </a>
-            @else
-            <form action="{{ route('logout') }}", method="post">
-                @csrf
-                <button class="btn btn-danger" type="submit">Keluar</button>
-            </form>
-               
-            @endif
-        </div>
-    </nav>
+    <x-navbar />
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs">
