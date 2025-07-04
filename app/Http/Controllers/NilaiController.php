@@ -128,97 +128,52 @@ class NilaiController extends Controller
     {
         try {
             $nip = session('userID');
-
             Log::info('inputNilai called', [
                 'nip' => $nip,
-                'nisn' => $request->input('nisn'),
-                'kegiatan' => $request->input('kegiatan'),
-                'nilai' => $request->input('nilai'),
-                'mapel' => $request->input('mapel'),
-                'tahun_pelajaran' => $request->input('tahun_pelajaran'),
-                'id_kelas' => $request->input('id_kelas')
+                'request' => $request->only(['nisn', 'kegiatan', 'nilai', 'mapel', 'tahun_pelajaran', 'id_kelas']),
             ]);
 
             // Validate input
             $validated = $request->validate([
                 'nisn' => 'required|exists:siswa,nisn',
                 'kegiatan' => 'required|string',
-                'nilai' => 'required|numeric|min:0|max:100',
+                'nilai' => 'required|array',
+                'nilai.*' => 'nullable|numeric|min:0|max:100', // Allow array of grades
                 'mapel' => 'required|exists:mapel,nama_mapel',
                 'tahun_pelajaran' => 'required|string',
-                'id_kelas' => 'nullable|string|exists:siswa,id_kelas'
+                'id_kelas' => 'nullable|string|exists:siswa,id_kelas',
             ]);
 
             // Get id_mapel from mapel name
-            $id_mapel = DB::table('mapel')
-                ->where('nama_mapel', $validated['mapel'])
-                ->value('id_mapel');
-
+            $id_mapel = $this->getMapelId($validated['mapel']);
             if (!$id_mapel) {
                 Log::error('Mapel not found', ['mapel' => $validated['mapel']]);
                 return response()->json(['message' => 'Mapel tidak ditemukan'], 404);
             }
 
             // Verify teacher has access to this mapel
-            $guru_mapel = DB::table('guru_mapel')
-                ->where('nip_guru_mapel', $nip)
-                ->where('id_mapel', $id_mapel)
-                ->exists();
-
-            if (!$guru_mapel) {
-                Log::error('Unauthorized access to mapel', ['nip' => $nip, 'id_mapel', 'id_kelas' => 'id_kelas']);
+            if (!$this->verifikasiGuruMapel($nip, $id_mapel)) {
+                Log::error('Unauthorized access to mapel', ['nip' => $nip, 'id_mapel' => $id_mapel]);
                 return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
             }
 
-            // Insert new grades for each kegiatan
+            // Update or insert grades
             DB::beginTransaction();
-            foreach ($request->nilai as $kegiatan => $nilai) {
-                if (!is_null($nilai)) {
-                    // Check if grade already exists
-                    $exists = DB::table('nilai')
-                        ->where('nisn', $validated['nisn'])
-                        ->where('id_mapel', $validated['id_mapel'])
-                        ->where('tahun_pelajaran', $validated['tahun_pelajaran'])
-                        ->where('nip_guru_mapel', $nip)
-                        ->where('kegiatan', $kegiatan)
-                        ->exists();
-
-                    if ($exists) {
-                        Log::warning('Grade already exists', [
-                            'nisn' => $validated['nisn'],
-                            'id_mapel' => $validated['id_mapel'],
-                            'tahun_pelajaran' => $validated['tahun_pelajaran'],
-                            'kegiatan' => $kegiatan,
-                        ]);
-                        continue; // Skip if record exists (input only, no update)
-                    }
-
-                    // Insert new grade
-                    DB::table('nilai')->insert([
-                        'nisn' => $validated['nisn'],
-                        'id_mapel' => $validated['id_mapel'],
-                        'nip_guru_mapel' => $nip,
-                        'tahun_pelajaran' => $validated['tahun_pelajaran'],
-                        'kegiatan' => $kegiatan,
-                        'nilai' => $nilai,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
+            $this->cekNilai($validated, $nip, $id_mapel);
             DB::commit();
 
-            Log::info('Grades inserted successfully', [
+            Log::info('Grades upserted successfully', [
                 'nisn' => $validated['nisn'],
-                'id_mapel' => $validated['id_mapel'],
+                'id_mapel' => $id_mapel,
                 'tahun_pelajaran' => $validated['tahun_pelajaran'],
             ]);
 
-            return response()->json(['message' => 'Nilai berhasil disimpan']);
+            return response()->json(['message' => 'Nilai berhasil disimpan'], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation error in inputNilai', ['errors' => $e->errors()]);
             return response()->json(['message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error in inputNilai', ['message' => $e->getMessage()]);
             return response()->json(['message' => 'Terjadi kesalahan saat menyimpan nilai'], 500);
         }
@@ -272,6 +227,49 @@ class NilaiController extends Controller
                 'message' => 'An error occurred',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function getMapelId(string $mapelName): string
+    {
+        return DB::table('mapel')
+            ->where('nama_mapel', $mapelName)
+            ->value('id_mapel');
+    }
+
+    public function verifikasiGuruMapel(string $nip, int $id_mapel): bool
+    {
+        return DB::table('guru_mapel')
+            ->where('nip_guru_mapel', $nip)
+            ->where('id_mapel', $id_mapel)
+            ->exists();
+    }
+
+    public function cekNilai(array $validated, string $nip, int $id_mapel): void
+    {
+        foreach ($validated['nilai'] as $kegiatan => $nilai) {
+            if (!is_null($nilai)) {
+                DB::table('nilai')->updateOrInsert(
+                    [
+                        'nisn' => $validated['nisn'],
+                        'id_mapel' => $id_mapel,
+                        'nip_guru_mapel' => $nip,
+                        'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                        'kegiatan' => $kegiatan,
+                    ],
+                    [
+                        'nilai' => $nilai,
+                    ]
+                );
+
+                Log::info('Grade upserted', [
+                    'nisn' => $validated['nisn'],
+                    'id_mapel' => $id_mapel,
+                    'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                    'kegiatan' => $kegiatan,
+                    'nilai' => $nilai,
+                ]);
+            }
         }
     }
 }
