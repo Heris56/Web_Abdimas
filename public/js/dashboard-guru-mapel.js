@@ -151,14 +151,16 @@ $(document).ready(function () {
                             <td>${row.semester === 'Ganjil' ? row.tahun_pelajaran + '-1' : row.semester === 'Genap' ? row.tahun_pelajaran + '-2' : row.tahun_pelajaran}</td>
                             ${data.kegiatanList
                                 .map((kegiatan) => {
-                                    var alias = kegiatan
-                                        .replace(/\s+/g, "_")
-                                        .toLowerCase();
-                                    return `<td class="editable" data-nisn="${
-                                        row.nisn
-                                    }" data-field="${kegiatan}">${
-                                        row[alias] ?? "-"
-                                    }</td>`;
+                                    var alias = kegiatan.replace(/\s+/g, "_").toLowerCase();
+                                    return `<td class="editable"
+                                                data-nisn="${row.nisn}"
+                                                data-field="${kegiatan}"
+                                                data-tahun_pelajaran="${row.tahun_pelajaran}"
+                                                data-semester="${row.semester}"
+                                                data-id_mapel="${row.id_mapel ?? ''}"
+                                                data-nip="${row.nip_guru_mapel ?? ''}">
+                                                ${row[alias] ?? "-"}
+                                            </td>`;
                                 })
                                 .join("")}
                         </tr>
@@ -173,13 +175,18 @@ $(document).ready(function () {
         attachEditableListeners();
     }
 
-    // Make cells editable
     function attachEditableListeners() {
         $(".editable").on("click", function () {
             var $cell = $(this);
             var nisn = $cell.data("nisn");
             var field = $cell.data("field");
+            var tahun_pelajaran = $cell.data("tahun_pelajaran") || '';
+            var semester = $cell.data("semester") || '';
+            var id_mapel = $cell.data("id_mapel") || '';
+            var nip = $cell.data("nip") || '';
             var currentValue = $cell.text() === "-" ? "" : $cell.text();
+
+            console.log("All cell data:", $cell.data());
 
             $cell.html(
                 `<input type="text" value="${currentValue}" class="form-control form-control-sm">`
@@ -189,24 +196,35 @@ $(document).ready(function () {
 
             $input.on("blur keypress", function (e) {
                 if (e.type === "blur" || e.which === 13) {
-                    saveValue($cell, $input, nisn, field);
+                    saveValue($cell, $input, nisn, field, tahun_pelajaran, semester, id_mapel, nip);
                 }
             });
         });
     }
 
-    function saveValue($cell, $input, nisn, field) {
+    function saveValue($cell, $input, nisn, field, tahun_pelajaran, semester, id_mapel, nip_guru_mapel) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
         $input.remove();
 
+        // Log inputs for debugging
         console.log("saveValue inputs:", {
             nisn: nisn,
             field: field,
             value: newValue,
+            tahun_pelajaran: tahun_pelajaran,
+            semester: semester,
+            id_mapel: id_mapel,
+            nip_guru_mapel: nip_guru_mapel,
             nisn_type: typeof nisn,
             field_type: typeof field,
         });
+
+        // Validate required fields
+        if (!tahun_pelajaran || !semester || !id_mapel || !nip_guru_mapel) {
+            showToast("Data tidak lengkap (tahun_pelajaran, semester, id_mapel, atau nip kosong)!", "text-bg-danger");
+            return;
+        }
 
         showToast("Sedang menyimpan...", "text-bg-primary");
 
@@ -217,7 +235,11 @@ $(document).ready(function () {
                 nisn: nisn,
                 field: field,
                 value: newValue === "-" ? null : newValue,
-                semester: $("#semesterFilter").val() || ""
+                semester: $("#semesterFilter").val() || "",
+                tahun_pelajaran: tahun_pelajaran,
+                semester: semester,
+                id_mapel: id_mapel,
+                nip_guru_mapel: nip_guru_mapel
             },
             success: function (response) {
                 console.log("AJAX success:", response);
@@ -230,6 +252,17 @@ $(document).ready(function () {
                     status,
                     error,
                     responseText: xhr.responseText,
+                });
+                console.log("Data Used:", {
+                    nisn: nisn,
+                    field: field,
+                    value: newValue,
+                    tahun_pelajaran: tahun_pelajaran,
+                    semester: semester,
+                    id_mapel: id_mapel,
+                    nip_guru_mapel: nip_guru_mapel,
+                    nisn_type: typeof nisn,
+                    field_type: typeof field,
                 });
                 let message = xhr.responseJSON?.message || "Gagal Update Data!";
                 showToast(message, "text-bg-danger");

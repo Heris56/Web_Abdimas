@@ -72,8 +72,10 @@ class NilaiController extends Controller
                 'siswa.id_kelas',
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
+                'mapel.id_mapel',
                 'nilai.tahun_pelajaran',
                 'nilai.semester',
+                'guru_mapel.nip_guru_mapel',
                 'guru_mapel.nama_guru'
             );
 
@@ -111,8 +113,10 @@ class NilaiController extends Controller
                 'siswa.id_kelas',
                 'siswa.nama_siswa',
                 'mapel.nama_mapel',
+                'mapel.id_mapel',
                 'nilai.tahun_pelajaran',
                 'nilai.semester',
+                'guru_mapel.nip_guru_mapel',
                 'guru_mapel.nama_guru'
             )
             ->get();
@@ -242,24 +246,46 @@ class NilaiController extends Controller
         $nisn = trim((string) $request->input('nisn')); // pastikan keluaran string
         $field = trim($request->input('field'));
         $value = $request->input('value');
+        $tahun_pelajaran = $request->input('tahun_pelajaran');
+        $semester = $request->input('semester');
+        $id_mapel = $request->input('id_mapel');
+        $nip_guru_mapel = $request->input('nip_guru_mapel');
 
         Log::info('updateNilai inputs', [
             'nisn' => $nisn,
             'field' => $field,
             'value' => $value,
+            'tahun_pelajaran' => $tahun_pelajaran,
+            'semester' => $semester,
+            'id_mapel' => $id_mapel,
+            'nip' => $nip_guru_mapel,
             'nisn_type' => gettype($nisn),
             'nisn_length' => strlen($nisn),
             'field_type' => gettype($field)
         ]);
 
         try {
+            $request->validate([
+                'nisn' => 'required|string',
+                'field' => 'required|string',
+                'value' => 'nullable|string',
+                'tahun_pelajaran' => 'required|string',
+                'semester' => 'required|in:Ganjil,Genap',
+                'id_mapel' => 'required|string',
+                'nip_guru_mapel' => 'required|string',
+            ]);
+
             $record = DB::table('nilai')
                 ->where('nisn', $nisn)
+                ->where('tahun_pelajaran', $tahun_pelajaran)
+                ->where('semester', $semester)
+                ->where('id_mapel', $id_mapel)
+                ->where('nip_guru_mapel', $nip_guru_mapel)
                 ->first();
 
             Log::info('Record query result', [
                 'record' => $record,
-                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn'"
+                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND tahun_pelajaran = '$tahun_pelajaran' AND semester = '$semester' AND id_mapel = '$id_mapel' AND nip = '$nip_guru_mapel'"
             ]);
 
             if ($record) {
@@ -282,12 +308,14 @@ class NilaiController extends Controller
 
                 DB::table('nilai')
                     ->insert([
-                        'nisn' => $nisn,
-                        'nama_siswa' => $siswa->nama_siswa,
-                        'id_kelas' => $siswa->id_kelas,
-                        'kegiatan' => $field,
                         'nilai' => $value,
                         'tanggal' => now(),
+                        'tahun_pelajaran' => $tahun_pelajaran,
+                        'semester' => $semester,
+                        'nisn' => $nisn,
+                        'nip_guru_mapel' => $nip_guru_mapel,
+                        'id_mapel' => $id_mapel,
+                        'kegiatan' => $field,
                     ]);
                 return response()->json(['success' => true, 'message' => 'Berhasil insert nilai!']);
             }
