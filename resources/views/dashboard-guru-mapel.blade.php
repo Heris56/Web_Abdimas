@@ -78,6 +78,17 @@
                     </select>
                 </div>
 
+                <!-- Semester Filter -->
+                <div class="col-md-auto d-flex align-items-center">
+                    <label for="semesterFilter" class="form-label">Semester</label>
+                    <select id="semesterFilter" class="form-select">
+                        <option value="">Semua Semester</option>
+                        @foreach ($semesterList as $semester)
+                            <option value="{{ $semester }}">{{ $semester }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
                         <a class="btn button-primary" href="#" data-bs-toggle="modal"
@@ -134,7 +145,13 @@
                                             $alias = str_replace(' ', '_', strtolower($kegiatan));
                                         @endphp
                                         <td class="editable" data-nisn="{{ $row->nisn }}"
-                                            data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
+                                            data-field="{{ $kegiatan }}"
+                                            data-tahun_pelajaran="{{ $row->tahun_pelajaran }}"
+                                            data-semester="{{ $row->semester }}"
+                                            data-id_mapel="{{ $row->id_mapel ?? '' }}"
+                                            data-nip="{{ $row->nip_guru_mapel ?? '' }}">
+                                            {{ $row->$alias ?? '-' }}
+                                        </td>
                                     @endforeach
                                 </tr>
                             @endforeach
