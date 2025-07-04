@@ -118,7 +118,6 @@ $(document).ready(function () {
         var $tableContainer = $("#tableContainer");
         $tableContainer.empty();
 
-        // Update table with new values
         var tableHtml = `
             <table class="table table-bordered table-sm" id="nilaiTable">
                 <thead>
@@ -142,15 +141,24 @@ $(document).ready(function () {
                             <td>${row.nisn}</td>
                             <td>${row.nama_siswa}</td>
                             <td>${row.id_kelas}</td>
-                            <td>${row.tahun_pelajaran}</td>
+                            <td>${
+                                row.semester === "Ganjil"
+                                    ? `${row.tahun_pelajaran}-1`
+                                    : row.semester === "Genap"
+                                    ? `${row.tahun_pelajaran}-2`
+                                    : row.tahun_pelajaran
+                            }</td>
                             ${data.kegiatanList
                                 .map((kegiatan) => {
                                     var alias = kegiatan
                                         .replace(/\s+/g, "_")
                                         .toLowerCase();
-                                    return `<td class="editable" data-nisn="${
-                                        row.nisn
-                                    }" data-field="${kegiatan}">${
+                                    return `<td class="editable"
+                                            data-nisn="${row.nisn}"
+                                            data-field="${kegiatan}"
+                                            data-semester="${row.semester}"
+                                            data-tahun_pelajaran="${row.tahun_pelajaran}"
+                                            data-mapel="${row.nama_mapel}">${
                                         row[alias] ?? "-"
                                     }</td>`;
                                 })
@@ -167,13 +175,22 @@ $(document).ready(function () {
         attachEditableListeners();
     }
 
-    // Make cells editable
+    // Fungsi untuk membuat cell bisa diubah secara langsung
     function attachEditableListeners() {
         $(".editable").on("click", function () {
             var $cell = $(this);
             var nisn = $cell.data("nisn");
-            var field = $cell.data("field");
+            var kegiatan = $cell.data("field");
+            var semester = $cell.data("semester");
+            var tahun_pelajaran = $cell.data("tahun_pelajaran");
+            var mapel = $cell.data("mapel");
             var currentValue = $cell.text() === "-" ? "" : $cell.text();
+
+            // validation
+            if (!nisn || !kegiatan || !semester || !tahun_pelajaran || !mapel) {
+                showToast("Data tidak lengkap!", "text-bg-danger");
+                return;
+            }
 
             $cell.html(
                 `<input type="text" value="${currentValue}" class="form-control form-control-sm">`
@@ -183,24 +200,25 @@ $(document).ready(function () {
 
             $input.on("blur keypress", function (e) {
                 if (e.type === "blur" || e.which === 13) {
-                    saveValue($cell, $input, nisn, field);
+                    saveValue($cell, $input, nisn, kegiatan, semester, tahun_pelajaran, mapel);
                 }
             });
         });
     }
 
     // Save updated value
-    function saveValue($cell, $input, nisn, field) {
+    function saveValue($cell, $input, nisn, kegiatan, semester, tahun_pelajaran, mapel) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
         $input.remove();
 
-        console.log("saveValue inputs:", {
+        cconsole.log("saveValue inputs:", {
             nisn: nisn,
-            field: field,
+            kegiatan: kegiatan,
             value: newValue,
-            nisn_type: typeof nisn,
-            field_type: typeof field,
+            semester: semester,
+            tahun_pelajaran: tahun_pelajaran,
+            mapel: mapel,
         });
 
         showToast("Sedang menyimpan...", "text-bg-primary");
@@ -210,8 +228,12 @@ $(document).ready(function () {
             type: "POST",
             data: {
                 nisn: nisn,
-                field: field,
-                value: newValue === "-" ? null : newValue,
+                kegiatan: kegiatan,
+                nilai: { [kegiatan]: newValue === "-" ? null : newValue }, // Send as array
+                mapel: mapel,
+                tahun_pelajaran: tahun_pelajaran,
+                semester: semester,
+                tanggal: new Date().toISOString().split("T")[0], // buang semua setelah "T" pada format date
             },
             success: function (response) {
                 console.log("AJAX success:", response);
