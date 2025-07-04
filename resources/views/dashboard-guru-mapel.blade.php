@@ -78,6 +78,15 @@
                     </select>
                 </div>
 
+                <div class="col-md-auto d-flex align-items-center">
+                    <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Semester</label>
+                    <select id="tahunFilter" class="form-select">
+                        <option value="">Semua Semester</option>
+                        <option value="Ganjil">Ganjil</option>
+                        <option value="Genap">Genap</option>
+                    </select>
+                </div>
+
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
                         <a class="btn button-primary" href="#" data-bs-toggle="modal"
