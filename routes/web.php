@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use App\Http\Middleware\RestrictAdminIP;
 use Illuminate\Http\Request;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
 use App\Http\Controllers\DataController;
@@ -71,12 +72,15 @@ Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_k
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 
-// staff
-Route::view('/login/staff', 'login-page-staff')->name('login-staff');
-// Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
-Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
-Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
-Route::put('/dashboard/staff/data/update/{type}/{id}', [DataController::class, 'updateData'])->name('data.update');
+Route::middleware([RestrictAdminIP::class])->group(function () {
+    // staff
+    Route::view('/login/staff', 'login-page-staff')->name('login-staff');
+    // Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
+    Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
+    Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
+    Route::put('/dashboard/staff/data/update/{type}/{id}', [DataController::class, 'updateData'])->name('data.update');
+});
+
 // ini buat test <<<<<<<<<<---------->>>>>>>>>>
 Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
 Route::get('/test/cookies', [login_controller::class, 'loginOrRedirect']);
