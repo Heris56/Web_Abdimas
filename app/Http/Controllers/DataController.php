@@ -22,6 +22,7 @@ class DataController extends Controller
         'kelas' => [
             'id_kelas' => 'required|unique:kelas,id_kelas',
             'jurusan' => 'required|string|max:32',
+            'alias' => 'required|string|max:10',
         ],
         'guru_mapel' => [
             'nip_guru_mapel' => 'required|unique:guru_mapel,nip_guru_mapel',
@@ -41,6 +42,9 @@ class DataController extends Controller
         'mapel' => [
             'id_mapel' => 'required|unique:mapel,id_mapel',
             'nama_mapel' => 'required|string|max:255',
+        ],
+        'tahun_ajaran'=> [
+            'tahun'=> 'required|string|max:10',
         ],
     ];
 
@@ -79,7 +83,8 @@ class DataController extends Controller
                 $data = DB::table('kelas')->get();
                 $columns = [
                     'id_kelas' => 'Kelas',
-                    'jurusan' => 'Jurusan'
+                    'jurusan' => 'Jurusan',
+                    'alias' => 'Alias',
                 ];
                 break;
             case 'guru_mapel':
@@ -109,6 +114,12 @@ class DataController extends Controller
                 $columns = [
                     'id_mapel' => 'ID Mapel',
                     'nama_mapel' => 'Nama Mapel'
+                ];
+                break;
+            case 'tahun_ajaran':
+                $data = DB::table('tahun_ajaran')->get();
+                $columns = [
+                    'tahun' => 'Tahun Ajaran'
                 ];
                 break;
             default:
@@ -178,6 +189,10 @@ class DataController extends Controller
                     $result = DB::table('mapel')->insert($validated);
                     Log::info("Mapel insert result: " . ($result ? 'Success' : 'Failed'));
                     break;
+                case 'tahun_ajaran':
+                    $result = DB::table('tahun_ajaran')->insert($validated);
+                    Log::info("Tahun ajaran insert result: " . ($result ? 'Success' : 'Failed'));
+                    break;
                 default:
                     Log::error("Unexpected type in switch: {$type}");
                     return response()->json(['success' => false, 'message' => "Invalid type: {$type}"], 400);
@@ -240,6 +255,9 @@ class DataController extends Controller
                     $primaryKey = 'id_mapel';
                     $validationRules['id_mapel'] = 'required|string|max:10|unique:mapel,id_mapel,' . $id . ',' . $primaryKey;
                     break;
+                case 'tahun_ajaran':
+                    $primaryKey = 'id_mapel';
+                    $validationRules['id_mapel'] = 'required|string|max:10|unique:tahun_ajaran,id_tahun_ajaran,' . $id . ',' . $primaryKey;
                 default:
                     Log::error("Unexpected type for update in switch: {$type}");
                     return redirect()->back()->with('error', "Tipe data tidak valid untuk update: {$type}");

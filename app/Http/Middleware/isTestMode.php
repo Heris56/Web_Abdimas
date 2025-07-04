@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RestrictAdminIP
+class isTestMode
 {
     /**
      * Handle an incoming request.
@@ -15,13 +15,8 @@ class RestrictAdminIP
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $allowedIP = [
-            '180.245.142.27',
-            '127.0.0.1'
-
-        ];
-        if (!in_array($request->ip(), $allowedIP)) {
-            return abort(403, 'Akses admin hanya diizinkan dari IP tertentu.');
+        if(env('APP_DEBUG') == false){
+            return abort(403, 'Tidak dalam mode test');
         }
 
         return $next($request);
