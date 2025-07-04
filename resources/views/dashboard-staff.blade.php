@@ -182,6 +182,13 @@
                         <i class="bi bi-bar-chart-line me-2"></i> Kelas
                     </a>
                 </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'tahun_ajaran') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'tahun_ajaran' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'tahun_ajaran' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-bar-chart-line me-2"></i> Tahun Ajaran
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link text-danger">
                         <i class="bi bi-box-arrow-right me-2"></i> Logout

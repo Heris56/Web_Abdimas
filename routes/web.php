@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use App\Http\Middleware\isTestMode;
 use App\Http\Middleware\RestrictAdminIP;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use App\Http\Controllers\dashboard_wali_kelas_controller;
 use App\Http\Controllers\DataController;
@@ -82,27 +84,34 @@ Route::middleware([RestrictAdminIP::class])->group(function () {
 });
 
 // ini buat test <<<<<<<<<<---------->>>>>>>>>>
-Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
-Route::get('/test/cookies', [login_controller::class, 'loginOrRedirect']);
-Route::get('/test-db', function () {
-    $data = DB::table('guru_mapel')->get();
-    return $data;
+Route::middleware([isTestMode::class])->group(function () {
+    Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
+    Route::get('/test/cookies', [login_controller::class, 'loginOrRedirect']);
+    Route::get('/test-db', function () {
+        $data = DB::table('guru_mapel')->get();
+        return $data;
+    });
+
+    Route::get('/test/clear-cookies', function () {
+        Cookie::queue(Cookie::forget('userID'));
+        Cookie::queue(Cookie::forget('userRole'));
+        session()->forget(['userID', 'userRole']);
+        return "Cookies cleared.";
+    });
+
+    Route::get("/test/getTahun", function () {
+        $data = TahunAjaran::all();
+        return response()->json($data);
+    });
+
+    Route::get('/testcookies', function (Request $request) {
+        return dd([
+            'userID' => $request->cookie('userID'),
+            'userRole' => $request->cookie('userRole'),
+            'allCookies' => $request->cookies->all()
+        ]);
+    });
 });
 
-
-Route::get('/test/clear-cookies', function () {
-    Cookie::queue(Cookie::forget('userID'));
-    Cookie::queue(Cookie::forget('userRole'));
-    session()->forget(['userID', 'userRole']);
-    return "Cookies cleared.";
-});
-
-Route::get('/testcookies', function (Request $request) {
-    return dd([
-        'userID' => $request->cookie('userID'),
-        'userRole' => $request->cookie('userRole'),
-        'allCookies' => $request->cookies->all()
-    ]);
-});
 
 // Route::get('/info-presensi-siswa', [controllerSiswa::class, 'showPresensi'])->name('info.presensi')->middleware(CheckLoginCookie::class);
