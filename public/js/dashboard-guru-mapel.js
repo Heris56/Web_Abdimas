@@ -142,15 +142,13 @@ $(document).ready(function () {
                             <td>${row.nisn}</td>
                             <td>${row.nama_siswa}</td>
                             <td>${row.id_kelas}</td>
-                            <td>
-                                @if ($row->semester === 'Ganjil')
-                                    {{ $row->tahun_pelajaran }}-1
-                                @elseif ($row->semester === 'Genap')
-                                    {{ $row->tahun_pelajaran }}-2
-                                @else
-                                    {{ $row->tahun_pelajaran }}
-                                @endif
-                            </td>
+                            <td>${
+                                row.semester === "Ganjil"
+                                    ? `${row.tahun_pelajaran}-1`
+                                    : row.semester === "Genap"
+                                    ? `${row.tahun_pelajaran}-2`
+                                    : row.tahun_pelajaran
+                            }</td>
                             <td>${row.tahun_pelajaran}</td>
                             ${data.kegiatanList
                                 .map((kegiatan) => {
