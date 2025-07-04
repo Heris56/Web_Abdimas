@@ -12,7 +12,7 @@ class DataController extends Controller
 
     public $rules = [
         'siswa' => [
-            'nisn' => 'required|unique:siswa,nisn',
+            'nisn' => 'required|string|max:20|unique:siswa,nisn',
             'nama_siswa' => 'required|string|max:255',
             'id_kelas' => 'required|exists:kelas,id_kelas',
             'status' => 'required|in:aktif,nonaktif',
@@ -44,7 +44,8 @@ class DataController extends Controller
             'nama_mapel' => 'required|string|max:255',
         ],
         'tahun_ajaran'=> [
-            'tahun'=> 'required|string|max:10',
+            'tahun'=> 'required|string|max:10|unique:tahun_ajaran,tahun',
+            'is_current'=> 'required|boolean',
         ],
     ];
 
@@ -119,7 +120,8 @@ class DataController extends Controller
             case 'tahun_ajaran':
                 $data = DB::table('tahun_ajaran')->get();
                 $columns = [
-                    'tahun' => 'Tahun Ajaran'
+                    'tahun' => 'Tahun Ajaran',
+                    'is_current' => 'Tahun berjalan'
                 ];
                 break;
             default:
@@ -236,8 +238,7 @@ class DataController extends Controller
             switch ($type) {
                 case 'siswa':
                     $primaryKey = 'nisn';
-                    // 'unique:table,column,except_id,id_column'
-                    $validationRules['nisn'] = 'required|numeric|min:5|unique:siswa,nisn,' . $id . ',' . $primaryKey;
+                    $validationRules['nisn'] = 'required|string|max:20|unique:siswa,nisn,' . $id . ',' . $primaryKey;
                     break;
                 case 'kelas':
                     $primaryKey = 'id_kelas';
@@ -256,8 +257,8 @@ class DataController extends Controller
                     $validationRules['id_mapel'] = 'required|string|max:10|unique:mapel,id_mapel,' . $id . ',' . $primaryKey;
                     break;
                 case 'tahun_ajaran':
-                    $primaryKey = 'id_mapel';
-                    $validationRules['id_mapel'] = 'required|string|max:10|unique:tahun_ajaran,id_tahun_ajaran,' . $id . ',' . $primaryKey;
+                    $primaryKey = 'id_tahun_ajaran';
+                    $validationRules['id_tahun_ajaran'] = 'required|string|max:10|unique:tahun_ajaran,tahun,' . $id . ',' . $primaryKey;
                 default:
                     Log::error("Unexpected type for update in switch: {$type}");
                     return redirect()->back()->with('error', "Tipe data tidak valid untuk update: {$type}");
