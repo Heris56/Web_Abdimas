@@ -106,7 +106,14 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             @foreach ($columns as $key => $label)
-                                <td>{{ $item->$key ?? '-' }}</td>
+                                <td>
+                                    @if ($key == 'is_current')
+                                        {{ $item->$key ? 'True' : 'False' }}
+                                    @else
+                                    {{ $item->$key ?? '-' }}
+                                    @endif
+                                    
+                                </td>
                             @endforeach
                             <td class="text-center">
                                 <button class="btn btn-primary" data-bs-toggle="modal"
@@ -117,6 +124,7 @@
                                     @elseif($type == 'guru_mapel'){{ $item->nip_guru_mapel }}
                                     @elseif($type == 'wali_kelas'){{ $item->nip_wali_kelas }}
                                     @elseif($type == 'mapel'){{ $item->id_mapel }}
+                                    @elseif($type == 'tahun_ajaran'){{ $item->id_tahun_ajaran }}
                                     @else{{ '' }} @endif
                                 "
                                     {{-- Loop untuk menambahkan semua data kolom sebagai data-* attributes --}}
@@ -203,7 +211,7 @@
                     </div>
                     <div class="modal-body">
                         {{-- Berikan ID pada form untuk JavaScript --}}
-                        <form id="updateForm" method="POST">
+                        <form id="updateForm" method="POST" action="{{ old('item_id') ? route('data.update', ['type' => $type, 'id' => old('item_id')]) : '' }}">
                             @csrf
                             @method('PUT') {{-- Gunakan method PUT atau PATCH untuk update --}}
 
@@ -219,10 +227,10 @@
                                     @if ($key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
-                                            <option value="" selected disabled>Pilih {{ $label }}
+                                            <option value="" {{ old($key) ? '' : 'selected' }} selected disabled>Pilih {{ $label }}
                                             </option>
                                             @foreach ($dropdowns['mapel'] as $mapelItem)
-                                                <option value="{{ $mapelItem->id_mapel }}">
+                                                <option value="{{ $mapelItem->id_mapel }}" {{ old($key) == $mapelItem->id_mapel ? 'selected' : '' }}>
                                                     {{ $mapelItem->nama_mapel }}</option>
                                             @endforeach
                                         </select>
@@ -232,19 +240,19 @@
                                     @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
-                                            <option value="" selected disabled>Pilih {{ $label }}
+                                            <option value="" {{ old($key) ? '' : 'selected' }} disabled>Pilih {{ $label }}
                                             </option>
-                                            <option value="aktif">Aktif</option>
-                                            <option value="nonaktif">Nonaktif</option>
+                                            <option value="aktif" {{ old($key) ? 'aktif' : 'selected' }}>Aktif</option>
+                                            <option value="nonaktif" {{ old($key) ? 'nonaktif' : 'selected' }}>Nonaktif</option>
                                         </select>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     @else
                                         <input
-                                            type="{{ in_array($key, ['nisn', 'nip_guru_mapel', 'nip_wali_kelas']) ? 'number' : 'text' }}"
+                                            type="text"
                                             class="form-control @error($key) is-invalid @enderror"
-                                            id="update_{{ $key }}" name="{{ $key }}" required>
+                                            id="update_{{ $key }}" name="{{ $key }}" value="{{ old($key) }}" required>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -297,9 +305,9 @@
                                     @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
-                                            <option selected disabled>Pilih {{ $label }}</option>
-                                            <option value="aktif">aktif</option>
-                                            <option value="nonaktif">nonaktif</option>
+                                            <option {{ old($key) ? '' : 'selected' }} disabled>Pilih {{ $label }}</option>
+                                            <option value="aktif" {{ old($key) == 'aktif' ? 'selected' : '' }}>aktif</option>
+                                            <option value="nonaktif" {{ old($key) == 'nonaktif' ? 'selected' : '' }}>nonaktif</option>
                                         </select>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -423,6 +431,23 @@
                 });
             });
         </script>
+
+            @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cek apakah form input sedang digunakan atau form update
+            @if (old('item_id'))
+                // Jika item_id ada, artinya dari modal update
+                const updateModal = new bootstrap.Modal(document.getElementById('UpdateNilaiModal'));
+                updateModal.show();
+            @else
+                // Jika tidak, berarti dari modal input
+                const inputModal = new bootstrap.Modal(document.getElementById('inputNilaiModal'));
+                inputModal.show();
+            @endif
+        });
+    </script>
+    @endif
 
         <script>
             document.getElementById('button-cetak').addEventListener('click', function() {
