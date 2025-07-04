@@ -201,8 +201,7 @@ class NilaiController extends Controller
                         'tahun_pelajaran' => $validated['tahun_pelajaran'],
                         'kegiatan' => $kegiatan,
                         'nilai' => $nilai,
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'tanggal' => now(),
                     ]);
                 }
             }
@@ -242,12 +241,11 @@ class NilaiController extends Controller
         try {
             $record = DB::table('nilai')
                 ->where('nisn', $nisn)
-                ->where('kegiatan', $field)
                 ->first();
 
             Log::info('Record query result', [
                 'record' => $record,
-                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND kegiatan = '$field'"
+                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn'"
             ]);
 
             if ($record) {
@@ -257,10 +255,27 @@ class NilaiController extends Controller
                     ->update(['nilai' => $value]);
                 return response()->json(['success' => true, 'message' => 'Berhasil update nilai!']);
             } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Record not found for nisn: ' . $nisn . ' and kegiatan: ' . $field
-                ], 404);
+                $siswa = DB::table('siswa')
+                    ->where('nisn', $nisn)
+                    ->first();
+
+                if (!$siswa) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Siswa not found for nisn: ' . $nisn
+                    ], 404);
+                }
+
+                DB::table('nilai')
+                    ->insert([
+                        'nisn' => $nisn,
+                        'nama_siswa' => $siswa->nama_siswa,
+                        'id_kelas' => $siswa->id_kelas,
+                        'kegiatan' => $field,
+                        'nilai' => $value,
+                        'tanggal' => now(),
+                    ]);
+                return response()->json(['success' => true, 'message' => 'Berhasil insert nilai!']);
             }
         } catch (\Exception $e) {
             Log::error('Error in updateNilai', [

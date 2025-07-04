@@ -189,7 +189,6 @@ $(document).ready(function () {
         });
     }
 
-    // Save updated value
     function saveValue($cell, $input, nisn, field) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
@@ -216,9 +215,12 @@ $(document).ready(function () {
             success: function (response) {
                 console.log("AJAX success:", response);
                 showToast("Sukses Update Data!", "text-bg-success");
-                // Use active tab's mapel
                 const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
-                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+                fetchFilteredData(
+                    activeMapel,
+                    $("#tahunFilter").val() || "",
+                    $("#kelasFilter").val() || ""
+                );
             },
             error: function (xhr, status, error) {
                 console.error("AJAX error:", {
