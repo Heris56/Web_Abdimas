@@ -626,3 +626,8 @@ input.form-control:focus {
 }
 /* END DROPDOWN CONTROLS */
 
+/* END MODAL CONTROLS */
+.modal-title {
+    color: var(--foreground);
+}
+/* END MODAL CONTROLS */
