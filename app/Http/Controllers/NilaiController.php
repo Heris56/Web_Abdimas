@@ -256,8 +256,8 @@ class NilaiController extends Controller
                         'nip_guru_mapel' => $nip,
                         'tahun_pelajaran' => $validated['tahun_pelajaran'],
                         'kegiatan' => $kegiatan,
-                        'semester' => $validated['semester'] ?? '1', // Default to semester 1
-                        'tanggal' => $validated['tanggal'] ?? now()->toDateString(), // Default to today
+                        'semester' => $validated['semester'],
+                        'tanggal' => $validated['tanggal'],
                     ],
                     [
                         'nilai' => $nilai,
@@ -270,8 +270,8 @@ class NilaiController extends Controller
                     'tahun_pelajaran' => $validated['tahun_pelajaran'],
                     'kegiatan' => $kegiatan,
                     'nilai' => $nilai,
-                    'semester' => $validated['semester'] ?? '1',
-                    'tanggal' => $validated['tanggal'] ?? now()->toDateString(),
+                    'semester' => $validated['semester'],
+                    'tanggal' => $validated['tanggal'],
                 ]);
             }
         }

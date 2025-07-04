@@ -212,7 +212,7 @@ $(document).ready(function () {
         $cell.text(newValue);
         $input.remove();
 
-        cconsole.log("saveValue inputs:", {
+        console.log("saveValue inputs:", {
             nisn: nisn,
             kegiatan: kegiatan,
             value: newValue,
