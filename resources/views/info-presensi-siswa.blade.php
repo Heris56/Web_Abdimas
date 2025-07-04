@@ -63,7 +63,9 @@
                 <div class="subject-section">
                     <span class="head">Riwayat Presensi</span>
                     @if($tahunAjaranFilter !== 'all')
-                        <span class="badge bg-primary ms-2">{{ $tahunAjaranFilter }}</span>
+                        <div class="subject-stats mt-2">
+                            Tahun Ajaran: {{ $tahunAjaranFilter }}
+                        </div>
                     @endif
                 </div>
 
