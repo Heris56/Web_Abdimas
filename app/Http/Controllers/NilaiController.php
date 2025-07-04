@@ -275,8 +275,11 @@ class NilaiController extends Controller
                 'nip_guru_mapel' => 'required|string',
             ]);
 
+            DB::beginTransaction();
+
             $record = DB::table('nilai')
                 ->where('nisn', $nisn)
+                ->where('kegiatan', $field)
                 ->where('tahun_pelajaran', $tahun_pelajaran)
                 ->where('semester', $semester)
                 ->where('id_mapel', $id_mapel)
@@ -285,49 +288,98 @@ class NilaiController extends Controller
 
             Log::info('Record query result', [
                 'record' => $record,
-                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND tahun_pelajaran = '$tahun_pelajaran' AND semester = '$semester' AND id_mapel = '$id_mapel' AND nip = '$nip_guru_mapel'"
+                'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND kegiatan = '$field' AND tahun_pelajaran = '$tahun_pelajaran' AND semester = '$semester' AND id_mapel = '$id_mapel' AND nip_guru_mapel = '$nip_guru_mapel'"
             ]);
 
             if ($record) {
-                DB::table('nilai')
+                // Update existing record
+                $updated = DB::table('nilai')
                     ->where('nisn', $nisn)
                     ->where('kegiatan', $field)
+                    ->where('tahun_pelajaran', $tahun_pelajaran)
+                    ->where('semester', $semester)
+                    ->where('id_mapel', $id_mapel)
+                    ->where('nip_guru_mapel', $nip_guru_mapel)
                     ->update(['nilai' => $value]);
+
+                Log::info('Update operation', [
+                    'updated_rows' => $updated,
+                    'nilai' => $value,
+                    'nisn' => $nisn,
+                    'kegiatan' => $field,
+                    'tahun_pelajaran' => $tahun_pelajaran,
+                    'semester' => $semester,
+                    'id_mapel' => $id_mapel,
+                    'nip_guru_mapel' => $nip_guru_mapel
+                ]);
+
+                if ($updated === 0) {
+                    DB::rollBack();
+                    Log::error('Update failed, no rows affected');
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to update nilai: no rows affected'
+                    ], 500);
+                }
+
+                DB::commit();
                 return response()->json(['success' => true, 'message' => 'Berhasil update nilai!']);
             } else {
+                // Fetch student data
                 $siswa = DB::table('siswa')
                     ->where('nisn', $nisn)
                     ->first();
 
                 if (!$siswa) {
+                    DB::rollBack();
+                    Log::error('Siswa not found', ['nisn' => $nisn]);
                     return response()->json([
                         'success' => false,
                         'message' => 'Siswa not found for nisn: ' . $nisn
                     ], 404);
                 }
 
-                DB::table('nilai')
-                    ->insert([
-                        'nilai' => $value,
-                        'tanggal' => now(),
-                        'tahun_pelajaran' => $tahun_pelajaran,
-                        'semester' => $semester,
-                        'nisn' => $nisn,
-                        'nip_guru_mapel' => $nip_guru_mapel,
-                        'id_mapel' => $id_mapel,
-                        'kegiatan' => $field,
-                    ]);
+                // Insert new record
+                $insertData = [
+                    'nilai' => $value,
+                    'tanggal' => now(),
+                    'tahun_pelajaran' => $tahun_pelajaran,
+                    'semester' => $semester,
+                    'nisn' => $nisn,
+                    'nip_guru_mapel' => $nip_guru_mapel,
+                    'id_mapel' => $id_mapel,
+                    'kegiatan' => $field,
+                ];
+
+                $inserted = DB::table('nilai')->insert($insertData);
+
+                Log::info('Insert operation', [
+                    'inserted' => $inserted,
+                    'data' => $insertData,
+                    'query' => "INSERT INTO nilai (" . implode(', ', array_keys($insertData)) . ") VALUES (" . implode(', ', array_map(fn($v) => is_null($v) ? 'NULL' : "'$v'", array_values($insertData))) . ")"
+                ]);
+
+                if (!$inserted) {
+                    DB::rollBack();
+                    Log::error('Insert failed');
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to insert nilai'
+                    ], 500);
+                }
+
+                DB::commit();
                 return response()->json(['success' => true, 'message' => 'Berhasil insert nilai!']);
             }
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error in updateNilai', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred',
-                'error' => $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
