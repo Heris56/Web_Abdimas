@@ -134,9 +134,7 @@
                                             $alias = str_replace(' ', '_', strtolower($kegiatan));
                                         @endphp
                                         <td class="editable" data-nisn="{{ $row->nisn }}"
-                                            data-field="{{ $kegiatan }}" data-semester="{{ $row->semester }}"
-                                            data-tahun_pelajaran="{{ $row->tahun_pelajaran }}"
-                                            data-mapel="{{ $row->nama_mapel }}">{{ $row->$alias ?? '-' }}</td>
+                                            data-field="{{ $kegiatan }}">{{ $row->$alias ?? '-' }}</td>
                                     @endforeach
                                 </tr>
                             @endforeach
