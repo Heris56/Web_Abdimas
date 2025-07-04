@@ -9,7 +9,7 @@ $(document).ready(function () {
     const $firstTab = $("#mapelTabs .nav-link").first();
     if ($firstTab.length) {
         $firstTab.addClass("active");
-        fetchFilteredData($firstTab.data("mapel"), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+        fetchFilteredData($firstTab.data("mapel"), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
     }
 
     // Handle form submission for input nilai
@@ -21,6 +21,7 @@ $(document).ready(function () {
         var mapel = $('#mapelSelect').val();
         var tahun = $('#tahunSelect').val();
         var kelas = $('#kelasFilter').val() || '';
+        var semester = $('#semesterFilter').val() || '';
 
         if (!nisn || !kegiatan || !nilai || !mapel || !tahun) {
             showToast('Harap isi semua field!', 'text-bg-danger');
@@ -38,16 +39,17 @@ $(document).ready(function () {
                 nilai: nilai,
                 mapel: mapel,
                 tahun_pelajaran: tahun,
-                id_kelas: kelas
+                id_kelas: kelas,
+                semester: semester
             },
             success: function (response) {
                 console.log('Input nilai success:', response);
                 showToast('Nilai berhasil disimpan!', 'text-bg-success');
                 $('#inputNilaiModal').modal('hide');
                 $('#inputNilaiForm')[0].reset();
-                // Use active tab's mapel
+                // Use active tab's mapel and current filter values
                 const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
-                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
             },
             error: function (xhr, status, error) {
                 console.error('Input nilai error:', { status, error, responseText: xhr.responseText });
@@ -61,27 +63,30 @@ $(document).ready(function () {
     $("#mapelTabs .nav-link").on("click", function () {
         const mapel = $(this).data("mapel");
         console.log("Tab clicked:", { mapel });
-        fetchFilteredData(mapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "");
+        fetchFilteredData(mapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
     });
 
-    // Handle kelas and tahun filter changes
-    $("#tahunFilter, #kelasFilter").on("change", function () {
+    // Handle kelas, tahun, and semester filter changes
+    $("#tahunFilter, #kelasFilter, #semesterFilter").on("change", function () {
         const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
         const tahun = $("#tahunFilter").val() || "";
         const kelas = $("#kelasFilter").val() || "";
+        const semester = $("#semesterFilter").val() || "";
         console.log("Filter change triggered:", {
             mapel: activeMapel,
             tahun_pelajaran: tahun,
             id_kelas: kelas,
+            semester: semester
         });
-        fetchFilteredData(activeMapel, tahun, kelas);
+        fetchFilteredData(activeMapel, tahun, kelas, semester);
     });
 
-    function fetchFilteredData(mapel, tahun, kelas) {
+    function fetchFilteredData(mapel, tahun, kelas, semester) {
         console.log("Fetching data:", {
             mapel: mapel,
             tahun_pelajaran: tahun,
             id_kelas: kelas,
+            semester: semester
         });
         $.ajax({
             url: "/dashboard/guru-mapel",
@@ -90,13 +95,14 @@ $(document).ready(function () {
                 mapel: mapel,
                 tahun_pelajaran: tahun,
                 id_kelas: kelas,
+                semester: semester
             },
             success: function (response) {
                 console.log("AJAX success:", response);
                 updateTable(response);
-                // Maintain kelas and tahun filter states
                 $("#tahunFilter").val(tahun);
                 $("#kelasFilter").val(kelas);
+                $("#semesterFilter").val(semester);
             },
             error: function (xhr, status, error) {
                 console.error("Filter error:", {
@@ -142,14 +148,7 @@ $(document).ready(function () {
                             <td>${row.nisn}</td>
                             <td>${row.nama_siswa}</td>
                             <td>${row.id_kelas}</td>
-                            <td>${
-                                row.semester === "Ganjil"
-                                    ? `${row.tahun_pelajaran}-1`
-                                    : row.semester === "Genap"
-                                    ? `${row.tahun_pelajaran}-2`
-                                    : row.tahun_pelajaran
-                            }</td>
-                            <td>${row.tahun_pelajaran}</td>
+                            <td>${row.semester === 'Ganjil' ? row.tahun_pelajaran + '-1' : row.semester === 'Genap' ? row.tahun_pelajaran + '-2' : row.tahun_pelajaran}</td>
                             ${data.kegiatanList
                                 .map((kegiatan) => {
                                     var alias = kegiatan
@@ -218,16 +217,13 @@ $(document).ready(function () {
                 nisn: nisn,
                 field: field,
                 value: newValue === "-" ? null : newValue,
+                semester: $("#semesterFilter").val() || ""
             },
             success: function (response) {
                 console.log("AJAX success:", response);
                 showToast("Sukses Update Data!", "text-bg-success");
                 const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
-                fetchFilteredData(
-                    activeMapel,
-                    $("#tahunFilter").val() || "",
-                    $("#kelasFilter").val() || ""
-                );
+                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
             },
             error: function (xhr, status, error) {
                 console.error("AJAX error:", {

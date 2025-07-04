@@ -26,6 +26,14 @@ class NilaiController extends Controller
             ->toArray();
         Log::info('mapelList', ['mapelList' => $mapelList]);
 
+        $semesterList = DB::table('nilai')
+            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->distinct()
+            ->pluck('nilai.semester')
+            ->toArray();
+        Log::info('semesterList', ['semesterList' => $semesterList]);
+
         // untuk filter tahun ajaran
         $tahunPelajaranList = DB::table('nilai')
             ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
@@ -82,6 +90,10 @@ class NilaiController extends Controller
             $query->where('siswa.id_kelas', $request->input('id_kelas'));
             Log::info('Applied id_kelas filter', ['id_kelas' => $request->input('id_kelas')]);
         }
+        if ($request->has('semester') && !empty($request->input('semester'))) {
+            $query->where('nilai.semester', $request->input('semester'));
+            Log::info('Applied semester filter', ['semester' => $request->input('semester')]);
+        }
 
         // Debug query
         $testData = $query->get();
@@ -111,6 +123,7 @@ class NilaiController extends Controller
             return response()->json([
                 'data_nilai' => $data_nilai,
                 'kegiatanList' => $kegiatanList,
+                'semesterList' => $semesterList,
                 'nama_mapel' => $data_nilai->isEmpty() ? '' : $data_nilai[0]->nama_mapel
             ]);
         }
@@ -120,6 +133,7 @@ class NilaiController extends Controller
             'kegiatanList' => $kegiatanList,
             'mapelList' => $mapelList,
             'tahunPelajaranList' => $tahunPelajaranList,
+            'semesterList' => $semesterList,
             'kelasList' => $kelasList
         ]);
     }
