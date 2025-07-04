@@ -6,20 +6,22 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class input-nilai-modal extends Component
+class InputNilaiModal extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public $dataNilai;
+    public $mapelList;
+    public $tahunPelajaranList;
+    public $kegiatanList;
+
+    public function __construct($dataNilai, $mapelList, $tahunPelajaranList, $kegiatanList)
     {
-        //
+        $this->dataNilai = $dataNilai;
+        $this->mapelList = $mapelList;
+        $this->tahunPelajaranList = $tahunPelajaranList;
+        $this->kegiatanList = $kegiatanList;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
+    public function render()
     {
         return view('components.input-nilai-modal');
     }
