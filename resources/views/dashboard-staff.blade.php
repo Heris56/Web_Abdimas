@@ -248,6 +248,15 @@
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                    @elseif ($key == 'is_current')
+                                        <input type='number'
+                                        class="form-control @error($key) is-invalid @enderror"
+                                        id="update_{{ $key }}"
+                                        value="{{ old($key) }}"
+                                        readonly
+                                        name="" {{-- kosongkan name agar tidak dikirim --}}
+                                        onkeydown="return false;"
+                                        onwheel="this.blur()">
                                     @else
                                         <input
                                             type="text"
@@ -325,6 +334,10 @@
                                             @enderror --}}
 
                                         <!-- input fields yang lainnya -->
+                                    @elseif ($key == 'is_current')
+                                        <input type='number'
+                                        class="form-control @error($key) is-invalid @enderror"
+                                        id="{{ $key }}" value= 0 disabled >
                                     @else
                                         <input
                                             type="{{ in_array($key, ['nisn', 'nip_guru_mapel', 'nip_wali_kelas']) ? 'number' : 'text' }}"

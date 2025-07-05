@@ -43,9 +43,8 @@ class DataController extends Controller
             'id_mapel' => 'required|unique:mapel,id_mapel',
             'nama_mapel' => 'required|string|max:255',
         ],
-        'tahun_ajaran'=> [
-            'tahun'=> 'required|string|max:10|unique:tahun_ajaran,tahun',
-            'is_current'=> 'required|boolean',
+        'tahun_ajaran' => [
+            'tahun' => 'required|string|max:10|unique:tahun_ajaran,tahun',
         ],
     ];
 
@@ -258,7 +257,8 @@ class DataController extends Controller
                     break;
                 case 'tahun_ajaran':
                     $primaryKey = 'id_tahun_ajaran';
-                    $validationRules['id_tahun_ajaran'] = 'required|string|max:10|unique:tahun_ajaran,tahun,' . $id . ',' . $primaryKey;
+                    $validationRules['tahun'] = 'required|string|max:10|unique:tahun_ajaran,tahun,' . $id . ',' . $primaryKey;
+                    break;
                 default:
                     Log::error("Unexpected type for update in switch: {$type}");
                     return redirect()->back()->with('error', "Tipe data tidak valid untuk update: {$type}");
