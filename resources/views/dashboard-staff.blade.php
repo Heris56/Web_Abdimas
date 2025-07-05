@@ -99,6 +99,11 @@
                             <th>{{ $label }}</th>
                         @endforeach
                         <th>Actions</th>
+                        @if ($type == 'tahun_ajaran')
+                            <th>
+                                Tahun Ajaran Terbaru
+                            </th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -137,6 +142,13 @@
                                     Perbarui
                                 </button>
                             </td>
+                            @if ($type == 'tahun_ajaran')
+                                <td class="text-center">
+                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myInfoModal">
+                                        Terapkan
+                                    </button>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
@@ -358,6 +370,44 @@
                 </div>
             </div>
         </div>
+
+        {{-- ini modal konfirmasi tahun ajaran --}}
+        <x-confirm-tahun-ajaran id="myInfoModal" title="Konfirmasi Perubahan Tahun Ajaran">
+            <div style="color:black;">
+                <div>
+                    Apakah anda yakin ingin mengubah tahun ajaran yang berjalan?
+                </div>
+                <div>Semua data tahun ajaran pada user siswa, guru mapel, dan wali kelas akan diubah menjadi tahun::</div>
+            </div>
+            
+            <x-slot:footer>
+                <div class="d-flex justify-content-end w-25 gap-2 ">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#secondModal">
+                        <span style="color: red;">Konfirmasi</span>
+                    </button>
+                </div>
+            </x-slot:footer>
+        </x-confirm-tahun-ajaran>
+
+        <x-confirm-tahun-ajaran id="secondModal" title="Konfirmasi Password">
+            <form action="">
+                <div class="mb-3">
+                    <label for="" class="form-label">Masukan Password Admin anda</label>
+                    <input type="password" class="form-control" placeholder="Password">
+                </div>
+
+                <x-slot:footer>
+                    <div class="d-flex">
+                        <button class="btn btn-danger">Konfirmasi</button>
+                    </div>
+                </x-slot:footer>
+            </form>
+
+            
+        </x-confirm-tahun-ajaran>
+
+        {{-- end of modal --}}
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
