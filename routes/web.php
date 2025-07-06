@@ -81,6 +81,7 @@ Route::middleware([RestrictAdminIP::class])->group(function () {
     Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
     Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
     Route::put('/dashboard/staff/data/update/{type}/{id}', [DataController::class, 'updateData'])->name('data.update');
+    Route::post('/confirmpassword', [DataController::class, 'ConfirmPassword'])->name('data.confirmpassword');
 });
 
 // ini buat test <<<<<<<<<<---------->>>>>>>>>>
