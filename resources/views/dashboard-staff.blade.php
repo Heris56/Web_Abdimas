@@ -383,25 +383,31 @@
             <x-slot:footer>
                 <div class="d-flex justify-content-end w-25 gap-2 ">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#secondModal">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#confirmModal">
                         <span style="color: red;">Konfirmasi</span>
                     </button>
                 </div>
             </x-slot:footer>
         </x-confirm-tahun-ajaran>
 
-        <x-confirm-tahun-ajaran id="secondModal" title="Konfirmasi Password">
-            <form action="">
+        <x-confirm-tahun-ajaran id="confirmModal" title="Konfirmasi Password">
+            <form action="{{ route('data.confirmpassword') }}" method="post" onsubmit="alert('Form is submitting!'); return true;">
+                @csrf
                 <div class="mb-3">
                     <label for="" class="form-label">Masukan Password Admin anda</label>
-                    <input type="password" class="form-control" placeholder="Password">
+                    <input id="password_admin" name="password_admin" type="password" class="form-control @error('password_admin') is-invalid @enderror" placeholder="Password">
+                    @error('password_admin')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
-                <x-slot:footer>
+                <div class="modal-footer"> {{-- Add Bootstrap's modal-footer class here manually --}}
                     <div class="d-flex">
-                        <button class="btn btn-danger">Konfirmasi</button>
+                        <button type="submit" class="btn btn-danger">Konfirmasi</button>
                     </div>
-                </x-slot:footer>
+                </div>
             </form>
 
             
@@ -495,11 +501,14 @@
             });
         </script>
 
-            @if ($errors->any())
+    @if ($errors->any())
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Cek apakah form input sedang digunakan atau form update
-            @if (old('item_id'))
+            @if (session('show_confirm_password_modal'))
+                const confirmPasswordModal = new bootstrap.Modal(document.getElementById('confirmModal')); // ID modal konfirmasi password Anda
+                confirmPasswordModal.show();
+            @elseif (old('item_id'))
                 // Jika item_id ada, artinya dari modal update
                 const updateModal = new bootstrap.Modal(document.getElementById('UpdateNilaiModal'));
                 updateModal.show();

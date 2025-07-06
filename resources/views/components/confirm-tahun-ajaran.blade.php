@@ -12,9 +12,13 @@
 
             --}}
 
-            <div class="modal-footer">
-                {{ $footer ?? '' }}
-            </div>
+            {{-- ONLY RENDER THE COMPONENT'S MODAL-FOOTER IF THE $footer SLOT IS PROVIDED --}}
+            @isset($footer)
+                <div class="modal-footer">
+                    {{ $footer }}
+                </div>
+            @endisset
+            {{-- Using @isset($footer) is better than @if($footer ?? '') because it checks if the variable exists --}}
         </div>
     </div>
 </div>

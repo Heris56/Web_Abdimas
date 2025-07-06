@@ -302,4 +302,24 @@ class DataController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
     }
+
+    public function ConfirmPassword(Request $request)
+    {
+        $tempPassword = 'Haikal123';
+
+        $inputpassword = $request->input('password_admin');
+
+        $request->validate([
+            'password_admin' => 'required|max:20'
+        ]);
+
+        if ($inputpassword == $tempPassword) {
+
+            return redirect()->back()->with('success', 'Konfirmasi password berhasil!');
+        } else {
+
+            return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);
+
+        }
+    }
 }
