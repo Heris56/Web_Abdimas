@@ -53,6 +53,8 @@
 
 .main-content .container a:active {
     transform: scale(0.97);
+    color: var(--card-foreground);
+    background-color: var(--card);
 }
 
 .hero {
@@ -127,6 +129,10 @@ span {
         height: 60px !important;
         background-color: transparent !important;
         border: 1px solid var(--border) !important;
+    }
+
+    .btn:active {
+        color: var(--card-foreground);
     }
 }
 
