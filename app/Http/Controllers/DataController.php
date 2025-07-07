@@ -50,7 +50,7 @@ class DataController extends Controller
             'nip_guru_mapel' => 'required|unique:guru_mapel,nip_guru_mapel',
             'nama_guru' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
-            'status_tahun_ajaran' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:aktif,nonaktif',
             'id_mapel' => 'required|exists:mapel,id_mapel',
             'id_kelas' => 'required|exists:kelas,id_kelas',
         ],
@@ -58,7 +58,7 @@ class DataController extends Controller
             'nip_wali_kelas' => 'required|unique:wali_kelas,nip_wali_kelas',
             'nama' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
-            'status_tahun_ajaran' => 'required|in:aktif,nonaktif',
+            'status' => 'required|in:aktif,nonaktif',
             'id_kelas' => 'required|exists:kelas,id_kelas',
         ],
         'mapel' => [
@@ -114,7 +114,7 @@ class DataController extends Controller
                     'nip_guru_mapel' => 'NIP',
                     'nama_guru' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
-                    'status_tahun_ajaran' => 'Status Tahun Ajaran',
+                    'status' => 'Status',
                     'id_mapel' => 'ID Mapel',
                     'id_kelas' => 'Kelas'
                 ];
@@ -125,7 +125,7 @@ class DataController extends Controller
                     'nip_wali_kelas' => 'NIP',
                     'nama' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
-                    'status_tahun_ajaran' => 'Status Tahun Ajaran',
+                    'status' => 'Status',
                     'id_kelas' => 'Kelas'
                 ];
                 break;
@@ -345,6 +345,11 @@ class DataController extends Controller
 
                 // update semua tahun ajaran siswa
                 DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+
+                // update tahun ajaran guru_mapel
+                DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+                // update tahun ajaran wali_kelas
+                DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
                 return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
             } else {
                 return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);

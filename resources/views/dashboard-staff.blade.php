@@ -213,6 +213,7 @@
             </ul>
         </div>
 
+        {{-- ini bagian untuk Update nilai/data --}}
         <div class="modal fade" id="UpdateNilaiModal" tabindex="-1" aria-labelledby="UpdateNilaiModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -239,7 +240,7 @@
                                         class="form-label">{{ $label }}</label>
 
                                     {{-- Sesuaikan id untuk setiap input --}}
-                                    @if ($key == 'id_mapel')
+                                    @if ($type == 'guru_mapel' && $key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
                                             <option value="" {{ old($key) ? '' : 'selected' }} selected disabled>Pilih {{ $label }}
@@ -259,6 +260,18 @@
                                             </option>
                                             <option value="aktif" {{ old($key) ? 'aktif' : 'selected' }}>Aktif</option>
                                             <option value="nonaktif" {{ old($key) ? 'nonaktif' : 'selected' }}>Nonaktif</option>
+                                        </select>
+                                        @error($key)
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    @elseif ($key == 'jurusan')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                            id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" selected disabled>Pilih {{ $label }}</option>
+                                            {{-- PASTIKAN VALUE SAMA PERSIS DENGAN DATABASE --}}
+                                            <option value="Teknik Komputer Jaringan" {{ old($key) == 'Teknik Komputer Jaringan' ? 'selected' : '' }}>Teknik Komputer dan Jaringan</option>
+                                            <option value="Rekayasa Perangkat Lunak" {{ old($key) == 'Rekayasa Perangkat Lunak' ? 'selected' : '' }}>Rekayasa Perangkat Lunak</option>
+                                            {{-- Jika ada jurusan lain di database, tambahkan opsi di sini --}}
                                         </select>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -292,6 +305,9 @@
                 </div>
             </div>
         </div>
+        {{-- end of update nilai/data --}}
+
+        {{-- ini bagian untuk input nilai/data --}}
 
         <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel"
             aria-hidden="true">
@@ -310,7 +326,7 @@
                                     <label for="{{ $key }}" class="form-label">{{ $label }}</label>
 
                                     <!-- set dropdown untuk pilih mapel dan kelas -->
-                                    @if ($key == 'id_mapel')
+                                    @if ($type == 'guru_mapel' && $key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
@@ -337,16 +353,16 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
 
-                                        {{-- @elseif (in_array($key == 'jurusan'))
+                                        @elseif ($key == 'jurusan')
                                             <select class="form-select @error($key) is-invalid @enderror"
                                                 id="{{ $key }}" name="{{ $key }}" required>
                                                 <option selected disabled>Pilih {{ $label }}</option>
-                                                <option value="aktif">Teknik Komputer dan Jaringan</option>
-                                                <option value="nonaktif">Rekayasa Perangkat Lunak</option>
+                                                <option value="Teknik Komputer Jaringan">Teknik Komputer Jaringan</option>
+                                                <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
                                             </select>
                                             @error($key)
                                                 <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror --}}
+                                            @enderror 
 
                                         <!-- input fields yang lainnya -->
                                     @elseif ($key == 'is_current')
@@ -448,22 +464,20 @@
 
                     const type = "{{ $type }}"; // Ambil $type dari Blade
                     updateForm.action =
-                    `/dashboard/staff/data/update/${type}/${itemId}`; // Sesuai dengan route Anda
+                        `/dashboard/staff/data/update/${type}/${itemId}`; // Sesuai dengan route Anda
 
                     // Ambil array $columns dari PHP (ini hanya untuk tahu kolom apa saja yang ada)
                     const columnsFromPhp =
-                    @json(array_keys($columns)); // Kita hanya perlu nama key (nama kolom)
+                        @json(array_keys($columns)); // Kita hanya perlu nama key (nama kolom)
 
                     // Loop melalui semua kunci kolom yang ada di tampilan
                     columnsFromPhp.forEach(key => {
                         let actualInputKey =
-                        key; // Asumsi default: nama kolom di DB sama dengan nama input
+                            key; // Asumsi default: nama kolom di DB sama dengan nama input
 
                         // Khusus untuk kolom yang ditampilkan (hasil join) tapi inputnya adalah ID
                         if (key === 'nama_kelas') {
                             actualInputKey = 'id_kelas';
-                        } else if (key === 'nama_mapel') {
-                            actualInputKey = 'id_mapel';
                         }
 
                         // Ambil nilai dari data-attribute yang sesuai dengan actualInputKey (misal data-id_kelas)
@@ -472,28 +486,21 @@
                         // Fallback jika value masih null/undefined (misal data-nama_kelas tapi mau id_kelas)
                         if (value === null && key !== actualInputKey) {
                             value = button.getAttribute('data-' +
-                            key); // Coba ambil dari data-nama_kelas jika ada
+                                key); // Coba ambil dari data-nama_kelas jika ada
                         }
 
 
                         const inputElement = document.getElementById('update_' + actualInputKey);
 
                         if (inputElement) {
+                            // Untuk elemen <select>
                             if (inputElement.tagName === 'SELECT') {
-                                // Untuk elemen <select>
-                                let found = false;
-                                for (let i = 0; i < inputElement.options.length; i++) {
-                                    // Perbandingan longgar untuk memastikan cocok
-                                    if (inputElement.options[i].value == value) {
-                                        inputElement.options[i].selected = true;
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                // Opsional: Jika tidak ada opsi yang cocok, atur kembali ke placeholder
-                                if (!found && value !== null && value !== '') {
-                                    inputElement.value =
-                                    ''; // Mengatur ke nilai default/placeholder jika tidak ada match
+                                // Set nilai select langsung
+                                inputElement.value = value;
+                                // Opsional: Jika nilai tidak ditemukan di opsi (misal data kotor),
+                                // pastikan placeholder terpilih jika value tidak ada
+                                if (inputElement.value !== value && value !== null && value !== '') {
+                                    inputElement.value = ''; // Set ke placeholder
                                 }
                             } else {
                                 // Untuk elemen <input>
@@ -502,11 +509,23 @@
                         }
                     });
 
-                    // Penanganan khusus untuk dropdown 'status' 
-                    // Karena ini adalah select dengan opsi statis
+                    // Penanganan khusus untuk dropdown status/status_tahun_ajaran
+                    // Ini tetap perlu karena loop di atas mungkin tidak selalu bekerja sempurna
+                    // untuk semua kasus select, atau untuk klarifikasi.
                     const selectStatus = document.getElementById('update_status');
                     if (selectStatus && button.hasAttribute('data-status')) {
                         selectStatus.value = button.getAttribute('data-status');
+                    }
+
+                    const selectStatusTA = document.getElementById('update_status_tahun_ajaran');
+                    if (selectStatusTA && button.hasAttribute('data-status_tahun_ajaran')) {
+                        selectStatusTA.value = button.getAttribute('data-status_tahun_ajaran');
+                    }
+
+                    // Penanganan khusus untuk dropdown jurusan
+                    const selectJurusan = document.getElementById('update_jurusan');
+                    if (selectJurusan && button.hasAttribute('data-jurusan')) {
+                        selectJurusan.value = button.getAttribute('data-jurusan');
                     }
                 });
             });
