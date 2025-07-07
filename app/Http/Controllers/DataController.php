@@ -6,9 +6,32 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException; // Import ValidationException untuk penanganan error
+use Illuminate\Support\Facades\Session; // Use Session facade for clarity
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 
 class DataController extends Controller
 {
+    private $staffid;
+    public function __construct()
+    {
+        // The __construct method is executed when the controller is instantiated.
+        // At this point, session and cookie helpers are available.
+
+        // Check session first, then cookie, then default to null
+        $this->staffid = Session::get('userID');
+
+        if (is_null($this->staffid)) {
+            $this->staffid = Cookie::get('userID');
+        }
+
+        // If still null, it remains null
+        // You could also add:
+        // if (is_null($this->staffid)) {
+        //     // Optionally, redirect to login if ID is absolutely required for any action
+        //     // return redirect()->route('login'); // This would need to be handled differently
+        // }
+    }
 
     public $rules = [
         'siswa' => [
@@ -305,21 +328,26 @@ class DataController extends Controller
 
     public function ConfirmPassword(Request $request)
     {
-        $tempPassword = 'Haikal123';
-
-        $inputpassword = $request->input('password_admin');
+        $id = $this->staffid;
+        $userpassword = DB::table('staff')->where('nip_staff', $id)->value('password');
 
         $request->validate([
             'password_admin' => 'required|max:20'
         ]);
+        $idTahunAjaran = $request->input('id_tahun_ajaran');
 
-        if ($inputpassword == $tempPassword) {
+        $inputpassword = $request->input('password_admin');
 
-            return redirect()->back()->with('success', 'Konfirmasi password berhasil!');
+        if (Hash::check($inputpassword, $userpassword)) {
+            $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
+            // nonaktifkan active marker terlebih dahulu
+            DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
+
+            // set mark jadi active lagi di tahun yang dipilih
+            DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
+            return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
         } else {
-
             return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);
-
         }
     }
 }
