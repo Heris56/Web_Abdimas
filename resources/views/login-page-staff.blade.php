@@ -31,7 +31,7 @@
 
 <body>
     <!-- Navbar -->
-    <x-navbar :showSearch="true" />
+    <x-navbar :showSearch="false" />
     <!-- Wrapper untuk form masuk -->
     <div class="container1">
         <div class="form-box">
@@ -64,7 +64,7 @@
                     {{-- <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p> --}}
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3" id="togglePassword" style="cursor: pointer;"></i>
                     </div>
-                    
+
                 </div>
                 <button class="btn btn-primary" type="submit">Masuk</button>
             </form>

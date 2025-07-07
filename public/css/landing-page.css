@@ -39,21 +39,22 @@
     padding: 0;
 }
 
-.main-content .container a button {
+.main-content .container a {
     background-color: var(--background);
     color: var(--foreground);
     width: 100%;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     border: none;
     border-radius: 4px;
     padding-top: 10px;
     padding-bottom: 10px;
     font-size: var(--font-size-base);
-
 }
 
 .main-content .container a:active {
     transform: scale(0.97);
+    color: var(--card-foreground);
+    background-color: var(--card);
 }
 
 .hero {
@@ -62,4 +63,82 @@
     font-size: var(--font-size-hero);
     font-family: var(--font-head);
     font-weight: bold;
+}
+
+span {
+    color: var(--foreground);
+    font-weight: bold;
+}
+
+/* RESPONSIVE DESIGN */
+/* Mobile layout (smaller screens, e.g., iPhones) */
+@media (max-width: 767px) {
+    .container1 {
+        position: relative; /* Context for absolute positioning */
+        min-height: 100vh;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right)
+            env(safe-area-inset-bottom) env(safe-area-inset-left);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .background {
+        position: absolute; /* Full-screen background */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1; /* Behind main-content */
+        background-size: cover;
+        background-position: center;
+    }
+
+    .main-content {
+        position: relative; /* Overlaps background */
+        z-index: 2; /* Foreground */
+        width: 95%;
+        height: 75%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        /* From https://css.glass */
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(7.9px);
+        -webkit-backdrop-filter: blur(7.9px);
+        border: 1px solid var(--border);
+    }
+
+    .hero {
+        font-size: var(--font-size-head);
+        font-weight: bold;
+        color: var(--card-foreground);
+    }
+
+    span {
+        color: var(--card-foreground);
+    }
+
+    .btn {
+        height: 60px !important;
+        background-color: transparent !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    .btn:active {
+        color: var(--card-foreground);
+    }
+}
+
+/* Very small screens (e.g., iPhone SE at 320px) */
+@media (max-width: 359px) {
+    .main-content {
+        padding: 15px; /* Reduced padding for small screens */
+    }
 }

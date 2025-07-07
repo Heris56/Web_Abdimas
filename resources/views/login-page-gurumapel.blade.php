@@ -48,14 +48,14 @@
                 <!-- Isi Username -->
                 <div class="mb-2">
                     <label for="inputUsername" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="inputUsername" name="inputUsername" required>
+                    <input type="text" class="form-control" id="inputUsername" value="{{ old('inputUsername') }}" name="inputUsername" required>
                 </div>
 
-                <!-- Isi kata sandi -->
+                <!-- password -->
                 <div class="mb-4">
                     <label for="inputPassword" class="form-label">Password</label>
                     <div class="position-relative">
-                        <input type="password" class="form-control" id="inputPassword" name="inputPassword" required>
+                        <input type="password" class="form-control" id="inputPassword" name="inputPassword" value="{{ old('inputPassword') }}" required>
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3" id="togglePassword" style="cursor: pointer;"></i>
                     </div>
                 </div>

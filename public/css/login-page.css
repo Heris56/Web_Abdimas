@@ -6,7 +6,7 @@
 }
 
 .form-box {
-    width: 40%;
+    max-width: 40%;
     height: fit-content;
     margin: 0;
     padding: 2rem;
@@ -40,4 +40,10 @@
 body {
     /* timpa padding untuk login page */
     padding-top: 8rem !important;
+}
+
+@media (max-width: 767px) {
+    .form-box {
+        max-width: 90%;
+    }
 }

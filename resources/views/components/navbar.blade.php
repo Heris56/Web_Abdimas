@@ -42,7 +42,7 @@
                 <button type="button" class="button btn-foreground" data-bs-toggle="dropdown" data-bs-display="static"
                     aria-expanded="false">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    <span class="dropdown-text">Masuk ke akun SMK PGRI 35</span>
+                    <span class="dropdown-text">Login</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
                     <li><button class="dropdown-item custom-dropdown-item" type="button"
