@@ -74,9 +74,10 @@ Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_k
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 
-Route::middleware([RestrictAdminIP::class])->group(function () {
-    // staff
-    Route::view('/login/staff', 'login-page-staff')->name('login-staff');
+// staff
+Route::view('/login/staff', 'login-page-staff')->name('login-staff');
+Route::post('/login/staff', [login_controller::class, 'auth_login_staff'])->name('auth.staff');
+Route::middleware([RestrictAdminIP::class, CheckLoginCookie::class])->group(function () {
     // Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
     Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
     Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');

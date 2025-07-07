@@ -37,13 +37,31 @@
         <div class="form-box">
             <h1 class="head">Masuk sebagai Atmint Sekolah SMK PGRI 35</h1>
             <h2 class="subhead">Halo bang Atmint</h2>
-            <form>
-                <label class="form-label" for="email">Email</label>
-                <input class="form-control" type="email" id="email" placeholder="Enter your email">
-                <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p>
-                <label class="form-label" for="password">Password</label>
-                <input class="form-control" type="password" id="password" placeholder="Enter yout password">
-                <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p>
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+            <form action="{{ route('auth.staff') }}" method="post">
+                @csrf
+                <div class="mt-3">
+                    <label class="form-label" for="NIP">NIP Staff</label>
+                    <input class="form-control" type="NIP" id="NIP" name="staffNIP" placeholder="Enter your NIP">
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label" for="email">Email</label>
+                    <input class="form-control" type="email" id="email" name="staffemail"
+                        placeholder="Enter your email">
+                    <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p>
+                </div>
+
+                <div class="mt-3">
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-control" type="password" id="password" name="staffpassword"
+                        placeholder="Enter yout password">
+                    <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p>
+                </div>
                 <button class="btn btn-primary" type="submit">Masuk</button>
             </form>
         </div>
@@ -52,7 +70,7 @@
     <!-- Connect Bootsrap bundle-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+        </script>
 </body>
 
 </html>

@@ -144,7 +144,7 @@
                             </td>
                             @if ($type == 'tahun_ajaran')
                                 <td class="text-center">
-                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#myInfoModal">
+                                    <button class="btn btn-warning" onclick="setTahunAjaran('{{ $item->id_tahun_ajaran }}')" data-bs-toggle="modal" data-bs-target="#myInfoModal">
                                         Terapkan
                                     </button>
                                 </td>
@@ -229,6 +229,8 @@
 
                             {{-- Input hidden untuk menyimpan ID item yang akan diupdate. Nama 'item_id' akan dibaca oleh controller --}}
                             <input type="hidden" name="item_id" id="updateItemId">
+                            <input type="hidden" name="tahun_ajaran_id" id="tahun_ajaran_id">
+
 
                             @foreach ($columns as $key => $label)
                                 <div class="mb-3">
@@ -391,8 +393,10 @@
         </x-confirm-tahun-ajaran>
 
         <x-confirm-tahun-ajaran id="confirmModal" title="Konfirmasi Password">
-            <form action="{{ route('data.confirmpassword') }}" method="post" onsubmit="alert('Form is submitting!'); return true;">
+            <form action="{{ route('data.confirmpassword') }}" method="post">
                 @csrf
+                <input type="hidden" name="id_tahun_ajaran" id="id_tahun_ajaran_input">
+
                 <div class="mb-3">
                     <label for="" class="form-label">Masukan Password Admin anda</label>
                     <input id="password_admin" name="password_admin" type="password" class="form-control @error('password_admin') is-invalid @enderror" placeholder="Password">
@@ -414,6 +418,13 @@
         </x-confirm-tahun-ajaran>
 
         {{-- end of modal --}}
+
+        <script>
+            function setTahunAjaran(id) {
+                document.getElementById('tahun_ajaran_id').value = id; // untuk update form
+                document.getElementById('id_tahun_ajaran_input').value = id; // untuk modal password
+            }
+        </script>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -505,7 +516,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Cek apakah form input sedang digunakan atau form update
-            @if (session('show_confirm_password_modal'))
+            @if ($errors->has('password_admin'))
                 const confirmPasswordModal = new bootstrap.Modal(document.getElementById('confirmModal')); // ID modal konfirmasi password Anda
                 confirmPasswordModal.show();
             @elseif (old('item_id'))

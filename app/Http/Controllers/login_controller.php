@@ -41,6 +41,26 @@ class login_controller extends Controller
         return $data;
     }
 
+    public function auth_login_staff(Request $request)
+    {
+        $request->validate([
+            'staffNIP' => 'required|max:20',
+            'staffemail' => 'required|max:255',
+            'staffpassword' => 'required|max:20'
+        ]);
+
+        $NIP = $request->input('staffNIP');
+        $email = $request->input('staffemail');
+        $password = $request->input('staffpassword');
+
+        $user = DB::table('staff')->where('nip_staff', $NIP)->where('email', $email)->first();
+        if ($user) {
+            return $this->checkhashmd5('data.fetch', 'login-staff', $password, $user);
+        } else {
+            return redirect()->route('login-staff')->with("error", "user tidak ditemukan");
+        }
+    }
+
     public function auth_login_siswa(Request $request)
     {
         $request->validate([
@@ -126,6 +146,9 @@ class login_controller extends Controller
                 } elseif (property_exists($user, 'nip_guru_mapel')) {
                     $tablename = 'guru_mapel';
                     $idColumn = "nip_guru_mapel";
+                } elseif (property_exists($user, 'nip_staff')) {
+                    $tablename = 'staff';
+                    $idColumn = "nip_staff";
                 }
 
                 if ($tablename && isset($idColumn)) {
@@ -155,6 +178,10 @@ class login_controller extends Controller
                 $id = $user->nip_guru_mapel;
                 $role = "guruMapel";
                 $username = $user->nama_guru;
+            } elseif (property_exists($user, 'nip_staff') && $user->nip_staff) {
+                $id = $user->nip_staff;
+                $role = "Staff";
+                $username = $user->nama_staff;
             } else {
                 return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
             }
