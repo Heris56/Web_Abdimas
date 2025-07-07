@@ -39,7 +39,6 @@ class DataController extends Controller
             'nama_siswa' => 'required|string|max:255',
             'id_kelas' => 'required|exists:kelas,id_kelas',
             'status' => 'required|in:aktif,nonaktif',
-            'status_tahun_ajaran' => 'required|in:aktif,nonaktif',
             'tahun_ajaran' => 'required|string|max:10',
         ],
         'kelas' => [
@@ -98,7 +97,6 @@ class DataController extends Controller
                     'nama_siswa' => 'Nama Siswa',
                     'id_kelas' => 'Kelas',
                     'status' => 'Status',
-                    'status_tahun_ajaran' => 'Status Tahun Ajaran',
                     'tahun_ajaran' => 'Tahun Ajaran'
                 ];
                 break;
@@ -128,7 +126,6 @@ class DataController extends Controller
                     'nama' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status_tahun_ajaran' => 'Status Tahun Ajaran',
-                    'id_mapel' => 'ID Mapel',
                     'id_kelas' => 'Kelas'
                 ];
                 break;
@@ -153,7 +150,6 @@ class DataController extends Controller
                     'nama_siswa' => 'Nama Siswa',
                     'id_kelas' => 'Kelas',
                     'status' => 'Status',
-                    'status_tahun_ajaran' => 'Status Tahun Ajaran',
                     'tahun_ajaran' => 'Tahun Ajaran'
                 ];
                 $type = 'siswa'; // set default untuk selalu show data siswa
@@ -328,26 +324,33 @@ class DataController extends Controller
 
     public function ConfirmPassword(Request $request)
     {
-        $id = $this->staffid;
-        $userpassword = DB::table('staff')->where('nip_staff', $id)->value('password');
+        try {
+            $id = $this->staffid;
+            $userpassword = DB::table('staff')->where('nip_staff', $id)->value('password');
 
-        $request->validate([
-            'password_admin' => 'required|max:20'
-        ]);
-        $idTahunAjaran = $request->input('id_tahun_ajaran');
+            $request->validate([
+                'password_admin' => 'required|max:20'
+            ]);
+            $idTahunAjaran = $request->input('id_tahun_ajaran');
 
-        $inputpassword = $request->input('password_admin');
+            $inputpassword = $request->input('password_admin');
 
-        if (Hash::check($inputpassword, $userpassword)) {
-            $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
-            // nonaktifkan active marker terlebih dahulu
-            DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
+            if (Hash::check($inputpassword, $userpassword)) {
+                $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
+                // nonaktifkan active marker terlebih dahulu
+                DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
 
-            // set mark jadi active lagi di tahun yang dipilih
-            DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
-            return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
-        } else {
-            return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);
+                // set mark jadi active lagi di tahun yang dipilih
+                DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
+
+                // update semua tahun ajaran siswa
+                DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+                return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
+            } else {
+                return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat konfirmasi' . $e->getMessage());
         }
     }
 }

@@ -53,14 +53,14 @@
                     <label class="form-label" for="email">Email</label>
                     <input class="form-control" type="email" id="email" name="staffemail"
                         placeholder="Enter your email">
-                    <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p>
+                    {{-- <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p> --}}
                 </div>
 
                 <div class="mt-3">
                     <label class="form-label" for="password">Password</label>
                     <input class="form-control" type="password" id="password" name="staffpassword"
                         placeholder="Enter yout password">
-                    <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p>
+                    {{-- <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p> --}}
                 </div>
                 <button class="btn btn-primary" type="submit">Masuk</button>
             </form>

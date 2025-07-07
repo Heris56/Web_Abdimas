@@ -32,6 +32,8 @@ class CheckLoginCookie
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain WaliKelas. Silahkan lakukan login');
                 case 'guruMapel':
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain GuruMapel. Silahkan lakukan login');
+                case 'Staff':
+                    return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain Staff. Silahkan lakukan login');
                 default:
                     // Jika role tidak dikenal, arahkan ke landing
                     return redirect()->route('landing')->with('error', 'Akses ditolak.');

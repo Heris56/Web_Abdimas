@@ -18,7 +18,7 @@ class RedirectIfLoggedIn
         $userID = $request->cookie('userID');
         $userRole = $request->cookie('userRole');
 
-        if ($userID && $userRole){
+        if ($userID && $userRole) {
             switch ($userRole) {
                 case 'siswa':
                     return redirect()->route('info.presensi')->with('success', 'Berhasil Login sebagai siswa');
@@ -26,6 +26,8 @@ class RedirectIfLoggedIn
                     return redirect()->route('dashboard-wali-kelas')->with('success', 'Berhasil Login sebagai wali kelas');
                 case 'guruMapel':
                     return redirect()->route('nilai.fetch')->with('success', 'Berhasil Login sebagai guru mapel');
+                case 'Staff':
+                    return redirect()->route('data.fetch')->with('success', 'Berhasil Login sebagai Staff');
                 default:
                     // Jika role tidak dikenal, arahkan ke landing
                     return redirect()->route('landing')->with('warning', 'Session sudah habis, harap login kembali');
