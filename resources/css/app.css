@@ -283,6 +283,7 @@ input.form-control:focus {
     background-color: var(--primary-foreground);
     color: var(--background);
     transition: background-color 0.2s, transform 0.1s;
+    height: 3.75rem;
 }
 
 .btn-foreground:hover {
