@@ -144,7 +144,7 @@
                             </td>
                             @if ($type == 'tahun_ajaran')
                                 <td class="text-center">
-                                    <button class="btn btn-warning" onclick="setTahunAjaran('{{ $item->id_tahun_ajaran }}')" data-bs-toggle="modal" data-bs-target="#myInfoModal">
+                                    <button class="btn btn-warning" onclick="setTahunAjaran('{{ $item->id_tahun_ajaran }}', '{{ $item->tahun }}')" data-bs-toggle="modal" data-bs-target="#myInfoModal">
                                         Terapkan
                                     </button>
                                 </td>
@@ -230,6 +230,7 @@
                             {{-- Input hidden untuk menyimpan ID item yang akan diupdate. Nama 'item_id' akan dibaca oleh controller --}}
                             <input type="hidden" name="item_id" id="updateItemId">
                             <input type="hidden" name="tahun_ajaran_id" id="tahun_ajaran_id">
+                            <input type="hidden" name="tahun_ajaran_nilai" id="tahun_ajaran_nilai">
 
 
                             @foreach ($columns as $key => $label)
@@ -251,7 +252,7 @@
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
-                                    @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
+                                    @elseif (in_array($key, ['status']))
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
                                             <option value="" {{ old($key) ? '' : 'selected' }} disabled>Pilih {{ $label }}
@@ -325,7 +326,7 @@
                                         @enderror
 
                                         <!-- set dropdown untuk pilih status dan status tahun ajaran -->
-                                    @elseif (in_array($key, ['status', 'status_tahun_ajaran']))
+                                    @elseif (in_array($key, ['status']))
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option {{ old($key) ? '' : 'selected' }} disabled>Pilih {{ $label }}</option>
@@ -379,7 +380,7 @@
                 <div>
                     Apakah anda yakin ingin mengubah tahun ajaran yang berjalan?
                 </div>
-                <div>Semua data tahun ajaran pada user siswa, guru mapel, dan wali kelas akan diubah menjadi tahun::</div>
+                <div>Semua data tahun ajaran pada user siswa, guru mapel, dan wali kelas akan diubah menjadi tahun <span id="preview_nilai_tahun_ajaran" style="color: red;"></span></div>
             </div>
             
             <x-slot:footer>
@@ -396,6 +397,7 @@
             <form action="{{ route('data.confirmpassword') }}" method="post">
                 @csrf
                 <input type="hidden" name="id_tahun_ajaran" id="id_tahun_ajaran_input">
+                <input type="hidden" name="nilai_tahun_ajaran" id="nilai_tahun_ajaran_input">
 
                 <div class="mb-3">
                     <label for="" class="form-label">Masukan Password Admin anda</label>
@@ -420,9 +422,12 @@
         {{-- end of modal --}}
 
         <script>
-            function setTahunAjaran(id) {
+            function setTahunAjaran(id, tahun) {
                 document.getElementById('tahun_ajaran_id').value = id; // untuk update form
                 document.getElementById('id_tahun_ajaran_input').value = id; // untuk modal password
+                document.getElementById('tahun_ajaran_nilai').value = tahun; // untuk update form
+                document.getElementById('nilai_tahun_ajaran_input').value = tahun; // untuk info di password
+                document.getElementById('preview_nilai_tahun_ajaran').innerText = tahun; // <--- update preview di modal
             }
         </script>
 
@@ -497,16 +502,11 @@
                         }
                     });
 
-                    // Penanganan khusus untuk dropdown 'status' dan 'status_tahun_ajaran'
+                    // Penanganan khusus untuk dropdown 'status' 
                     // Karena ini adalah select dengan opsi statis
                     const selectStatus = document.getElementById('update_status');
                     if (selectStatus && button.hasAttribute('data-status')) {
                         selectStatus.value = button.getAttribute('data-status');
-                    }
-
-                    const selectStatusTA = document.getElementById('update_status_tahun_ajaran');
-                    if (selectStatusTA && button.hasAttribute('data-status_tahun_ajaran')) {
-                        selectStatusTA.value = button.getAttribute('data-status_tahun_ajaran');
                     }
                 });
             });
