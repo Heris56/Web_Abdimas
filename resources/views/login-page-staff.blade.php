@@ -56,11 +56,15 @@
                     {{-- <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p> --}}
                 </div>
 
-                <div class="mt-3">
+                <div class="mt-3 mb-3">
                     <label class="form-label" for="password">Password</label>
-                    <input class="form-control" type="password" id="password" name="staffpassword"
-                        placeholder="Enter yout password">
+                    <div class="position-relative">
+                        <input class="form-control" type="password" id="password" name="staffpassword"
+                        placeholder="Enter your password">
                     {{-- <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p> --}}
+                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3" id="togglePassword" style="cursor: pointer;"></i>
+                    </div>
+                    
                 </div>
                 <button class="btn btn-primary" type="submit">Masuk</button>
             </form>
@@ -71,6 +75,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+        const togglePassword = document.getElementById("togglePassword");
+        const password = document.getElementById("password");
+
+        togglePassword.addEventListener("click", function (e) {
+            const type =
+            password.getAttribute("type") === "password" ? "text" : "password";
+            password.setAttribute("type", type);
+            this.classList.toggle("bi-eye");
+        });
+    });
+    </script>
 </body>
 
 </html>
