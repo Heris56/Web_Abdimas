@@ -73,6 +73,16 @@
     --chart-5: hsl(44 101% 50%);
 }
 
+@media (max-width: 767px) {
+    /* untuk notch iphone dll */
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
 html,
 body {
     height: 100%;
@@ -91,14 +101,6 @@ body {
     height: 100%;
     width: 100%;
     background-color: var(--background);
-}
-
-/* untuk notch iphone dll */
-body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
 }
 
 .error-container {
@@ -182,11 +184,6 @@ a span {
     margin-right: 0.5rem;
 }
 
-@media (max-width: 767px) {
-    .logo span {
-        display: none;
-    }
-}
 /* END NAVBAR CONTROLLS */
 
 /* START INPUT CONTROLLS */

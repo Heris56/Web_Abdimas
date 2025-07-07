@@ -46,4 +46,8 @@ body {
     .form-box {
         width: 95%;
     }
+
+    .logo span {
+        display: none;
+    }
 }
