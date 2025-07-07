@@ -63,8 +63,9 @@
     font-weight: bold;
 }
 
-span  {
+span {
     color: var(--foreground);
+    font-weight: bold;
 }
 
 /* RESPONSIVE DESIGN */
@@ -75,7 +76,10 @@ span  {
         min-height: 100vh;
         padding: env(safe-area-inset-top) env(safe-area-inset-right)
             env(safe-area-inset-bottom) env(safe-area-inset-left);
-        display: block; /* Remove grid for mobile */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .background {
@@ -92,29 +96,37 @@ span  {
     .main-content {
         position: relative; /* Overlaps background */
         z-index: 2; /* Foreground */
+        width: 95%;
+        height: 75%;
         padding: 20px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
-
         /* From https://css.glass */
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 16px;
+        background: var(--card);
+        border-radius: var(--radius);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        backdrop-filter: blur(7.9px);
+        -webkit-backdrop-filter: blur(7.9px);
+        border: 1px solid var(--border);
     }
 
     .hero {
         font-size: var(--font-size-head);
         font-weight: bold;
+        color: var(--card-foreground);
+    }
+
+    span {
+        color: var(--card-foreground);
     }
 
     .btn {
-        background-color: var(--primary);
+        height: 60px !important;
+        background-color: transparent !important;
+        border: 1px solid var(--border) !important;
     }
 }
 
