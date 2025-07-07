@@ -44,6 +44,6 @@ body {
 
 @media (max-width: 767px) {
     .form-box {
-    width: 95%;
-}
+        width: 95%;
+    }
 }

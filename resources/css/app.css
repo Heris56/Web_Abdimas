@@ -181,6 +181,12 @@ a span {
 .logo-img {
     margin-right: 0.5rem;
 }
+
+@media (max-width: 767px) {
+    .logo span {
+        display: none;
+    }
+}
 /* END NAVBAR CONTROLLS */
 
 /* START INPUT CONTROLLS */
