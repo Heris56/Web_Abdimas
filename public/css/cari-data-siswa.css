@@ -6,7 +6,7 @@
 }
 
 .form-box {
-    width: 40%;
+    max-width: 40%;
     height: fit-content;
     margin: 0;
     padding: 2rem;
@@ -15,7 +15,6 @@
     color: var(--card-foreground);
     border-radius: var(--radius);
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    font-family: var(--font-head);
 }
 
 .navbar {
@@ -36,4 +35,10 @@
 
 .logo-img {
     margin-right: 0.5rem;
+}
+
+@media (max-width: 767px) {
+    .form-box {
+        max-width: 90%;
+    }
 }
