@@ -285,6 +285,11 @@
                                         name="" {{-- kosongkan name agar tidak dikirim --}}
                                         onkeydown="return false;"
                                         onwheel="this.blur()">
+                                    @elseif ($key == 'tahun_ajaran')
+                                        <input type='text'
+                                        class="form-control @error($key) is-invalid @enderror"
+                                        id="{{ $key }}" value= {{ $current_year->tahun }}  disabled >
+                                        <input type="hidden" name="tahun_ajaran" value="{{ $current_year->tahun }}">
                                     @else
                                         <input
                                             type="text"
@@ -365,10 +370,16 @@
                                             @enderror 
 
                                         <!-- input fields yang lainnya -->
-                                    @elseif ($key == 'is_current')
+                                         <!-- block bagian tahun ajaran dan is curent biar gak bisa diubah -->
+                                    @elseif ($key == 'is_current' )
                                         <input type='number'
                                         class="form-control @error($key) is-invalid @enderror"
                                         id="{{ $key }}" value= 0 disabled >
+                                    @elseif ($key == 'tahun_ajaran')
+                                        <input type='text'
+                                        class="form-control @error($key) is-invalid @enderror"
+                                        id="{{ $key }}" value= {{ $current_year->tahun }}  disabled >
+                                        <input type="hidden" name="tahun_ajaran" value="{{ $current_year->tahun }}">
                                     @else
                                         <input
                                             type="{{ in_array($key, ['nisn', 'nip_guru_mapel', 'nip_wali_kelas']) ? 'number' : 'text' }}"

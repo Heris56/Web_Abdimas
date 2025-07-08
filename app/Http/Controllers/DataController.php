@@ -51,8 +51,9 @@ class DataController extends Controller
             'nama_guru' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
             'status' => 'required|in:aktif,nonaktif',
-            'id_mapel' => 'required|exists:mapel,id_mapel',
-            'id_kelas' => 'required|exists:kelas,id_kelas',
+            'kode_paket' => 'required|unique:paket_mapel,kode_paket|exists:paket_mapel,kode_paket',
+            // 'id_mapel' => 'required|exists:mapel,id_mapel',
+            // 'id_kelas' => 'required|exists:kelas,id_kelas',
         ],
         'wali_kelas' => [
             'nip_wali_kelas' => 'required|unique:wali_kelas,nip_wali_kelas',
@@ -115,8 +116,9 @@ class DataController extends Controller
                     'nama_guru' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status' => 'Status',
-                    'id_mapel' => 'ID Mapel',
-                    'id_kelas' => 'Kelas'
+                    'kode_paket' => 'Kode Paket'
+                    // 'id_mapel' => 'ID Mapel',
+                    // 'id_kelas' => 'Kelas'
                 ];
                 break;
             case 'wali_kelas':
@@ -158,12 +160,14 @@ class DataController extends Controller
         // agar di view tidak ada '_' atau spasi kosong ' '
         $buttonText = $labels[$type] ?? str_replace('_', ' ', ucwords($type));
 
+        $currentyear = DB::table('tahun_ajaran')->where('is_current', 1)->first();
         return view('dashboard-staff', [
             'data' => $data,
             'columns' => $columns,
             'type' => $type,
             'dropdowns' => $dropdowns,
-            'buttonText' => $buttonText
+            'buttonText' => $buttonText,
+            'current_year' => $currentyear
         ]);
     }
 
