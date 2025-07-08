@@ -55,11 +55,11 @@
             <div class="mt-4 row-md-auto">
                 <div class="col container">
                     {{-- <img src="{{ asset('images/logo_pgri.png') }}" alt="Logo Sekolah PGRI" id="logo-pgri"> --}}
-                    <a href="{{ route('cari') }}" class="btn"><button>Cari Info Siswa</button></a>
-                    <a href="{{ route('login-siswa') }}" class="btn"><button>Masuk ke akun Siswa</button></a>
-                    <a href="{{ route('login-walikelas') }}" class="btn"><button>Masuk ke akun Wali
-                            Kelas</button></a>
-                    <a href="{{ route('login-gurumapel') }}" class="btn"><button>Masuk ke akun Guru</button></a>
+                    <a href="{{ route('cari') }}" class="btn">Cari Info Siswa</a>
+                    <a href="{{ route('login-siswa') }}" class="btn">Masuk ke akun Siswa</a>
+                    <a href="{{ route('login-walikelas') }}" class="btn">Masuk ke akun Wali
+                        Kelas</a>
+                    <a href="{{ route('login-gurumapel') }}" class="btn">Masuk ke akun Guru</a>
                 </div>
             </div>
 
@@ -68,27 +68,31 @@
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <div class="col-auto"><i class="bi bi-facebook"></i></div>
-                <div class="col-auto">:</div>
-                <div class="col text-start">0981284762387</div>
+                <span class="col-auto"><i class="bi bi-facebook"></i></span>
+                <span class="col-auto">:</span>
+                <span class="col text-start">0981284762387</span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <div class="col-auto"><i class="bi bi-whatsapp"></i></div>
-                <div class="col-auto">:</div>
-                <div class="col text-start">0981284762387</div>
+                <span class="col-auto"><i class="bi bi-whatsapp"></i></span>
+                <span class="col-auto">:</span>
+                <span class="col text-start">0981284762387</span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <div class="col-auto"><i class="bi bi-telegram"></i></div>
-                <div class="col-auto">:</div>
-                <div class="col text-start">0981284762387</div>
+                <span class="col-auto"><i class="bi bi-telegram"></i></span>
+                <span class="col-auto">:</span>
+                <span class="col text-start">0981284762387</span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <div class="col-auto"><i class="bi bi-instagram"></i></div>
-                <div class="col-auto">:</div>
-                <div class="col text-start">0981284762387</div>
+                <span class="col-auto"><i class="bi bi-instagram"></i></span>
+                <span class="col-auto">:</span>
+                <span class="col text-start">0981284762387</span>
+            </div>
+
+            <div class="row align-items-center justify-content-start mt-4 mb-2">
+                <div><span>Alamat: SMK PGRI 35 Solokan Jeruk</span></div>
             </div>
         </div>
     </div>
