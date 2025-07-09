@@ -57,6 +57,12 @@
         </div>
     @endif
 
+    @if (session('info'))
+        <div class="alert alert-info">
+            {{ session('info') }}
+        </div>
+    @endif
+
     @if (session('error') || session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -239,8 +245,33 @@
                                     <label for="update_{{ $key }}"
                                         class="form-label">{{ $label }}</label>
 
+                                    @if ($type == 'siswa'  && $key == 'id_kelas')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['kelas'] as $item)
+                                                <option value="{{  $item->id_kelas}}" {{ old($key) == $item->id_kelas ? 'selected' : '' }}>
+                                                    {{  $item->id_kelas}}
+                                                </option>
+                                            @empty
+                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                            @endforelse
+                                        </select>
                                     {{-- Sesuaikan id untuk setiap input --}}
-                                    @if ($type == 'guru_mapel' && $key == 'id_mapel')
+                                    @elseif ($type == 'wali_kelas'  && $key == 'id_kelas')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['kelas'] as $item)
+                                                <option value="{{  $item->id_kelas}}" {{ old($key) == $item->id_kelas ? 'selected' : '' }}>
+                                                    {{  $item->id_kelas}}
+                                                </option>
+                                            @empty
+                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                            @endforelse
+                                        </select>
+                                    {{-- Sesuaikan id untuk setiap input --}}
+                                    @elseif ($type == 'guru_mapel' && $key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
                                             <option value="" {{ old($key) ? '' : 'selected' }} selected disabled>Pilih {{ $label }}
@@ -330,8 +361,22 @@
                                 <div class="mb-3">
                                     <label for="{{ $key }}" class="form-label">{{ $label }}</label>
 
-                                    <!-- set dropdown untuk pilih mapel dan kelas -->
-                                    @if ($type == 'guru_mapel' && $key == 'id_mapel')
+                                    <!-- set dropdown untuk kelas pada siswa dan wali kelas -->
+
+                                    @if ($type == 'wali_kelas'  && $key == 'id_kelas')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="{{ $key }}" name="{{ $key }}" required>
+                                            <option selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['kelas'] as $item)
+                                                <option value="{{  $item->id_kelas}}">
+                                                    {{  $item->id_kelas}}
+                                                </option>
+                                            @empty
+                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                            @endforelse
+                                        </select>
+                                        <!-- set dropdown untuk pilih mapel dan kelas -->
+                                    @elseif ($type == 'guru_mapel' && $key == 'id_mapel')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
@@ -382,7 +427,7 @@
                                         <input type="hidden" name="tahun_ajaran" value="{{ $current_year->tahun }}">
                                     @else
                                         <input
-                                            type="{{ in_array($key, ['nisn', 'nip_guru_mapel', 'nip_wali_kelas']) ? 'number' : 'text' }}"
+                                            type="text"
                                             class="form-control @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                         @error($key)
