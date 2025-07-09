@@ -305,7 +305,8 @@ class ControllerSiswa extends Controller
         DB::table('siswa')
             ->where('nisn', $nisn)
             ->update([
-                'password' => Hash::make($request->new_password)
+                'password' => Hash::make($request->new_password),
+                'pwd_is_changed' => 1
             ]);
 
         return back()->with('success', 'Password berhasil diperbarui.');

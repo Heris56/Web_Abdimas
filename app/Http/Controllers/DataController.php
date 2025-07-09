@@ -300,7 +300,10 @@ class DataController extends Controller
             if (in_array($type, ['siswa', 'guru_mapel', 'wali_kelas'])) {
                 // Gunakan nilai primary key dari $validatedData (mungkin nilai baru jika diubah)
                 // Jika primary key memang bagian dari input form yang di-validate
-                $validatedData['password'] = md5($validatedData[$primaryKey]);
+                $ischanged = DB::table($type)->where($primaryKey, $id)->value('pwd_is_changed');
+                if ($ischanged == false) {
+                    $validatedData['password'] = Hash::make($validatedData[$primaryKey]);
+                }
             }
 
             // Lakukan update data
