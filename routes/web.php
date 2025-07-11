@@ -90,7 +90,7 @@ Route::middleware([isTestMode::class])->group(function () {
     Route::get('/test/login', [login_controller::class, 'checkhashmd5']);
     Route::get('/test/cookies', [login_controller::class, 'loginOrRedirect']);
     Route::get('/test-db', function () {
-        $data = DB::table('guru_mapel')->get();
+        $data = DB::table('guru')->get();
         return $data;
     });
 

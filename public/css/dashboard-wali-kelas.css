@@ -70,12 +70,14 @@ table th {
 }
 
 #kelas h5 {
-    font-weight: bold;
     color: black;
 }
 
 #nip h5 {
-    font-weight: bold;
+    color: black;
+}
+
+#tahun-ajaran h5 {
     color: black;
 }
 
