@@ -17,13 +17,7 @@ class NilaiController extends Controller
         Log::info('NIP', ['nip' => $nip]);
 
         // untuk filter mapel
-        $mapelList = DB::table('mapel')
-            ->leftJoin('nilai', 'mapel.id_mapel', '=', 'nilai.id_mapel')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('mapel.nama_mapel')
-            ->toArray();
+        $mapelList = $this->getListMapelByNipGuruMapel($nip);
         Log::info('mapelList', ['mapelList' => $mapelList]);
 
         $semesterList = DB::table('nilai')
@@ -392,7 +386,8 @@ class NilaiController extends Controller
             ->where('guru_mapel.nip_guru_mapel', $nip_guru_mapel)
             ->select('mapel.id_mapel', 'mapel.nama_mapel', 'guru_mapel.nip_guru_mapel')
             ->distinct() // agar tidak terjadi duplicate data
-            ->get();
+            ->pluck('mapel.nama_mapel')
+            ->toArray();
 
         return $listMapel;
     }
