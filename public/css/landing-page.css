@@ -71,7 +71,6 @@ span {
 }
 
 /* RESPONSIVE DESIGN */
-/* Mobile layout (smaller screens, e.g., iPhones) */
 @media (max-width: 767px) {
     .container1 {
         position: relative; /* Context for absolute positioning */
@@ -98,6 +97,8 @@ span {
     .main-content {
         position: relative; /* Overlaps background */
         z-index: 2; /* Foreground */
+        min-width: fit-content;
+        min-height: fit-content;
         width: 95%;
         height: 75%;
         padding: 20px;
@@ -106,7 +107,6 @@ span {
         justify-content: center;
         align-items: center;
         text-align: center;
-        /* From https://css.glass */
         background: var(--card);
         border-radius: var(--radius);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -136,9 +136,8 @@ span {
     }
 }
 
-/* Very small screens (e.g., iPhone SE at 320px) */
 @media (max-width: 359px) {
     .main-content {
-        padding: 15px; /* Reduced padding for small screens */
+        padding: 15px;
     }
 }
