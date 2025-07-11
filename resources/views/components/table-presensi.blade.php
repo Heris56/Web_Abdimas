@@ -1,4 +1,4 @@
-                    <div style="overflow-x: auto; white-space: nowrap;" class="mb-3">
+                    <div class="table1" style="overflow-x: auto; white-space: nowrap;" class="mb-3">
                     @csrf
                     <table class="table table striped" id="table-presensi" style="min-width: 1500px;">
                     <thead class="table-warning">
