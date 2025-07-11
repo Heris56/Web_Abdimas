@@ -182,11 +182,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="tahunSelect" class="form-label">Tahun Ajaran</label>
-                                <select id="tahunSelect" class="form-select" required>
-                                    <option value="">Pilih Tahun Ajaran</option>
-                                    @foreach ($tahunPelajaranList as $tahun)
-                                        <option value="{{ $tahun }}">{{ $tahun }}</option>
-                                    @endforeach
+                                <select id="tahunSelect" class="form-select" disabled>
+                                    <option value="">{{ $tahunAjaran }}</option>
                                 </select>
                             </div>
                             <div class="mb-3">

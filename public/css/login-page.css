@@ -45,5 +45,6 @@ body {
 @media (max-width: 767px) {
     .form-box {
         max-width: 90%;
+        min-height: fit-content;
     }
 }

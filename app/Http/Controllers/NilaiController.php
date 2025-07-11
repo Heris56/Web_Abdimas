@@ -17,14 +17,10 @@ class NilaiController extends Controller
         Log::info('NIP', ['nip' => $nip]);
 
         // untuk filter mapel
-        $mapelList = DB::table('mapel')
-            ->leftJoin('nilai', 'mapel.id_mapel', '=', 'nilai.id_mapel')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('mapel.nama_mapel')
-            ->toArray();
+        $mapelList = $this->getListMapelByNipGuruMapel($nip);
         Log::info('mapelList', ['mapelList' => $mapelList]);
+
+        $tahunAjaran = $this->getTahunAjaranAktif();
 
         $semesterList = DB::table('nilai')
             ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
@@ -138,7 +134,8 @@ class NilaiController extends Controller
             'mapelList' => $mapelList,
             'tahunPelajaranList' => $tahunPelajaranList,
             'semesterList' => $semesterList,
-            'kelasList' => $kelasList
+            'kelasList' => $kelasList,
+            'tahunAjaran' => $tahunAjaran
         ]);
     }
 
@@ -382,5 +379,26 @@ class NilaiController extends Controller
                 'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getListMapelByNipGuruMapel($nip_guru_mapel)
+    {
+        $listMapel = DB::table('guru_mapel')
+            ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+            ->join('mapel', 'paket_mapel.id_mapel', '=', 'mapel.id_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip_guru_mapel)
+            ->select('mapel.id_mapel', 'mapel.nama_mapel', 'guru_mapel.nip_guru_mapel')
+            ->distinct() // agar tidak terjadi duplicate data
+            ->pluck('mapel.nama_mapel')
+            ->toArray();
+
+        return $listMapel;
+    }
+
+    public function getTahunAjaranAktif()
+    {
+        $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
+
+        return $tahunAjaran;
     }
 }
