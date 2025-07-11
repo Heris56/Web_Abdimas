@@ -383,4 +383,17 @@ class NilaiController extends Controller
             ], 500);
         }
     }
+
+    public function getListMapelByNipGuruMapel($nip_guru_mapel)
+    {
+        $listMapel = DB::table('guru_mapel')
+            ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+            ->join('mapel', 'paket_mapel.id_mapel', '=', 'mapel.id_mapel')
+            ->where('guru_mapel.nip_guru_mapel', $nip_guru_mapel)
+            ->select('mapel.id_mapel', 'mapel.nama_mapel', 'guru_mapel.nip_guru_mapel')
+            ->distinct() // agar tidak terjadi duplicate data
+            ->get();
+
+        return $listMapel;
+    }
 }
