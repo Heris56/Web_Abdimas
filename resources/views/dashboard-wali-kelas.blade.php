@@ -48,6 +48,12 @@
                             NIP: {{ $wali->nip_wali_kelas }}
                         </H5>
                     </div>
+                    <div class="column" id="tahun-ajaran">
+                        <H5>
+                            Tahun Ajaran: {{ $wali->tahun_ajaran }}
+                        </H5>
+                    </div>
+                    </div>
                     <div id="button-ganti-password">
                         <a href="{{ route('dashboard.walikelas.ganti-password') }}">
                         <button type="button" class="btn btn-warning">
