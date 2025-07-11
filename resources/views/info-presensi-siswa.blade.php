@@ -75,7 +75,6 @@
                             <th scope="col">No</th>
                             <th scope="col">Tanggal</th>
                             <th scope="col">Keterangan</th>
-                            <th scope="col">Catatan</th>
                         </tr>
                     </thead>
 
@@ -85,17 +84,6 @@
                                 <td>{{ $index + 1 }}</th>
                                 <td>{{ $presensiItem->tanggal }}</td>
                                 <td>{{ $presensiItem->keterangan_absen }}</td>
-                                <td>
-                                    @if($presensiItem->keterangan_absen == 'Hadir')
-                                        -
-                                    @elseif($presensiItem->keterangan_absen == 'Izin')
-                                        Surat izin sakit
-                                    @elseif($presensiItem->keterangan_absen == 'Alpha')
-                                        Tidak ada keterangan
-                                    @else
-                                        Terlambat
-                                    @endif
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>
