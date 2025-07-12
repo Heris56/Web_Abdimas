@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -397,13 +398,9 @@ class NilaiController extends Controller
                 'inputKegiatan' => 'required|string|max:255',
             ]);
 
-            $guru_mapel = DB::table('guru_mapel')
-                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
-                ->where('guru_mapel.nip_guru_mapel', $nip)
-                ->where('paket_mapel.id_mapel', $validated['id_mapel'])
-                ->exists();
+            $assigned = verifyTeacherAccessToMapel($nip, $validated['mapelSelect']);
 
-            if (!$guru_mapel) {
+            if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
                     'nip' => $nip,
                     'id_mapel' => $validated['id_mapel'],
@@ -487,4 +484,16 @@ class NilaiController extends Controller
 
         return $tahunAjaran;
     }
+
+    public function verifyTeacherAccessToMapel($nip, $mapel)
+    {
+        $assigned = DB::table('guru_mapel')
+                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+                ->where('guru_mapel.nip_guru_mapel', $nip)
+                ->where('paket_mapel.id_mapel', $mapel)
+                ->exists();
+
+        return $assigned;
+    }
+
 }
