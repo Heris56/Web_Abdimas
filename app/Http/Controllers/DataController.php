@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException; // Import ValidationException unt
 use Illuminate\Support\Facades\Session; // Use Session facade for clarity
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class DataController extends Controller
 {
@@ -51,7 +52,7 @@ class DataController extends Controller
             'nama_guru' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
             'status' => 'required|in:aktif,nonaktif',
-            'kode_paket' => 'required|unique:paket_mapel,kode_paket|exists:paket_mapel,kode_paket',
+            'kode_paket' => 'exists:paket_mapel,kode_paket',
             // 'id_mapel' => 'required|exists:mapel,id_mapel',
             // 'id_kelas' => 'required|exists:kelas,id_kelas',
         ],
@@ -68,6 +69,20 @@ class DataController extends Controller
         ],
         'tahun_ajaran' => [
             'tahun' => 'required|string|max:10|unique:tahun_ajaran,tahun',
+        ],
+        'paket_mapel' => [
+            'kode_paket' => 'required|string|max:50',
+            'id_kelas' => 'required|exists:kelas,id_kelas',
+            'id_mapel' => [
+                'required',
+                'exists:mapel,id_mapel',
+                // // Ini akan memastikan kombinasi kode_paket, id_kelas, id_mapel unik
+                // Rule::unique('paket_mapel')->where(function ($query) use ($request) {
+                //         return $query->where('kode_paket', $request->kode_paket)
+                //             ->where('id_kelas', $request->id_kelas);
+                //     }),
+            ],
+            'tahun_ajaran' => 'required|string|max:10',
         ],
     ];
 
@@ -88,6 +103,7 @@ class DataController extends Controller
             'siswa' => DB::table('siswa')->get(['nisn', 'nama_siswa']),
             'guru_mapel' => DB::table('guru_mapel')->get(['nip_guru_mapel', 'nama_guru']),
             'wali_kelas' => DB::table('wali_kelas')->get(['nip_wali_kelas', 'nama']),
+            'paket_mapel' => DB::table('paket_mapel')->select('kode_paket')->distinct()->get(),
         ];
 
         switch ($type) {
@@ -112,7 +128,7 @@ class DataController extends Controller
             case 'guru_mapel':
                 $data = DB::table('guru_mapel')->get();
                 $columns = [
-                    'nip_guru_mapel' => 'NIP',
+                    'nip_guru_mapel' => 'Kode Guru',
                     'nama_guru' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status' => 'Status',
@@ -124,7 +140,7 @@ class DataController extends Controller
             case 'wali_kelas':
                 $data = DB::table('wali_kelas')->get();
                 $columns = [
-                    'nip_wali_kelas' => 'NIP',
+                    'nip_wali_kelas' => 'Kode Guru',
                     'nama' => 'Nama Guru',
                     'tahun_ajaran' => 'Tahun Ajaran',
                     'status' => 'Status',
@@ -144,6 +160,17 @@ class DataController extends Controller
                     'tahun' => 'Tahun Ajaran',
                     'is_current' => 'Tahun berjalan'
                 ];
+                break;
+            case 'paket_mapel':
+                $data = DB::table('paket_mapel')->get();
+                $columns = [
+                    'kode_paket' => 'Kode Paket',
+                    'id_kelas' => 'Kelas',
+                    'id_mapel' => 'Mapel',
+                    'tahun_ajaran' => 'Tahun Ajaran'
+                ];
+
+
                 break;
             default:
                 $data = DB::table('siswa')->get();
@@ -184,9 +211,18 @@ class DataController extends Controller
                 return response()->json(['success' => false, 'message' => "Invalid type: {$type}"], 400);
             }
 
+            $validationRules = $this->rules[$type]; // Ambil aturan dasar
+
+            if ($type === 'paket_mapel') {
+                $validationRules['id_mapel'][] = Rule::unique('paket_mapel')->where(function ($query) use ($request) {
+                    return $query->where('kode_paket', $request->kode_paket)
+                        ->where('id_kelas', $request->id_kelas);
+                });
+            }
+
             Log::info("Starting validation for type: {$type}");
-            $validated = $request->validate($this->rules[$type]);
-            Log::info("Validated data for type {$type}: " . json_encode($validated));
+            $validated = $request->validate($validationRules);
+            Log::info(message: "Validated data for type {$type}: " . json_encode($validated));
 
             Log::info("Processing insertion for type: {$type}");
             switch ($type) {
@@ -217,6 +253,10 @@ class DataController extends Controller
                     $result = DB::table('tahun_ajaran')->insert($validated);
                     Log::info("Tahun ajaran insert result: " . ($result ? 'Success' : 'Failed'));
                     break;
+                case 'paket_mapel':
+                    $result = DB::table('paket_mapel')->insert($validated);
+                    Log::info("Paket mapel insert result: " . ($result ? 'Success' : 'Failed'));
+                    break;
                 default:
                     Log::error("Unexpected type in switch: {$type}");
                     return response()->json(['success' => false, 'message' => "Invalid type: {$type}"], 400);
@@ -229,7 +269,7 @@ class DataController extends Controller
 
             Log::info("Data successfully saved for type: {$type}");
             return redirect()->back()->with('success', 'Data berhasil disimpan!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             Log::error("Validation error for type {$type}: " . json_encode($e->errors()));
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json(['success' => false, 'message' => $e->errors()], 422);
@@ -281,6 +321,13 @@ class DataController extends Controller
                 case 'tahun_ajaran':
                     $primaryKey = 'id_tahun_ajaran';
                     $validationRules['tahun'] = 'required|string|max:10|unique:tahun_ajaran,tahun,' . $id . ',' . $primaryKey;
+                    break;
+                case 'paket_mapel':
+                    $primaryKey = 'id_paket';
+                    $validationRules['id_mapel'][] = Rule::unique('paket_mapel')->where(function ($query) use ($request) {
+                        return $query->where('kode_paket', $request->kode_paket)
+                            ->where('id_kelas', $request->id_kelas);
+                    })->ignore($id, $primaryKey);
                     break;
                 default:
                     Log::error("Unexpected type for update in switch: {$type}");
@@ -342,22 +389,31 @@ class DataController extends Controller
 
             $inputpassword = $request->input('password_admin');
 
+            $ischanged = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('is_changed');
+
             if (Hash::check($inputpassword, $userpassword)) {
-                $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
-                // nonaktifkan active marker terlebih dahulu
-                DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
+                if ($ischanged == false) {
+                    $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
+                    // nonaktifkan active marker terlebih dahulu
+                    DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
 
-                // set mark jadi active lagi di tahun yang dipilih
-                DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
+                    // set mark jadi active lagi di tahun yang dipilih
+                    DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
 
-                // update semua tahun ajaran siswa
-                DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+                    // update semua tahun ajaran siswa
+                    DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
 
-                // update tahun ajaran guru_mapel
-                DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
-                // update tahun ajaran wali_kelas
-                DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
-                return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
+                    // update tahun ajaran guru_mapel
+                    DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+                    // update tahun ajaran wali_kelas
+                    DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+
+                    DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_changed' => true]);
+                    return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
+                } else {
+                    return redirect()->back()->with('error', 'Gagal Mengganti Tahun ajaran, tahun ajaran sudah pernah diubah sebelumnya');
+                }
+
             } else {
                 return redirect()->back()->withErrors(['password_admin' => 'Password admin salah.'])->withInput()->with('show_confirm_password_modal', true);
             }
