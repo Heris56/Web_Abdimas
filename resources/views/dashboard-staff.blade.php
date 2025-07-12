@@ -211,6 +211,13 @@
                         <i class="bi bi-bar-chart-line me-2"></i> Tahun Ajaran
                     </a>
                 </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ route('data.fetch', 'paket_mapel') }}"
+                        class="nav-link {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'paket_mapel' ? 'active' : '' }}"
+                        {{ Route::is('data.fetch') && Route::current()->parameter('type') == 'paket_mapel' ? 'aria-current=page' : '' }}>
+                        <i class="bi bi-bar-chart-line me-2"></i> Paket Mapel
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link text-danger">
                         <i class="bi bi-box-arrow-right me-2"></i> Logout
@@ -271,14 +278,14 @@
                                             @endforelse
                                         </select>
                                     {{-- Sesuaikan id untuk setiap input --}}
-                                    @elseif ($type == 'guru_mapel' && $key == 'id_mapel')
+                                    @elseif ($type == 'guru_mapel' && $key == 'kode_paket')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
                                             <option value="" {{ old($key) ? '' : 'selected' }} selected disabled>Pilih {{ $label }}
                                             </option>
-                                            @foreach ($dropdowns['mapel'] as $mapelItem)
-                                                <option value="{{ $mapelItem->id_mapel }}" {{ old($key) == $mapelItem->id_mapel ? 'selected' : '' }}>
-                                                    {{ $mapelItem->nama_mapel }}</option>
+                                            @foreach ($dropdowns['paket_mapel'] as $mapelItem)
+                                                <option value="{{ $mapelItem->kode_paket }}" {{ old($key) == $mapelItem->kode_paket ? 'selected' : '' }}>
+                                                    {{ $mapelItem->kode_paket }} - {{ $item->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>
                                         @error($key)
@@ -363,7 +370,7 @@
 
                                     <!-- set dropdown untuk kelas pada siswa dan wali kelas -->
 
-                                    @if ($type == 'wali_kelas'  && $key == 'id_kelas')
+                                    @if (($type == 'wali_kelas' || $type == 'siswa')  && $key == 'id_kelas')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                                 id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
@@ -429,7 +436,7 @@
                                         <input
                                             type="text"
                                             class="form-control @error($key) is-invalid @enderror"
-                                            id="{{ $key }}" name="{{ $key }}" required>
+                                            id="{{ $key }}" name="{{ $key }}" value="{{ old($key) }}" required>
                                         @error($key)
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
