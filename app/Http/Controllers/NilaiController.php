@@ -398,7 +398,7 @@ class NilaiController extends Controller
                 'inputKegiatan' => 'required|string|max:255',
             ]);
 
-            $assigned = verifyTeacherAccessToMapel($nip, $validated['mapelSelect']);
+            $assigned = $this->verifyTeacherAccessToMapel($nip, $validated['mapelSelect']);
 
             if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
