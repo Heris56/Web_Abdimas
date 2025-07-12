@@ -410,24 +410,24 @@ class NilaiController extends Controller
 
             // Check if kegiatan already exists for this mapel and tahun_pelajaran
             $exists = DB::table('nilai')
-                ->where('id_mapel', $validated['id_mapel'])
-                ->where('tahun_pelajaran', $validated['tahun_pelajaran'])
-                ->where('kegiatan', $validated['kegiatan'])
+                ->where('id_mapel', $validated['mapelSelect'])
+                ->where('tahun_pelajaran', $validated['tahunSelect'])
+                ->where('kegiatan', $validated['inputKegiatan'])
                 ->exists();
 
             if ($exists) {
                 Log::warning('Kegiatan already exists', [
-                    'id_mapel' => $validated['id_mapel'],
-                    'tahun_pelajaran' => $validated['tahun_pelajaran'],
-                    'kegiatan' => $validated['kegiatan'],
+                    'id_mapel' => $validated['mapelSelect'],
+                    'tahun_pelajaran' => $validated['tahunSelect'],
+                    'kegiatan' => $validated['inputKegiatan'],
                 ]);
                 return response()->json(['message' => 'Kegiatan sudah ada untuk mata pelajaran dan tahun pelajaran ini'], 409);
             }
 
             $students = DB::table('siswa')
                 ->join('nilai', 'siswa.nisn', '=', 'nilai.nisn')
-                ->where('nilai.id_mapel', $validated['id_mapel'])
-                ->where('nilai.tahun_pelajaran', $validated['tahun_pelajaran'])
+                ->where('nilai.id_mapel', $validated['mapelSelect'])
+                ->where('nilai.tahun_pelajaran', $validated['tahunSelect'])
                 ->where('nilai.nip_guru_mapel', $nip)
                 ->distinct()
                 ->pluck('siswa.nisn');
@@ -436,21 +436,19 @@ class NilaiController extends Controller
             foreach ($students as $nisn) {
                 DB::table('nilai')->insert([
                     'nisn' => $nisn,
-                    'id_mapel' => $validated['id_mapel'],
+                    'id_mapel' => $validated['mapelSelect'],
                     'nip_guru_mapel' => $nip,
-                    'tahun_pelajaran' => $validated['tahun_pelajaran'],
-                    'kegiatan' => $validated['kegiatan'],
-                    'nilai' => null, // Initially null
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'tahun_pelajaran' => $validated['tahunSelect'],
+                    'kegiatan' => $validated['inputKegiatan'],
+                    'nilai' => null,
                 ]);
             }
             DB::commit();
 
             Log::info('Kegiatan inserted successfully', [
-                'id_mapel' => $validated['id_mapel'],
-                'tahun_pelajaran' => $validated['tahun_pelajaran'],
-                'kegiatan' => $validated['kegiatan'],
+                'id_mapel' => $validated['mapelSelect'],
+                'tahun_pelajaran' => $validated['tahunSelect'],
+                'kegiatan' => $validated['inputKegiatan'],
             ]);
 
             return response()->json(['message' => 'Kegiatan berhasil ditambahkan']);
