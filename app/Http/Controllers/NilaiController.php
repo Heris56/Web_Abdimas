@@ -426,12 +426,20 @@ class NilaiController extends Controller
             }
 
             $students = DB::table('siswa')
-                ->join('nilai', 'siswa.nisn', '=', 'nilai.nisn')
-                ->where('nilai.id_mapel', $id_mapel)
-                ->where('nilai.tahun_pelajaran', $tahunAjaran)
-                ->where('nilai.nip_guru_mapel', $nip)
-                ->distinct()
+                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip) {
+                    $join->on('siswa.nisn', '=', 'nilai.nisn')
+                        ->where('nilai.id_mapel', '=', $id_mapel)
+                        ->where('nilai.tahun_pelajaran', '=', $tahunAjaran)
+                        ->where('nilai.nip_guru_mapel', '=', $nip);
+                })
+                ->whereNull('nilai.nisn')
                 ->pluck('siswa.nisn');
+            Log::debug('Fetched students', ['students' => $students]);
+
+            if ($students->isEmpty()) {
+                Log::warning('No students found for this kegiatan insert');
+            }
+
 
             DB::beginTransaction();
             foreach ($students as $nisn) {
@@ -447,6 +455,7 @@ class NilaiController extends Controller
             DB::commit();
 
             Log::info('Kegiatan inserted successfully', [
+                'nip' => $nip,
                 'id_mapel' => $id_mapel,
                 'tahun_pelajaran' => $tahunAjaran,
                 'kegiatan' => $kegiatan,
@@ -487,9 +496,9 @@ class NilaiController extends Controller
     public function verifyTeacherAccessToMapel($nip, $mapel)
     {
         Log::info('verifyTeacher called', [
-                'nip' => $nip,
-                'id_mapel' => $mapel,
-            ]);
+            'nip' => $nip,
+            'id_mapel' => $mapel,
+        ]);
         $assigned = DB::table('guru_mapel')
             ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
             ->where('guru_mapel.nip_guru_mapel', $nip)
