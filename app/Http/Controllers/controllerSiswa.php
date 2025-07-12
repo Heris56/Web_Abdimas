@@ -67,11 +67,18 @@ class ControllerSiswa extends Controller
         // Determine which tab to show (presensi or nilai)
         $tab = $request->input('tab', 'presensi'); // Default to presensi
 
+        // Prepare the merged request with all needed parameters
+        $mergedRequest = $request->merge([
+            'nisn_guest' => $nisn,
+            'isGuest' => true,
+            'tahun_ajaran' => $request->input('tahun_ajaran')
+        ]);
+
         if ($tab === 'nilai') {
-            return $this->fetchNilaiSiswa($request->merge(['nisn_guest' => $nisn, 'isGuest' => true]));
+            return $this->fetchNilaiSiswa($mergedRequest);
         }
 
-        return $this->showPresensi($request->merge(['nisn_guest' => $nisn, 'isGuest' => true]));
+        return $this->showPresensi($mergedRequest);
     }
 
 
@@ -115,7 +122,7 @@ class ControllerSiswa extends Controller
                 $tahun = $tanggal->year;
 
                 $item->semester = ($bulan >= 1 && $bulan <= 6) ? '2' : '1'; // Genap = 2, Ganjil = 1
-    
+
                 // Tahun ajaran berdasarkan bulan
                 $tahun_awal = ($bulan >= 7) ? $tahun : $tahun - 1;
                 $tahun_akhir = $tahun_awal + 1;
@@ -267,7 +274,6 @@ class ControllerSiswa extends Controller
                 'tahunAjaranFilter' => $tahunSemesterFilter,
                 'isGuest' => $isGuest,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Error in fetchNilaiSiswa', [
                 'nisn' => $nisn ?? 'unknown',

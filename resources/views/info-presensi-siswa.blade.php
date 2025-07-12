@@ -152,13 +152,31 @@
         <script>
             function filterByTahunAjaran() {
                 const selectedTahun = document.getElementById('filterTahunAjaran').value;
+                const isGuest = {{ $isGuest ? 'true' : 'false' }};
+                const currentNISN = "{{ $siswa->nisn ?? '' }}"; // Ensure NISN is available
+                const currentTab = "{{ $tab ?? 'presensi' }}"; // Get the currently active tab
 
-                if (selectedTahun === 'all') {
-                    window.location.href = "{{ route('info.presensi') }}";
-                    return;
+                let baseUrl;
+                let params = new URLSearchParams(); // Start with empty params, add what's needed
+
+                if (selectedTahun !== 'all') {
+                    params.set('tahun_ajaran', selectedTahun);
                 }
 
-                window.location.href = "{{ route('info.presensi') }}?tahun_ajaran=" + selectedTahun;
+                if (isGuest) {
+                    baseUrl = "{{ route('guest.info.siswa') }}";
+                    params.set('inputNISN', currentNISN); // Always pass NISN for guest info
+                    if (currentTab === 'nilai') {
+                        params.set('tab', 'nilai'); // Preserve 'nilai' tab if active
+                    }
+                    // For 'presensi' tab, no need to explicitly add 'tab=presensi' as it's the default
+                } else {
+                    // For logged-in student, this filter is only for the presensi page
+                    baseUrl = "{{ route('info.presensi') }}";
+                    // No need to pass 'tab' or 'inputNISN' for logged-in student's presensi page
+                }
+
+                window.location.href = baseUrl + '?' + params.toString();
             }
         </script>
 </body>
