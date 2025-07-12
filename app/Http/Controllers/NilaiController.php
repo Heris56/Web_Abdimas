@@ -386,6 +386,9 @@ class NilaiController extends Controller
     {
         try {
             $nip = session('userID');
+            $mapel = $request->input('mapelSelect');
+            $tahunAjaran = $this->getTahunAjaranAktif();
+            $kegiatan = $request->input('inputKegiatan');
 
             Log::info('storeKegiatan called', [
                 'nip' => $nip,
@@ -398,28 +401,28 @@ class NilaiController extends Controller
                 'inputKegiatan' => 'required|string|max:255',
             ]);
 
-            $assigned = $this->verifyTeacherAccessToMapel($nip, $validated['mapelSelect']);
+            $assigned = $this->verifyTeacherAccessToMapel($nip, $mapel);
 
             if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
                     'nip' => $nip,
-                    'id_mapel' => $validated['id_mapel'],
+                    'mapel' => $mapel,
                 ]);
                 return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
             }
 
             // Check if kegiatan already exists for this mapel and tahun_pelajaran
             $exists = DB::table('nilai')
-                ->where('id_mapel', $validated['mapelSelect'])
-                ->where('tahun_pelajaran', $validated['tahunSelect'])
-                ->where('kegiatan', $validated['inputKegiatan'])
+                ->where('id_mapel', $mapel)
+                ->where('tahun_pelajaran', $tahunAjaran)
+                ->where('kegiatan', $kegiatan)
                 ->exists();
 
             if ($exists) {
                 Log::warning('Kegiatan already exists', [
-                    'id_mapel' => $validated['mapelSelect'],
-                    'tahun_pelajaran' => $validated['tahunSelect'],
-                    'kegiatan' => $validated['inputKegiatan'],
+                    'mapel' => $mapel,
+                    'tahun_pelajaran' => $tahunAjaran,
+                    'kegiatan' => $kegiatan,
                 ]);
                 return response()->json(['message' => 'Kegiatan sudah ada untuk mata pelajaran dan tahun pelajaran ini'], 409);
             }
@@ -486,12 +489,18 @@ class NilaiController extends Controller
     public function verifyTeacherAccessToMapel($nip, $mapel)
     {
         $assigned = DB::table('guru_mapel')
-                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
-                ->where('guru_mapel.nip_guru_mapel', $nip)
-                ->where('paket_mapel.id_mapel', $mapel)
-                ->exists();
+            ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->where('paket_mapel.id_mapel', $mapel)
+            ->exists();
 
         return $assigned;
     }
 
+    public function getIdMapel($mapel)
+    {
+        return DB::table('mapel')
+            ->where('nama_mapel', $mapel)
+            ->value('id_mapel');
+    }
 }

@@ -13,51 +13,51 @@ $(document).ready(function () {
     }
 
     // Handle form submission for input nilai
-    $('#inputKegiatanForm').on('submit', function (e) {
-        e.preventDefault();
-        var nisn = $('#nisnSelect').val();
-        var kegiatan = $('#kegiatanSelect').val();
-        var nilai = $('#nilaiInput').val();
-        var mapel = $('#mapelSelect').val();
-        var tahun = $('#tahunSelect').val();
-        var kelas = $('#kelasFilter').val() || '';
-        var semester = $('#semesterFilter').val() || '';
+    // $('#inputKegiatanForm').on('submit', function (e) {
+    //     e.preventDefault();
+    //     var nisn = $('#nisnSelect').val();
+    //     var kegiatan = $('#kegiatanSelect').val();
+    //     var nilai = $('#nilaiInput').val();
+    //     var mapel = $('#mapelSelect').val();
+    //     var tahun = $('#tahunSelect').val();
+    //     var kelas = $('#kelasFilter').val() || '';
+    //     var semester = $('#semesterFilter').val() || '';
 
-        if (!nisn || !kegiatan || !nilai || !mapel || !tahun) {
-            showToast('Harap isi semua field!', 'text-bg-danger');
-            return;
-        }
+    //     if (!nisn || !kegiatan || !nilai || !mapel || !tahun) {
+    //         showToast('Harap isi semua field!', 'text-bg-danger');
+    //         return;
+    //     }
 
-        showToast('Sedang menyimpan...', 'text-bg-primary');
+    //     showToast('Sedang menyimpan...', 'text-bg-primary');
 
-        $.ajax({
-            url: "/dashboard/guru-mapel/input-nilai",
-            type: "POST",
-            data: {
-                nisn: nisn,
-                kegiatan: kegiatan,
-                nilai: nilai,
-                mapel: mapel,
-                tahun_pelajaran: tahun,
-                id_kelas: kelas,
-                semester: semester
-            },
-            success: function (response) {
-                console.log('Input nilai success:', response);
-                showToast('Nilai berhasil disimpan!', 'text-bg-success');
-                $('#inputNilaiModal').modal('hide');
-                $('#inputKegiatanForm')[0].reset();
-                // Use active tab's mapel and current filter values
-                const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
-                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
-            },
-            error: function (xhr, status, error) {
-                console.error('Input nilai error:', { status, error, responseText: xhr.responseText });
-                let message = xhr.responseJSON?.message || 'Gagal menyimpan nilai!';
-                showToast(message, 'text-bg-danger');
-            }
-        });
-    });
+    //     $.ajax({
+    //         url: "/dashboard/guru-mapel/input-nilai",
+    //         type: "POST",
+    //         data: {
+    //             nisn: nisn,
+    //             kegiatan: kegiatan,
+    //             nilai: nilai,
+    //             mapel: mapel,
+    //             tahun_pelajaran: tahun,
+    //             id_kelas: kelas,
+    //             semester: semester
+    //         },
+    //         success: function (response) {
+    //             console.log('Input nilai success:', response);
+    //             showToast('Nilai berhasil disimpan!', 'text-bg-success');
+    //             $('#inputNilaiModal').modal('hide');
+    //             $('#inputKegiatanForm')[0].reset();
+    //             // Use active tab's mapel and current filter values
+    //             const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
+    //             fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error('Input nilai error:', { status, error, responseText: xhr.responseText });
+    //             let message = xhr.responseJSON?.message || 'Gagal menyimpan nilai!';
+    //             showToast(message, 'text-bg-danger');
+    //         }
+    //     });
+    // });
 
     // Handle tab clicks
     $("#mapelTabs .nav-link").on("click", function () {
