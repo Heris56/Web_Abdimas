@@ -170,10 +170,32 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="inputNilaiForm">
+                        <form id="inputKegiatanForm">
+                            @csrf
+                            <!-- Mata Pelajaran -->
                             <div class="mb-3">
-                                <label for="inputKegiatan" class="form-label">Kegiatan</label>
-                                <input type="text" class="form-control" id="inputKegiatan" name="inputKegiatan" required>
+                                <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
+                                <select id="mapelSelect" class="form-select">
+                                    @foreach ($mapelList as $mapel)
+                                        <option value="{{ $mapel }}">{{ $mapel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Tahun Pelajaran -->
+                            <div class="mb-3">
+                                <label for="tahunSelect" class="form-label">Tahun Ajaran</label>
+                                <select id="tahunSelect" class="form-select" disabled>
+                                    <option selected disabled value="">{{ $tahunAjaran }}</option>
+                                </select>
+                            </div>
+
+                            {{-- Kegiatan --}}
+                            <div class="mb-3">
+                                <label for="inputKegiatan" class="form-label"
+                                    data-tahun_pelajaran="{{ $tahunAjaran }}">Kegiatan</label>
+                                <input type="text" class="form-control" id="inputKegiatan" name="inputKegiatan"
+                                    required>
                             </div>
                             <button type="submit" class="btn btn-primary">Tambah</button>
                         </form>

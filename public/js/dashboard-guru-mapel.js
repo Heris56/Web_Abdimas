@@ -13,7 +13,7 @@ $(document).ready(function () {
     }
 
     // Handle form submission for input nilai
-    $('#inputNilaiForm').on('submit', function (e) {
+    $('#inputKegiatanForm').on('submit', function (e) {
         e.preventDefault();
         var nisn = $('#nisnSelect').val();
         var kegiatan = $('#kegiatanSelect').val();
@@ -46,7 +46,7 @@ $(document).ready(function () {
                 console.log('Input nilai success:', response);
                 showToast('Nilai berhasil disimpan!', 'text-bg-success');
                 $('#inputNilaiModal').modal('hide');
-                $('#inputNilaiForm')[0].reset();
+                $('#inputKegiatanForm')[0].reset();
                 // Use active tab's mapel and current filter values
                 const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
                 fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");

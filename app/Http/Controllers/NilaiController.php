@@ -381,6 +381,92 @@ class NilaiController extends Controller
         }
     }
 
+    public function tambahKegiatan(Request $request)
+    {
+        try {
+            $nip = session('userID');
+
+            Log::info('storeKegiatan called', [
+                'nip' => $nip,
+                'request_data' => $request->all(),
+            ]);
+
+            $validated = $request->validate([
+                'mapelSelect' => 'required|exists:mapel,id_mapel',
+                'tahunSelect' => 'required|string',
+                'inputKegiatan' => 'required|string|max:255',
+            ]);
+
+            $guru_mapel = DB::table('guru_mapel')
+                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+                ->where('guru_mapel.nip_guru_mapel', $nip)
+                ->where('paket_mapel.id_mapel', $validated['id_mapel'])
+                ->exists();
+
+            if (!$guru_mapel) {
+                Log::error('Unauthorized access to mapel', [
+                    'nip' => $nip,
+                    'id_mapel' => $validated['id_mapel'],
+                ]);
+                return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
+            }
+
+            // Check if kegiatan already exists for this mapel and tahun_pelajaran
+            $exists = DB::table('nilai')
+                ->where('id_mapel', $validated['id_mapel'])
+                ->where('tahun_pelajaran', $validated['tahun_pelajaran'])
+                ->where('kegiatan', $validated['kegiatan'])
+                ->exists();
+
+            if ($exists) {
+                Log::warning('Kegiatan already exists', [
+                    'id_mapel' => $validated['id_mapel'],
+                    'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                    'kegiatan' => $validated['kegiatan'],
+                ]);
+                return response()->json(['message' => 'Kegiatan sudah ada untuk mata pelajaran dan tahun pelajaran ini'], 409);
+            }
+
+            $students = DB::table('siswa')
+                ->join('nilai', 'siswa.nisn', '=', 'nilai.nisn')
+                ->where('nilai.id_mapel', $validated['id_mapel'])
+                ->where('nilai.tahun_pelajaran', $validated['tahun_pelajaran'])
+                ->where('nilai.nip_guru_mapel', $nip)
+                ->distinct()
+                ->pluck('siswa.nisn');
+
+            DB::beginTransaction();
+            foreach ($students as $nisn) {
+                DB::table('nilai')->insert([
+                    'nisn' => $nisn,
+                    'id_mapel' => $validated['id_mapel'],
+                    'nip_guru_mapel' => $nip,
+                    'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                    'kegiatan' => $validated['kegiatan'],
+                    'nilai' => null, // Initially null
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            DB::commit();
+
+            Log::info('Kegiatan inserted successfully', [
+                'id_mapel' => $validated['id_mapel'],
+                'tahun_pelajaran' => $validated['tahun_pelajaran'],
+                'kegiatan' => $validated['kegiatan'],
+            ]);
+
+            return response()->json(['message' => 'Kegiatan berhasil ditambahkan']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation error in storeKegiatan', ['errors' => $e->errors()]);
+            return response()->json(['message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in storeKegiatan', ['message' => $e->getMessage()]);
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan kegiatan'], 500);
+        }
+    }
+
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
         $listMapel = DB::table('guru_mapel')
