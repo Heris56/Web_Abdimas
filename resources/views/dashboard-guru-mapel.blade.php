@@ -175,7 +175,8 @@
                             <!-- Mata Pelajaran -->
                             <div class="mb-3">
                                 <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
-                                <select id="mapelSelect" class="form-select">
+                                <select id="mapelSelect" name="mapelSelect" class="form-select">
+                                    <option value="">Pilih Mata Pelajaran</option>
                                     @foreach ($mapelList as $mapel)
                                         <option value="{{ $mapel }}">{{ $mapel }}</option>
                                     @endforeach

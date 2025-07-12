@@ -389,19 +389,17 @@ class NilaiController extends Controller
             $mapel = $request->input('mapelSelect');
             $tahunAjaran = $this->getTahunAjaranAktif();
             $kegiatan = $request->input('inputKegiatan');
+            $id_mapel = $this->getIdMapel($mapel);
 
             Log::info('storeKegiatan called', [
                 'nip' => $nip,
+                'id_mapel' => $id_mapel,
+                'tahunAjaran' => $tahunAjaran,
+                'mapel' => $mapel,
                 'request_data' => $request->all(),
             ]);
 
-            $validated = $request->validate([
-                'mapelSelect' => 'required|exists:mapel,id_mapel',
-                'tahunSelect' => 'required|string',
-                'inputKegiatan' => 'required|string|max:255',
-            ]);
-
-            $assigned = $this->verifyTeacherAccessToMapel($nip, $mapel);
+            $assigned = $this->verifyTeacherAccessToMapel($nip, $id_mapel);
 
             if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
@@ -413,14 +411,14 @@ class NilaiController extends Controller
 
             // Check if kegiatan already exists for this mapel and tahun_pelajaran
             $exists = DB::table('nilai')
-                ->where('id_mapel', $mapel)
+                ->where('id_mapel', $id_mapel)
                 ->where('tahun_pelajaran', $tahunAjaran)
                 ->where('kegiatan', $kegiatan)
                 ->exists();
 
             if ($exists) {
                 Log::warning('Kegiatan already exists', [
-                    'mapel' => $mapel,
+                    'mapel' => $id_mapel,
                     'tahun_pelajaran' => $tahunAjaran,
                     'kegiatan' => $kegiatan,
                 ]);
@@ -429,8 +427,8 @@ class NilaiController extends Controller
 
             $students = DB::table('siswa')
                 ->join('nilai', 'siswa.nisn', '=', 'nilai.nisn')
-                ->where('nilai.id_mapel', $validated['mapelSelect'])
-                ->where('nilai.tahun_pelajaran', $validated['tahunSelect'])
+                ->where('nilai.id_mapel', $id_mapel)
+                ->where('nilai.tahun_pelajaran', $tahunAjaran)
                 ->where('nilai.nip_guru_mapel', $nip)
                 ->distinct()
                 ->pluck('siswa.nisn');
@@ -439,19 +437,19 @@ class NilaiController extends Controller
             foreach ($students as $nisn) {
                 DB::table('nilai')->insert([
                     'nisn' => $nisn,
-                    'id_mapel' => $validated['mapelSelect'],
+                    'id_mapel' => $id_mapel,
                     'nip_guru_mapel' => $nip,
-                    'tahun_pelajaran' => $validated['tahunSelect'],
-                    'kegiatan' => $validated['inputKegiatan'],
+                    'tahun_pelajaran' => $tahunAjaran,
+                    'kegiatan' => $kegiatan,
                     'nilai' => null,
                 ]);
             }
             DB::commit();
 
             Log::info('Kegiatan inserted successfully', [
-                'id_mapel' => $validated['mapelSelect'],
-                'tahun_pelajaran' => $validated['tahunSelect'],
-                'kegiatan' => $validated['inputKegiatan'],
+                'id_mapel' => $id_mapel,
+                'tahun_pelajaran' => $tahunAjaran,
+                'kegiatan' => $kegiatan,
             ]);
 
             return response()->json(['message' => 'Kegiatan berhasil ditambahkan']);
@@ -488,6 +486,10 @@ class NilaiController extends Controller
 
     public function verifyTeacherAccessToMapel($nip, $mapel)
     {
+        Log::info('verifyTeacher called', [
+                'nip' => $nip,
+                'id_mapel' => $mapel,
+            ]);
         $assigned = DB::table('guru_mapel')
             ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
             ->where('guru_mapel.nip_guru_mapel', $nip)
