@@ -70,13 +70,15 @@ class dashboard_wali_kelas_controller extends Controller
 
     public function edit_kehadiran(Request $request)
     {
+    
     $data = $request->validate([
     'nisn' => 'required', 
     'tanggal' => 'required|date', 
     'keterangan_absen' => 'nullable|string',
+    'tahun_ajaran' => 'required|string'
     ]);
 
-    DB::table('absen')->updateOrInsert(['nisn'=>$data['nisn'],'tanggal'=>$data['tanggal']], ['keterangan_absen' => $data['keterangan_absen']]);
+    DB::table('absen')->updateOrInsert(['nisn'=>$data['nisn'],'tanggal'=>$data['tanggal']], ['keterangan_absen' => $data['keterangan_absen'], 'tahun_ajaran'=>$data['tahun_ajaran']]);
 
     return response()->json(['success' => true, 'message' => 'Data kehadiran berhasil diperbarui.']);
     }

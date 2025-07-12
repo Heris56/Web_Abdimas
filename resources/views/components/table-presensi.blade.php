@@ -1,4 +1,4 @@
-                    <div style="overflow-x: auto; white-space: nowrap;" class="mb-3">
+                    <div class="table1" style="overflow-x: auto; white-space: nowrap;" class="mb-3">
                     @csrf
                     <table class="table table striped" id="table-presensi" style="min-width: 1500px;">
                     <thead class="table-warning">
@@ -35,6 +35,7 @@
                                             name="absen[{{ $siswa->nisn_siswa }}][{{ $tanggals }}]"
                                             data-nisn ="{{ $siswa->nisn_siswa }}"
                                             data-tanggal="{{ $tanggals }}"
+                                            data-tahun_ajaran="{{ $wali->tahun_ajaran }}"
                                             onchange ="updateKehadiran(this)">
                                             <option value="">-</option>
                                             @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)

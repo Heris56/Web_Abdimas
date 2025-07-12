@@ -44,15 +44,12 @@ table {
     border-collapse: collapse;
 }
 
-table th,
-table td {
-    border: 1px solid #ccc;
+.table1 th:nth-child(1),
+.table1 td:nth-child(1) {
+    position: sticky;
+    left: 0;
     padding: 8px;
     text-align: center;
-}
-
-table th {
-    background-color: #f0f0f0;
 }
 
 #wrapper-info-wali-kelas {
@@ -70,12 +67,14 @@ table th {
 }
 
 #kelas h5 {
-    font-weight: bold;
     color: black;
 }
 
 #nip h5 {
-    font-weight: bold;
+    color: black;
+}
+
+#tahun-ajaran h5 {
     color: black;
 }
 

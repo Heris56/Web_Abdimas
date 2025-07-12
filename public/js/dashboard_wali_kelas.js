@@ -44,10 +44,11 @@ function updateKehadiran(selectElement) {
     const nisn = selectElement.dataset.nisn;
     const tanggal = selectElement.dataset.tanggal;
     const keterangan_absen = selectElement.value;
+    const tahun_ajaran = selectElement.dataset.tahun_ajaran;
     const editKehadiranURL = document.querySelector('meta[name="route-edit-kehadiran"]').getAttribute('content');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    console.log({ nisn, tanggal, keterangan_absen });
+    console.log({ nisn, tanggal, keterangan_absen, tahun_ajaran });
 
     fetch(editKehadiranURL, {
         method: "POST",
@@ -58,7 +59,8 @@ function updateKehadiran(selectElement) {
         body: JSON.stringify({
             nisn: nisn,
             tanggal: tanggal,
-            keterangan_absen: keterangan_absen
+            keterangan_absen: keterangan_absen,
+            tahun_ajaran: tahun_ajaran
         })
     })
         .then(response => response.json())
