@@ -16,6 +16,10 @@
     <!-- Connect jQuery, DOM Manipulation, AJAX -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
+    {{-- global variables --}}
+    @vite(['resources/css/app.css'])
+    @vite(['resources/js/app.js'])
+
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
 
@@ -31,6 +35,27 @@
 </head>
 
 <body>
+    {{-- Handle messages thrown when something happens --}}
+    @if (session('success'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('success') }}", "text-bg-success");
+            });
+        </script>
+    @elseif (session('error'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('error') }}", "text-bg-danger");
+            });
+        </script>
+    @elseif (session('status'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('status') }}", "text-bg-primary");
+            });
+        </script>
+    @endif
+
     <!-- Navbar -->
     <x-navbar></x-navbar>
 

@@ -422,23 +422,31 @@ class NilaiController extends Controller
                     'tahun_pelajaran' => $tahunAjaran,
                     'kegiatan' => $kegiatan,
                 ]);
-                return response()->json(['message' => 'Kegiatan sudah ada untuk mata pelajaran dan tahun pelajaran ini'], 409);
+                return redirect()->back()->with('error', 'Kegiatan sudah ada');
             }
 
             $students = DB::table('siswa')
-                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip) {
+                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip, $kegiatan) {
                     $join->on('siswa.nisn', '=', 'nilai.nisn')
                         ->where('nilai.id_mapel', '=', $id_mapel)
                         ->where('nilai.tahun_pelajaran', '=', $tahunAjaran)
-                        ->where('nilai.nip_guru_mapel', '=', $nip);
+                        ->where('nilai.nip_guru_mapel', '=', $nip)
+                        ->where('nilai.kegiatan', '=', $kegiatan);
                 })
                 ->whereNull('nilai.nisn')
                 ->pluck('siswa.nisn');
-            Log::debug('Fetched students', ['students' => $students]);
+
 
             if ($students->isEmpty()) {
-                Log::warning('No students found for this kegiatan insert');
+                Log::warning('No students to insert nilai for this kegiatan', [
+                    'kegiatan' => $kegiatan,
+                    'id_mapel' => $id_mapel,
+                    'tahun_pelajaran' => $tahunAjaran,
+                    'nip' => $nip,
+                ]);
+                return response()->json(['message' => 'Tidak ada siswa yang bisa ditambahkan untuk kegiatan ini'], 400);
             }
+
 
 
             DB::beginTransaction();
@@ -460,15 +468,14 @@ class NilaiController extends Controller
                 'tahun_pelajaran' => $tahunAjaran,
                 'kegiatan' => $kegiatan,
             ]);
-
-            return response()->json(['message' => 'Kegiatan berhasil ditambahkan']);
+            return redirect()->back()->with('success', 'Berhasil menambahkan kegiatan.');
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation error in storeKegiatan', ['errors' => $e->errors()]);
-            return response()->json(['message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
+            return redirect()->back()->with('error', 'Gagal menambahkan kegiatan.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error in storeKegiatan', ['message' => $e->getMessage()]);
-            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan kegiatan'], 500);
+            return redirect()->back()->with('error', 'Gagal menambahkan kegiatan.');
         }
     }
 
