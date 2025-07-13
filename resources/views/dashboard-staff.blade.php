@@ -323,6 +323,18 @@
                                         name="" {{-- kosongkan name agar tidak dikirim --}}
                                         onkeydown="return false;"
                                         onwheel="this.blur()">
+                                    @elseif($type == 'tahun_ajaran' && $key == 'semester')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                        id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" selected disabled>Pilih {{ $label }}</option>
+                                            {{-- PASTIKAN VALUE SAMA PERSIS DENGAN DATABASE --}}
+                                            <option value="Ganjil" {{ old($key) == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
+                                            <option value="Genap" {{ old($key) == 'Genap' ? 'selected' : '' }}>Genap</option>
+                                            {{-- Jika ada jurusan lain di database, tambahkan opsi di sini --}}
+                                        </select>
+                                        @error($key)
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     @elseif ($key == 'tahun_ajaran')
                                         <input type='text'
                                         class="form-control @error($key) is-invalid @enderror"
@@ -427,6 +439,18 @@
                                         <input type='number'
                                         class="form-control @error($key) is-invalid @enderror"
                                         id="{{ $key }}" value= 0 disabled >
+                                    @elseif($type == 'tahun_ajaran' && $key == 'semester')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                        id="{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" selected disabled>Pilih {{ $label }}</option>
+                                            {{-- PASTIKAN VALUE SAMA PERSIS DENGAN DATABASE --}}
+                                            <option value="Ganjil" {{ old($key) == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
+                                            <option value="Genap" {{ old($key) == 'Genap' ? 'selected' : '' }}>Genap</option>
+                                            {{-- Jika ada jurusan lain di database, tambahkan opsi di sini --}}
+                                        </select>
+                                        @error($key)
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     @elseif ($key == 'tahun_ajaran')
                                         <input type='text'
                                         class="form-control @error($key) is-invalid @enderror"

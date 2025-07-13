@@ -45,7 +45,6 @@ class DataController extends Controller
         'kelas' => [
             'id_kelas' => 'required|unique:kelas,id_kelas',
             'jurusan' => 'required|string|max:32',
-            'alias' => 'required|string|max:10',
         ],
         'guru_mapel' => [
             'nip_guru_mapel' => 'required|unique:guru_mapel,nip_guru_mapel',
@@ -68,7 +67,8 @@ class DataController extends Controller
             'nama_mapel' => 'required|string|max:255',
         ],
         'tahun_ajaran' => [
-            'tahun' => 'required|string|max:10|unique:tahun_ajaran,tahun',
+            'tahun' => ['required', 'string', 'max:10'],
+            'semester' => 'required|string|max:10|in:Genap,Ganjil'
         ],
         'paket_mapel' => [
             'kode_paket' => 'required|string|max:50',
@@ -122,7 +122,6 @@ class DataController extends Controller
                 $columns = [
                     'id_kelas' => 'Kelas',
                     'jurusan' => 'Jurusan',
-                    'alias' => 'Alias',
                 ];
                 break;
             case 'guru_mapel':
@@ -155,9 +154,12 @@ class DataController extends Controller
                 ];
                 break;
             case 'tahun_ajaran':
-                $data = DB::table('tahun_ajaran')->get();
+                $data = DB::table('tahun_ajaran')
+                    ->orderBy('tahun', 'asc')
+                    ->orderBy('semester', 'asc')->get();
                 $columns = [
                     'tahun' => 'Tahun Ajaran',
+                    'semester' => 'Semester',
                     'is_current' => 'Tahun berjalan'
                 ];
                 break;
@@ -219,9 +221,22 @@ class DataController extends Controller
                         ->where('id_kelas', $request->id_kelas);
                 });
             }
+            if ($type === 'tahun_ajaran') {
+                $validationRules['tahun'][] = Rule::unique('tahun_ajaran')->where(function ($query) use ($request) {
+                    return $query->where('tahun', $request->tahun)
+                        ->where('semester', $request->semester);
+                });
+            }
+
+            // --- DEFINISIKAN PESAN KUSTOM DI SINI ---
+            $messages = [];
+            if ($type === 'tahun_ajaran') {
+                // Kunci pesan adalah 'nama_field.nama_aturan'
+                $messages['tahun.unique'] = 'Tahun ajaran dan semester ini sudah ada. Tidak boleh duplikasi.';
+            }
 
             Log::info("Starting validation for type: {$type}");
-            $validated = $request->validate($validationRules);
+            $validated = $request->validate($validationRules, $messages);
             Log::info(message: "Validated data for type {$type}: " . json_encode($validated));
 
             Log::info("Processing insertion for type: {$type}");
@@ -320,7 +335,10 @@ class DataController extends Controller
                     break;
                 case 'tahun_ajaran':
                     $primaryKey = 'id_tahun_ajaran';
-                    $validationRules['tahun'] = 'required|string|max:10|unique:tahun_ajaran,tahun,' . $id . ',' . $primaryKey;
+                    $validationRules['tahun'][] = Rule::unique('tahun_ajaran')->where(function ($query) use ($request) {
+                        return $query->where('tahun', $request->tahun)
+                            ->where('semester', $request->semester);
+                    })->ignore($id, $primaryKey); // <--- PENTING: Mengecualikan record saat ini
                     break;
                 case 'paket_mapel':
                     $primaryKey = 'id_paket';
@@ -338,8 +356,14 @@ class DataController extends Controller
             Log::info("DEBUG - Value of Primary Key from Form (\$validatedData[\$primaryKey]): " . ($request->input($primaryKey) ?? 'N/A'));
             Log::info("DEBUG - Value from URL (\$id): {$id}");
 
+            $messages = [];
+            if ($type === 'tahun_ajaran') {
+                // Kunci pesan adalah 'nama_field.nama_aturan'
+                $messages['tahun.unique'] = 'Tahun ajaran dan semester ini sudah ada. Tidak boleh duplikasi.';
+            }
+
             // Lakukan validasi dengan aturan yang sudah dimodifikasi
-            $validatedData = $request->validate($validationRules);
+            $validatedData = $request->validate($validationRules, $messages);
 
             $table = $type;
 
