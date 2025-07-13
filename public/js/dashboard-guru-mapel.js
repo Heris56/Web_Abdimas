@@ -9,7 +9,12 @@ $(document).ready(function () {
     const $firstTab = $("#mapelTabs .nav-link").first();
     if ($firstTab.length) {
         $firstTab.addClass("active");
-        fetchFilteredData($firstTab.data("mapel"), $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
+        fetchFilteredData(
+            $firstTab.data("mapel"),
+            $("#tahunFilter").val() || "",
+            $("#kelasFilter").val() || "",
+            $("#semesterFilter").val() || ""
+        );
     }
 
     // Handle form submission for input nilai
@@ -63,12 +68,18 @@ $(document).ready(function () {
     $("#mapelTabs .nav-link").on("click", function () {
         const mapel = $(this).data("mapel");
         console.log("Tab clicked:", { mapel });
-        fetchFilteredData(mapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
+        fetchFilteredData(
+            mapel,
+            $("#tahunFilter").val() || "",
+            $("#kelasFilter").val() || "",
+            $("#semesterFilter").val() || ""
+        );
     });
 
     // Handle kelas, tahun, and semester filter changes
     $("#tahunFilter, #kelasFilter, #semesterFilter").on("change", function () {
-        const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
+        const activeMapel =
+            $("#mapelTabs .nav-link.active").data("mapel") || "";
         const tahun = $("#tahunFilter").val() || "";
         const kelas = $("#kelasFilter").val() || "";
         const semester = $("#semesterFilter").val() || "";
@@ -76,7 +87,7 @@ $(document).ready(function () {
             mapel: activeMapel,
             tahun_pelajaran: tahun,
             id_kelas: kelas,
-            semester: semester
+            semester: semester,
         });
         fetchFilteredData(activeMapel, tahun, kelas, semester);
     });
@@ -86,7 +97,7 @@ $(document).ready(function () {
             mapel: mapel,
             tahun_pelajaran: tahun,
             id_kelas: kelas,
-            semester: semester
+            semester: semester,
         });
         $.ajax({
             url: "/dashboard/guru-mapel",
@@ -95,7 +106,7 @@ $(document).ready(function () {
                 mapel: mapel,
                 tahun_pelajaran: tahun,
                 id_kelas: kelas,
-                semester: semester
+                semester: semester,
             },
             success: function (response) {
                 console.log("AJAX success:", response);
@@ -148,17 +159,31 @@ $(document).ready(function () {
                             <td>${row.nisn}</td>
                             <td>${row.nama_siswa}</td>
                             <td>${row.id_kelas}</td>
-                            <td>${row.semester === 'Ganjil' ? row.tahun_pelajaran + '-1' : row.semester === 'Genap' ? row.tahun_pelajaran + '-2' : row.tahun_pelajaran}</td>
+                            <td>${
+                                row.semester === "Ganjil"
+                                    ? row.tahun_pelajaran + "-1"
+                                    : row.semester === "Genap"
+                                    ? row.tahun_pelajaran + "-2"
+                                    : row.tahun_pelajaran
+                            }</td>
                             ${data.kegiatanList
                                 .map((kegiatan) => {
-                                    var alias = kegiatan.replace(/\s+/g, "_").toLowerCase();
+                                    var alias = kegiatan
+                                        .replace(/\s+/g, "_")
+                                        .toLowerCase();
                                     return `<td class="editable"
                                                 data-nisn="${row.nisn}"
                                                 data-field="${kegiatan}"
-                                                data-tahun_pelajaran="${row.tahun_pelajaran}"
+                                                data-tahun_pelajaran="${
+                                                    row.tahun_pelajaran
+                                                }"
                                                 data-semester="${row.semester}"
-                                                data-id_mapel="${row.id_mapel ?? ''}"
-                                                data-nip="${row.nip_guru_mapel ?? ''}">
+                                                data-id_mapel="${
+                                                    row.id_mapel ?? ""
+                                                }"
+                                                data-nip="${
+                                                    row.nip_guru_mapel ?? ""
+                                                }">
                                                 ${row[alias] ?? "-"}
                                             </td>`;
                                 })
@@ -180,11 +205,12 @@ $(document).ready(function () {
             var $cell = $(this);
             var nisn = $cell.data("nisn");
             var field = $cell.data("field");
-            var tahun_pelajaran = $cell.data("tahun_pelajaran") || '';
-            var semester = $cell.data("semester") || '';
-            var id_mapel = $cell.data("id_mapel") || '';
-            var nip = $cell.data("nip") || '';
-            var currentValue = $cell.text() === "-" ? "" : $cell.text();
+            var tahun_pelajaran = $cell.data("tahun_pelajaran") || "";
+            var semester = $cell.data("semester") || "";
+            var id_mapel = $cell.data("id_mapel") || "";
+            var nip = $cell.data("nip") || "";
+            var currentValue =
+                $cell.text().trim() === "-" ? "" : $cell.text().trim();
 
             console.log("All cell data:", $cell.data());
 
@@ -193,16 +219,38 @@ $(document).ready(function () {
             );
             var $input = $cell.find("input");
             $input.focus();
+            $input[0].setSelectionRange(
+                $input.val().length,
+                $input.val().length
+            );
 
             $input.on("blur keypress", function (e) {
                 if (e.type === "blur" || e.which === 13) {
-                    saveValue($cell, $input, nisn, field, tahun_pelajaran, semester, id_mapel, nip);
+                    saveValue(
+                        $cell,
+                        $input,
+                        nisn,
+                        field,
+                        tahun_pelajaran,
+                        semester,
+                        id_mapel,
+                        nip
+                    );
                 }
             });
         });
     }
 
-    function saveValue($cell, $input, nisn, field, tahun_pelajaran, semester, id_mapel, nip_guru_mapel) {
+    function saveValue(
+        $cell,
+        $input,
+        nisn,
+        field,
+        tahun_pelajaran,
+        semester,
+        id_mapel,
+        nip_guru_mapel
+    ) {
         var newValue = $input.val().trim() || "-";
         $cell.text(newValue);
         $input.remove();
@@ -222,7 +270,10 @@ $(document).ready(function () {
 
         // Validate required fields
         if (!tahun_pelajaran || !semester || !id_mapel || !nip_guru_mapel) {
-            showToast("Data tidak lengkap (tahun_pelajaran, semester, id_mapel, atau nip kosong)!", "text-bg-danger");
+            showToast(
+                "Data tidak lengkap (tahun_pelajaran, semester, id_mapel, atau nip kosong)!",
+                "text-bg-danger"
+            );
             return;
         }
 
@@ -239,13 +290,19 @@ $(document).ready(function () {
                 tahun_pelajaran: tahun_pelajaran,
                 semester: semester,
                 id_mapel: id_mapel,
-                nip_guru_mapel: nip_guru_mapel
+                nip_guru_mapel: nip_guru_mapel,
             },
             success: function (response) {
                 console.log("AJAX success:", response);
                 showToast("Sukses Update Data!", "text-bg-success");
-                const activeMapel = $("#mapelTabs .nav-link.active").data("mapel") || "";
-                fetchFilteredData(activeMapel, $("#tahunFilter").val() || "", $("#kelasFilter").val() || "", $("#semesterFilter").val() || "");
+                const activeMapel =
+                    $("#mapelTabs .nav-link.active").data("mapel") || "";
+                fetchFilteredData(
+                    activeMapel,
+                    $("#tahunFilter").val() || "",
+                    $("#kelasFilter").val() || "",
+                    $("#semesterFilter").val() || ""
+                );
             },
             error: function (xhr, status, error) {
                 console.error("AJAX error:", {
