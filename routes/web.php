@@ -73,6 +73,7 @@ Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_k
 // Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
+Route::post('/dashboard/guru-mapel/tambah-kegiatan', [NilaiController::class, 'tambahKegiatan'])->name('nilai.tambah-kegiatan');
 
 // staff
 Route::view('/login/staff', 'login-page-staff')->name('login-staff');

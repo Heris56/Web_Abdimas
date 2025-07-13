@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -381,6 +382,96 @@ class NilaiController extends Controller
         }
     }
 
+    public function tambahKegiatan(Request $request)
+    {
+        try {
+            $nip = session('userID');
+            $mapel = $request->input('mapelSelect');
+            $tahunAjaran = $this->getTahunAjaranAktif();
+            $kegiatan = $request->input('inputKegiatan');
+            $id_mapel = $this->getIdMapel($mapel);
+
+            Log::info('storeKegiatan called', [
+                'nip' => $nip,
+                'id_mapel' => $id_mapel,
+                'tahunAjaran' => $tahunAjaran,
+                'mapel' => $mapel,
+                'request_data' => $request->all(),
+            ]);
+
+            $assigned = $this->verifyTeacherAccessToMapel($nip, $id_mapel);
+
+            if (!$assigned) {
+                Log::error('Unauthorized access to mapel', [
+                    'nip' => $nip,
+                    'mapel' => $mapel,
+                ]);
+                return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
+            }
+
+            // Check if kegiatan already exists for this mapel and tahun_pelajaran
+            $exists = DB::table('nilai')
+                ->where('id_mapel', $id_mapel)
+                ->where('tahun_pelajaran', $tahunAjaran)
+                ->where('kegiatan', $kegiatan)
+                ->exists();
+
+            if ($exists) {
+                Log::warning('Kegiatan already exists', [
+                    'mapel' => $id_mapel,
+                    'tahun_pelajaran' => $tahunAjaran,
+                    'kegiatan' => $kegiatan,
+                ]);
+                return response()->json(['message' => 'Kegiatan sudah ada untuk mata pelajaran dan tahun pelajaran ini'], 409);
+            }
+
+            $students = DB::table('siswa')
+                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip) {
+                    $join->on('siswa.nisn', '=', 'nilai.nisn')
+                        ->where('nilai.id_mapel', '=', $id_mapel)
+                        ->where('nilai.tahun_pelajaran', '=', $tahunAjaran)
+                        ->where('nilai.nip_guru_mapel', '=', $nip);
+                })
+                ->whereNull('nilai.nisn')
+                ->pluck('siswa.nisn');
+            Log::debug('Fetched students', ['students' => $students]);
+
+            if ($students->isEmpty()) {
+                Log::warning('No students found for this kegiatan insert');
+            }
+
+
+            DB::beginTransaction();
+            foreach ($students as $nisn) {
+                DB::table('nilai')->insert([
+                    'nisn' => $nisn,
+                    'id_mapel' => $id_mapel,
+                    'nip_guru_mapel' => $nip,
+                    'tahun_pelajaran' => $tahunAjaran,
+                    'kegiatan' => $kegiatan,
+                    'nilai' => null,
+                ]);
+            }
+            DB::commit();
+
+            Log::info('Kegiatan inserted successfully', [
+                'nip' => $nip,
+                'id_mapel' => $id_mapel,
+                'tahun_pelajaran' => $tahunAjaran,
+                'kegiatan' => $kegiatan,
+            ]);
+
+            return response()->json(['message' => 'Kegiatan berhasil ditambahkan']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation error in storeKegiatan', ['errors' => $e->errors()]);
+            return response()->json(['message' => 'Data tidak valid', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in storeKegiatan', ['message' => $e->getMessage()]);
+            return response()->json(['message' => 'Terjadi kesalahan saat menambahkan kegiatan'], 500);
+        }
+    }
+
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
         $listMapel = DB::table('guru_mapel')
@@ -400,5 +491,27 @@ class NilaiController extends Controller
         $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
 
         return $tahunAjaran;
+    }
+
+    public function verifyTeacherAccessToMapel($nip, $mapel)
+    {
+        Log::info('verifyTeacher called', [
+            'nip' => $nip,
+            'id_mapel' => $mapel,
+        ]);
+        $assigned = DB::table('guru_mapel')
+            ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+            ->where('guru_mapel.nip_guru_mapel', $nip)
+            ->where('paket_mapel.id_mapel', $mapel)
+            ->exists();
+
+        return $assigned;
+    }
+
+    public function getIdMapel($mapel)
+    {
+        return DB::table('mapel')
+            ->where('nama_mapel', $mapel)
+            ->value('id_mapel');
     }
 }

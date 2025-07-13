@@ -93,7 +93,7 @@
                     <div class="btns input-nilai me-3">
                         <a class="btn button-primary" href="#" data-bs-toggle="modal"
                             data-bs-target="#inputNilaiModal">
-                            Input Nilai
+                            Tambah Kegiatan
                         </a>
                     </div>
                 </div>
@@ -166,52 +166,39 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="inputNilaiModalLabel">Input Nilai</h5>
+                        <h5 class="modal-title" id="inputNilaiModalLabel">Tambah Kegiatan</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="inputNilaiForm">
+                        <form id="inputKegiatanForm" action="{{ route('nilai.tambah-kegiatan') }}" method="POST">
+                            @csrf
+                            <!-- Mata Pelajaran -->
                             <div class="mb-3">
                                 <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
-                                <select id="mapelSelect" class="form-select" required>
+                                <select id="mapelSelect" name="mapelSelect" class="form-select">
                                     <option value="">Pilih Mata Pelajaran</option>
                                     @foreach ($mapelList as $mapel)
                                         <option value="{{ $mapel }}">{{ $mapel }}</option>
                                     @endforeach
                                 </select>
                             </div>
+
+                            <!-- Tahun Pelajaran -->
                             <div class="mb-3">
                                 <label for="tahunSelect" class="form-label">Tahun Ajaran</label>
                                 <select id="tahunSelect" class="form-select" disabled>
-                                    <option value="">{{ $tahunAjaran }}</option>
+                                    <option selected disabled value="">{{ $tahunAjaran }}</option>
                                 </select>
                             </div>
+
+                            {{-- Kegiatan --}}
                             <div class="mb-3">
-                                <label for="nisnSelect" class="form-label">Siswa</label>
-                                <select id="nisnSelect" class="form-select" required>
-                                    <option value="">Pilih Siswa</option>
-                                    @foreach ($data_nilai as $row)
-                                        <option value="{{ $row->nisn }}">{{ $row->nama_siswa }}
-                                            ({{ $row->nisn }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="inputKegiatan" class="form-label"
+                                    data-tahun_pelajaran="{{ $tahunAjaran }}">Kegiatan</label>
+                                <input type="text" class="form-control" id="inputKegiatan" name="inputKegiatan"
+                                    required>
                             </div>
-                            <div class="mb-3">
-                                <label for="kegiatanSelect" class="form-label">Kegiatan</label>
-                                <select id="kegiatanSelect" class="form-select" required>
-                                    <option value="">Pilih Kegiatan</option>
-                                    @foreach ($kegiatanList as $kegiatan)
-                                        <option value="{{ $kegiatan }}">{{ $kegiatan }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nilaiInput" class="form-label">Nilai</label>
-                                <input type="number" id="nilaiInput" class="form-control" required min="0"
-                                    max="100">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <button type="submit" class="btn btn-primary">Tambah</button>
                         </form>
                     </div>
                 </div>
