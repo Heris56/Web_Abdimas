@@ -25,7 +25,7 @@ function exportExcel() {
         rowData.push(cells[0].textContent.trim());
 
         // Loop through select dropdowns
-        for (let i = 1; i < cells.length - 1; i++) {
+        for (let i = 1; i < cells.length; i++) {
             const select = cells[i].querySelector("select");
             const selectedText = select ? select.options[select.selectedIndex].text : "";
             rowData.push(selectedText === "-" ? "" : selectedText); // skip "-"
