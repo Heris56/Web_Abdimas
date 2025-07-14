@@ -113,40 +113,27 @@ class ControllerSiswa extends Controller
         $data_absen = DB::table('absen')
             ->join('siswa', 'absen.nisn', '=', 'siswa.nisn')
             ->where('siswa.nisn', $nisn)
-            ->select('absen.*', 'siswa.nama_siswa', 'siswa.tahun_ajaran')
+            ->select('absen.*', 'siswa.nama_siswa')
             ->orderBy('absen.tanggal', 'desc')
-            ->get()
-            ->map(function ($item) {
-                $tanggal = \Carbon\Carbon::parse($item->tanggal);
-                $bulan = $tanggal->month;
-                $tahun = $tanggal->year;
+            ->get();
 
-                $item->semester = ($bulan >= 1 && $bulan <= 6) ? '2' : '1'; // Genap = 2, Ganjil = 1
+        $tahunFilter = $request->input('tahun_ajaran');
 
-                // Tahun ajaran berdasarkan bulan
-                $tahun_awal = ($bulan >= 7) ? $tahun : $tahun - 1;
-                $tahun_akhir = $tahun_awal + 1;
-                $item->tahun_ajaran_label = "$tahun_awal/$tahun_akhir - {$item->semester}";
-
-                return $item;
-            });
-
-        // Filter jika ada input tahun_ajaran_label
-        $tahunSemesterFilter = $request->input('tahun_ajaran');
-        if ($tahunSemesterFilter && $tahunSemesterFilter !== 'all') {
-            $data_absen = $data_absen->filter(function ($item) use ($tahunSemesterFilter) {
-                return $item->tahun_ajaran_label === $tahunSemesterFilter;
+        if ($tahunFilter && $tahunFilter !== 'all') {
+            // Filter data_absen sesuai filter, termasuk label 'Tidak Diketahui'
+            $data_absen = $data_absen->filter(function ($item) use ($tahunFilter) {
+                return $item->tahun_ajaran === $tahunFilter;
             })->values();
         }
 
-        // Ambil daftar unik tahun ajaran + semester
-        $tahunSemesterList = $data_absen->pluck('tahun_ajaran_label')->unique()->sort()->values();
+        // Ambil daftar unik tahun ajaran dari semua data_absen, termasuk label 'Tidak Diketahui'
+        $tahunAjaranList = $data_absen->pluck('tahun_ajaran')->filter()->unique()->sort()->values();
 
         return view('info-presensi-siswa', [
             'presensi' => $data_absen,
             'siswa' => $siswa,
-            'tahunAjaranList' => $tahunSemesterList,
-            'tahunAjaranFilter' => $tahunSemesterFilter ?? 'all',
+            'tahunAjaranList' => $tahunAjaranList,
+            'tahunAjaranFilter' => $tahunFilter ?? 'all',
             'isGuest' => $isGuest
         ]);
     }
@@ -181,7 +168,7 @@ class ControllerSiswa extends Controller
                 return redirect()->route('cari')->with('error', 'Student data not found.');
             }
 
-            // Daftar gabungan tahun pelajaran dan semester (mis. "2024/2025 - 1")
+            // Daftar gabungan tahun pelajaran dan semester
             $semesterList = DB::table('nilai')
                 ->where('nisn', $nisn)
                 ->select(DB::raw("CONCAT(tahun_pelajaran, ' - ', CASE WHEN semester = 'Ganjil' THEN '1' ELSE '2' END) AS tahun_semester"))
@@ -189,7 +176,7 @@ class ControllerSiswa extends Controller
                 ->orderBy('tahun_semester', 'desc')
                 ->pluck('tahun_semester');
 
-            $tahunSemesterFilter = $request->input('tahun_ajaran'); // input: "2024/2025 - 1"
+            $tahunSemesterFilter = $request->input('tahun_ajaran');
             $tahunAjaranFilter = null;
             $semesterFilter = null;
 
@@ -232,7 +219,7 @@ class ControllerSiswa extends Controller
                 $tahunPelajaran = $grades->first()->tahun_pelajaran ?? null;
                 $semester = $grades->first()->semester ?? null;
 
-                // Konversi semester ke angka (asumsi semester string "Ganjil"/"Genap")
+                // Konversi semester ke angka
                 $semesterAngka = null;
                 if ($semester === 'Ganjil') {
                     $semesterAngka = '1';
