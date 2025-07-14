@@ -94,3 +94,8 @@ table {
 #button-ganti-password {
     margin-top: 30px;
 }
+
+#th-namaMahasiswa {
+    max-width: 30%;
+    text-align: center;
+}

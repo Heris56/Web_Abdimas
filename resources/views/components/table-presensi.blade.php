@@ -1,18 +1,18 @@
                     <div class="table1 mb-3" style="overflow-x: auto; white-space: nowrap;" class="mb-3">
                     @csrf
-                    <table class="table table-striped" id="table-presensi" style="min-width: 100%; table-layout: fixed;">
+                    <table class="table table-striped" id="table-presensi" style="min-width: 100%;">
                     <thead class="table-warning">
                         <tr>
-                            <th style="width:30%">Nama Siswa</th>
+                            <th style="width: fit-content;">Nama Siswa</th>
                             @php use Carbon\Carbon; 
                             @endphp
                             @foreach($tanggal_list as $tanggals)
                                 @php
                                     $tanggal = Carbon::parse($tanggals);
-                                    $hari = $tanggal->translatedFormat('l'); // "Senin", "Selasa", dst (pastikan locale Indonesia)
+                                    $hari = $tanggal->translatedFormat('l');
                                     $tanggalFormat = $tanggal->format('d-m-Y');
                                 @endphp
-                                <th style="min-width: 120px;">
+                                <th style="width: fit-content;">
                                     <div class="d-flex flex-column align-items-center justify-content-center text-center">
                                         <button type="button" class="btn btn-danger btn-delete-tanggal" data-tanggal="{{ $tanggals }}" style="width: 90px;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-x-fill" viewBox="0 0 16 16">
@@ -28,7 +28,7 @@
                     <tbody>
                         @foreach($list_siswa as $siswa)
                             <tr>
-                                <td style="width:30%">{{ $siswa->nama_siswa }}</td>
+                                <td style="width: fit-content;">{{ $siswa->nama_siswa }}</td>
                                 @foreach($tanggal_list as $tanggals)
                                     @php
                                         $presensi = $data_absen->firstWhere(fn($item) =>
@@ -43,9 +43,7 @@
                                             data-tanggal="{{ $tanggals }}"
                                             data-tahun_ajaran="{{ $wali->tahun_ajaran }}"
                                             onchange ="updateKehadiran(this)">
-                                            @if($presensi->keterangan_absen === '-')
-                                            <option value="">-</option>
-                                            @endif
+                                            <option value="" {{ ($presensi->keterangan_absen ?? '-') === '-' ? 'selected' : '' }}>-</option>
                                             
                                             @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)
                                                 <option value="{{ $keterangan_absen }}"
