@@ -27,6 +27,7 @@ class dashboard_wali_kelas_controller extends Controller
     ->leftJoin('absen', 'absen.nisn', '=', 'siswa.nisn')
     ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
     ->where('wali_kelas.nip_wali_kelas', $nip)
+    ->where('siswa.status','aktif')
     ->select(
         'absen.*',
         'siswa.nama_siswa as nama_siswa',
