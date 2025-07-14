@@ -47,11 +47,12 @@
                     <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
                         <option value="all">Semua Tahun Ajaran</option>
                         @if(isset($tahunAjaranList))
-                            @foreach($tahunAjaranList as $tahunSemester)
-                                <option value="{{ $tahunSemester }}" {{ $tahunAjaranFilter == $tahunSemester ? 'selected' : '' }}>
-                                    {{ $tahunSemester }}
+                            @foreach($tahunAjaranList as $tahunAjaran)
+                                <option value="{{ $tahunAjaran }}" {{ $tahunAjaranFilter == $tahunAjaran ? 'selected' : '' }}>
+                                    {{ $tahunAjaran }}
                                 </option>
                             @endforeach
+
                         @endif
                     </select>
 
