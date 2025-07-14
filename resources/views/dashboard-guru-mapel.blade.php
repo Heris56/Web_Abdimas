@@ -16,6 +16,10 @@
     <!-- Connect jQuery, DOM Manipulation, AJAX -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
+    {{-- global variables --}}
+    @vite(['resources/css/app.css'])
+    @vite(['resources/js/app.js'])
+
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
 
@@ -31,6 +35,27 @@
 </head>
 
 <body>
+    {{-- Handle messages thrown when something happens --}}
+    @if (session('success'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('success') }}", "text-bg-success");
+            });
+        </script>
+    @elseif (session('error'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('error') }}", "text-bg-danger");
+            });
+        </script>
+    @elseif (session('status'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showToast("{{ session('status') }}", "text-bg-primary");
+            });
+        </script>
+    @endif
+
     <!-- Navbar -->
     <x-navbar></x-navbar>
 
@@ -111,52 +136,6 @@
             <div class="row-md-auto">
                 <!-- Table -->
                 <div id="tableContainer" class="table-responsive">
-                    <table class="table table-bordered table-sm" id="nilaiTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Tahun Ajaran</th>
-                                @foreach ($kegiatanList as $kegiatan)
-                                    <th>{{ $kegiatan }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($data_nilai as $i => $row)
-                                <tr>
-                                    <td>{{ $i + 1 }}</td>
-                                    <td>{{ $row->nisn }}</td>
-                                    <td>{{ $row->nama_siswa }}</td>
-                                    <td>{{ $row->id_kelas }}</td>
-                                    <td>
-                                        @if ($row->semester === 'Ganjil')
-                                            {{ $row->tahun_pelajaran }}-1
-                                        @elseif ($row->semester === 'Genap')
-                                            {{ $row->tahun_pelajaran }}-2
-                                        @else
-                                            {{ $row->tahun_pelajaran }}
-                                        @endif
-                                    </td>
-                                    @foreach ($kegiatanList as $kegiatan)
-                                        @php
-                                            $alias = str_replace(' ', '_', strtolower($kegiatan));
-                                        @endphp
-                                        <td class="editable" data-nisn="{{ $row->nisn }}"
-                                            data-field="{{ $kegiatan }}"
-                                            data-tahun_pelajaran="{{ $row->tahun_pelajaran }}"
-                                            data-semester="{{ $row->semester }}"
-                                            data-id_mapel="{{ $row->id_mapel ?? '' }}"
-                                            data-nip="{{ $row->nip_guru_mapel ?? '' }}">
-                                            {{ $row->$alias ?? '-' }}
-                                        </td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
