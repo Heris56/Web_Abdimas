@@ -274,6 +274,18 @@
                                                     {{  $item->id_kelas}}
                                                 </option>
                                             @empty
+                                                <option disabled>Tidak ada Kelas tersedia</option>
+                                            @endforelse
+                                        </select>
+                                    @elseif ($type == 'paket_mapel'  && $key == 'id_kelas')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['kelas'] as $item)
+                                                <option value="{{  $item->id_kelas}}" {{ old($key) == $item->id_kelas ? 'selected' : '' }}>
+                                                    {{  $item->id_kelas}}
+                                                </option>
+                                            @empty
                                                 <option disabled>Tidak ada mata pelajaran tersedia</option>
                                             @endforelse
                                         </select>
@@ -285,7 +297,7 @@
                                             </option>
                                             @foreach ($dropdowns['paket_mapel'] as $mapelItem)
                                                 <option value="{{ $mapelItem->kode_paket }}" {{ old($key) == $mapelItem->kode_paket ? 'selected' : '' }}>
-                                                    {{ $mapelItem->kode_paket }} - {{ $item->tahun_ajaran }}</option>
+                                                    {{ $mapelItem->kode_paket }}</option>
                                             @endforeach
                                         </select>
                                         @error($key)
@@ -391,19 +403,43 @@
                                                     {{  $item->id_kelas}}
                                                 </option>
                                             @empty
+                                                <option disabled>Tidak ada kelas tersedia</option>
+                                            @endforelse
+                                        </select>
+                                    @elseif ($type == 'paket_mapel'  && $key == 'id_kelas')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['kelas'] as $item)
+                                                <option value="{{  $item->id_kelas}}" {{ old($key) == $item->id_kelas ? 'selected' : '' }}>
+                                                    {{  $item->id_kelas}}
+                                                </option>
+                                            @empty
+                                                <option disabled>Tidak ada kelas tersedia</option>
+                                            @endforelse
+                                        </select>
+                                    @elseif ($type == 'paket_mapel'  && $key == 'id_mapel')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['mapel'] as $item)
+                                                <option value="{{  $item->id_mapel}}" {{ old($key) == $item->id_mapel ? 'selected' : '' }}>
+                                                    {{  $item->id_mapel}} - {{ $item->nama_mapel }}
+                                                </option>
+                                            @empty
                                                 <option disabled>Tidak ada mata pelajaran tersedia</option>
                                             @endforelse
                                         </select>
                                         <!-- set dropdown untuk pilih mapel dan kelas -->
-                                    @elseif ($type == 'guru_mapel' && $key == 'id_mapel')
+                                    @elseif ($type == 'guru_mapel' && $key == 'kode_paket')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="{{ $key }}" name="{{ $key }}" required>
                                             <option selected disabled>Pilih {{ $label }}</option>
-                                            @forelse ($dropdowns['mapel'] as $item)
-                                                <option value="{{ $item->id_mapel }}">{{ $item->nama_mapel }}
+                                            @forelse ($dropdowns['paket_mapel'] as $item)
+                                                <option value="{{ $item->kode_paket }}">{{ $item->kode_paket }} - {{ $item->tahun_ajaran }}
                                                 </option>
                                             @empty
-                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                                <option disabled>Tidak ada Paket tersedia</option>
                                             @endforelse
                                         </select>
                                         @error($key)
