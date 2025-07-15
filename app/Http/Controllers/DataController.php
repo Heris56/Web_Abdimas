@@ -60,7 +60,7 @@ class DataController extends Controller
             'nama' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
             'status' => 'required|in:aktif,nonaktif',
-            'id_kelas' => 'required|exists:kelas,id_kelas',
+            'id_kelas' => ['required', 'exists:kelas,id_kelas', 'unique:wali_kelas,id_kelas'], 
         ],
         'mapel' => [
             'id_mapel' => 'required|unique:mapel,id_mapel',
@@ -103,7 +103,7 @@ class DataController extends Controller
             'siswa' => DB::table('siswa')->get(['nisn', 'nama_siswa']),
             'guru_mapel' => DB::table('guru_mapel')->get(['nip_guru_mapel', 'nama_guru']),
             'wali_kelas' => DB::table('wali_kelas')->get(['nip_wali_kelas', 'nama']),
-            'paket_mapel' => DB::table('paket_mapel')->select('kode_paket')->distinct()->get(),
+            'paket_mapel' => DB::table('paket_mapel')->select('kode_paket', 'tahun_ajaran')->distinct()->get(),
         ];
 
         switch ($type) {
@@ -228,11 +228,21 @@ class DataController extends Controller
                 });
             }
 
+            if ($type === 'wali_kelas'){
+                $validationRules['id_kelas'][] = Rule::unique('wali_kelas')->where(function ($query) use ($request) {
+                    return $query->where('id_kelas', $request->id_kelas);
+                });
+            }
+
             // --- DEFINISIKAN PESAN KUSTOM DI SINI ---
             $messages = [];
             if ($type === 'tahun_ajaran') {
                 // Kunci pesan adalah 'nama_field.nama_aturan'
                 $messages['tahun.unique'] = 'Tahun ajaran dan semester ini sudah ada. Tidak boleh duplikasi.';
+            }
+            if ($type === 'wali_kelas') {
+                // Kunci pesan adalah 'nama_field.nama_aturan'
+                $messages['id_kelas.unique'] = 'Kelas sudah digunakan oleh wali kelas lain. Tidak boleh duplikasi.';
             }
 
             Log::info("Starting validation for type: {$type}");
@@ -328,6 +338,14 @@ class DataController extends Controller
                 case 'wali_kelas':
                     $primaryKey = 'nip_wali_kelas';
                     $validationRules['nip_wali_kelas'] = 'required|string|max:20|unique:wali_kelas,nip_wali_kelas,' . $id . ',' . $primaryKey;
+
+                    // Aturan unique untuk id_kelas saat update
+                    // Mengecualikan record wali_kelas yang sedang diupdate ($id adalah nip_wali_kelas)
+                    $validationRules['id_kelas'] = [
+                        'required',
+                        'exists:kelas,id_kelas',
+                        Rule::unique('wali_kelas', 'id_kelas')->ignore($id, $primaryKey),
+                    ];
                     break;
                 case 'mapel':
                     $primaryKey = 'id_mapel';
@@ -418,20 +436,22 @@ class DataController extends Controller
             if (Hash::check($inputpassword, $userpassword)) {
                 if ($ischanged == false) {
                     $tahunajaran = DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->value('tahun');
+                    $currentTahunajaran = DB::table('tahun_ajaran')->where('is_current', true)->value('tahun');
                     // nonaktifkan active marker terlebih dahulu
                     DB::table('tahun_ajaran')->where('active_year_marker', 1)->update(['is_current' => 0]);
 
                     // set mark jadi active lagi di tahun yang dipilih
                     DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
 
-                    // update semua tahun ajaran siswa
-                    DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
+                   if($tahunajaran != $currentTahunajaran) {
+                        // update semua tahun ajaran siswa
+                        DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'id_kelas' => null]);
 
-                    // update tahun ajaran guru_mapel
-                    DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
-                    // update tahun ajaran wali_kelas
-                    DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran]);
-
+                        // update tahun ajaran guru_mapel
+                        DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'kode_paket' => null]);
+                        // update tahun ajaran wali_kelas
+                        DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'id_kelas' => null]);
+                   }
                     DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_changed' => true]);
                     return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
                 } else {
