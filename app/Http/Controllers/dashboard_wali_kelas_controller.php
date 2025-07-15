@@ -111,7 +111,7 @@ class dashboard_wali_kelas_controller extends Controller
             return redirect()->back()->with('error', 'NIP tidak ditemukan.');
         }else{
             $hashedPassword = Hash::make($request->input('new_password'));
-            DB::table('wali_kelas')->where('nip_wali_kelas', $nip)->update(['password' => $hashedPassword]);
+            DB::table('wali_kelas')->where('nip_wali_kelas', $nip)->update(['password' => $hashedPassword, 'pwd_is_changed' => true]);
             return redirect()->route('dashboard-wali-kelas')->with('success', 'Password berhasil diubah.');
         }
     }
