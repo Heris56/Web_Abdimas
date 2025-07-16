@@ -75,8 +75,9 @@
                     @foreach ($mapelList as $index => $mapel)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab" data-id-mapel="{{ $index }}" data-mapel="{{ $mapel }}"
-                                type="button" role="tab" aria-controls="mapel-{{ $index }}"
+                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab"
+                                data-id-mapel="{{ $index }}" data-mapel="{{ $mapel }}" type="button"
+                                role="tab" aria-controls="mapel-{{ $index }}"
                                 aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
                                 {{ $mapel }}
                             </button>
@@ -139,6 +140,20 @@
             <div class="row-md-auto">
                 <!-- Table -->
                 <div id="tableContainer" class="table-responsive">
+                    <table class="table table-bordered table-sm" id="nilaiTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NISN</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Tahun Ajaran</th>
+                                @foreach ($kegiatanList as $kegiatan)
+                                    <th>{{ $kegiatan }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>

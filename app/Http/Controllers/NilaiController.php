@@ -12,7 +12,7 @@ class NilaiController extends Controller
 {
     public function fetchNilai(Request $request)
     {
-        // 197806152005011001
+        // 198001012005011001
         // budi123
         $nip = session('userID');
 
@@ -516,6 +516,13 @@ class NilaiController extends Controller
 
         return $tahunAjaran;
     }
+
+    // public function getStudents()
+    // {
+    //     $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
+
+    //     return $tahunAjaran;
+    // }
 
     public function getSemester()
     {
