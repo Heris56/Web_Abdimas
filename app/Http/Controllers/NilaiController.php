@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class NilaiController extends Controller
 
         $tahunAjaran = $this->getTahunAjaranAktif();
 
-        $semesterList = ["Ganjil","Genap"];
+        $semesterList = ["Ganjil", "Genap"];
         Log::info('semesterList', ['semesterList' => $semesterList]);
 
         $semester = $this->getSemester();
@@ -474,6 +475,25 @@ class NilaiController extends Controller
             DB::rollBack();
             Log::error('Error in storeKegiatan', ['message' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Gagal menambahkan kegiatan.');
+        }
+    }
+
+    public function gantiPassword(Request $request)
+    {
+        $request->validate([
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $nip = session('userID');
+
+        $ceknip = DB::table('guru_mapel')->where('nip_guru_mapel', $nip)->exists();
+
+        if (!$ceknip) {
+            return redirect()->back()->with('error', 'NIP tidak ditemukan.');
+        } else {
+            $hashedPassword = Hash::make($request->input('new_password'));
+            DB::table('guru_mapel')->where('nip_guru_mapel', $nip)->update(['password' => $hashedPassword, 'pwd_is_changed' => true]);
+            return redirect()->route('nilai.fetch')->with('success', 'Password berhasil diubah.');
         }
     }
 

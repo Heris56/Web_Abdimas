@@ -211,16 +211,6 @@
                         <form id="changePasswordForm" action="{{ route('nilai.ganti-password') }}" method="POST">
                             @csrf
                             @method('PUT')
-                            <input type="hidden" name="user_id" value="{{ $userId ?? auth()->id() }}">
-                            <div class="mb-3">
-                                <label for="current_password" class="form-label">Password Saat Ini</label>
-                                <input type="password"
-                                    class="form-control @error('current_password') is-invalid @enderror"
-                                    id="current_password" name="current_password" required>
-                                @error('current_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
                             <div class="mb-3">
                                 <label for="new_password" class="form-label">Password Baru</label>
                                 <input type="password"

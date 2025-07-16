@@ -72,8 +72,8 @@ Route::post('/logout', [login_controller::class, 'logout'])->name('logout');
 Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
 Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
 Route::post('/dashboard/guru-mapel/tambah-kegiatan', [NilaiController::class, 'tambahKegiatan'])->name('nilai.tambah-kegiatan');
-Route::post('/dashboard/guru-mapel/ganti-password', [NilaiController::class, 'gantiPassword'])->name('nilai.ganti-password');
-Route::post('/dashboard/guru-mapel/password-baru', [NilaiController::class, 'gantiPassword'])->name('nilai.password-baru');
+Route::put('/dashboard/guru-mapel/ganti-password', [NilaiController::class, 'gantiPassword'])->name('nilai.ganti-password');
+Route::post('/dashboard/guru-mapel/password-baru', [NilaiController::class, 'passwordBaru'])->name('nilai.password-baru');
 
 // staff
 Route::view('/login/staff', 'login-page-staff')->name('login-staff');
