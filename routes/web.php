@@ -44,6 +44,14 @@ Route::middleware([CheckLoginCookie::class . ':siswa'])->group(function () {
 
 Route::middleware([CheckLoginCookie::class . ':waliKelas'])->group(function () {
     Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
+<<<<<<< HEAD
+    Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');
+    Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
+    Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+    Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class, 'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
+    Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
+    Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+=======
 Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');
 Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
@@ -51,6 +59,7 @@ Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_k
 Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
     Route::get("/test/get",[dashboard_wali_kelas_controller::class, 'dataSiswa'])->name('dashboard.walikelas.dataSiswa');
+>>>>>>> 515a9f48b1f0e92affa04e693b2f5350ec124352
 });
 Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function () {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
