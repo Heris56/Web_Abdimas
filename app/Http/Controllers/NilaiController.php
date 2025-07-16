@@ -464,6 +464,7 @@ class NilaiController extends Controller
                     'nip_guru_mapel' => $nip,
                     'tahun_pelajaran' => $tahunAjaran,
                     'kegiatan' => $kegiatan,
+                    'semester' => $semester,
                     'nilai' => null,
                 ]);
             }
@@ -473,6 +474,7 @@ class NilaiController extends Controller
                 'nip' => $nip,
                 'id_mapel' => $id_mapel,
                 'tahun_pelajaran' => $tahunAjaran,
+                'semester' => $semester,
                 'kegiatan' => $kegiatan,
             ]);
             return redirect()->back()->with('success', 'Berhasil menambahkan kegiatan.');
