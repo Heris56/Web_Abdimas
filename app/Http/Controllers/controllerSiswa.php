@@ -110,7 +110,7 @@ class ControllerSiswa extends Controller
         }
 
         // Ambil data presensi
-        $data_absen = DB::table('absen')
+        $absensi = DB::table('absen')
             ->join('siswa', 'absen.nisn', '=', 'siswa.nisn')
             ->where('siswa.nisn', $nisn)
             ->select('absen.*', 'siswa.nama_siswa')
@@ -118,16 +118,18 @@ class ControllerSiswa extends Controller
             ->get();
 
         $tahunFilter = $request->input('tahun_ajaran');
+        $data_absen = $absensi;
 
         if ($tahunFilter && $tahunFilter !== 'all') {
-            // Filter data_absen sesuai filter, termasuk label 'Tidak Diketahui'
-            $data_absen = $data_absen->filter(function ($item) use ($tahunFilter) {
-                return $item->tahun_ajaran === $tahunFilter;
+            $data_absen = $absensi->filter(function ($item) use ($tahunFilter) {
+                return ($item->tahun_ajaran ?? 'Tidak Diketahui') === $tahunFilter;
             })->values();
         }
 
-        // Ambil daftar unik tahun ajaran dari semua data_absen, termasuk label 'Tidak Diketahui'
-        $tahunAjaranList = $data_absen->pluck('tahun_ajaran')->filter()->unique()->sort()->values();
+        $tahunAjaranList = $absensi->pluck('tahun_ajaran')->map(function ($item) {
+            return $item ?? 'Tidak Diketahui';
+        })->unique()->sort()->values();
+
 
         return view('info-presensi-siswa', [
             'presensi' => $data_absen,
