@@ -137,7 +137,7 @@ $(document).ready(function () {
 
         // Update table with new values
         var tableHtml = `
-            <table class="table table-bordered table-sm" id="nilaiTable">
+            <table class="table table-bordered table-sm" id="table-data">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -362,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     input.addEventListener("keyup", function () {
         const inputSearch = this.value.toLowerCase();
-        const rows = tableContainer.querySelectorAll("#nilaiTable tbody tr");
+        const rows = tableContainer.querySelectorAll("#table-data tbody tr");
 
         rows.forEach((row) => {
             const namaSiswaCell = row.querySelector("td:nth-child(3)"); // Nama Siswa is the 3rd column

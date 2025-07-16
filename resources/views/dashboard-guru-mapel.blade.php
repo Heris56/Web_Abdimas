@@ -20,6 +20,9 @@
     @vite(['resources/css/app.css'])
     @vite(['resources/js/app.js'])
 
+    {{-- XLSX CDN --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <!-- Connect CSS -->
     <link rel="stylesheet" href="{{ asset('css/dashboard-guru-mapel.css') }}">
 
@@ -125,9 +128,9 @@
 
                 <div class="col-md-auto">
                     <div class="btns cetak-nilai">
-                        <a class="btn button-secondary" href="{{ route('login-siswa') }}">
-                            Cetak Nilai
-                        </a>
+                        <button id="button-cetak" class="btn btn-success">
+                            Cetak Nilai Siswa
+                        </button>
                     </div>
                 </div>
             </div>
@@ -202,6 +205,12 @@
 
         <!-- Connect Custom JS -->
         <script src="{{ asset('js/dashboard-guru-mapel.js') }}"></script>
+        <script>
+            document.getElementById('button-cetak').addEventListener('click', function() {
+                showToast('Mencetak Nilai Siswa', 'text-bg-primary');
+                exportExcel('Nilai Siswa', 'Nilai Siswa');
+            });
+        </script>
 </body>
 
 </html>
