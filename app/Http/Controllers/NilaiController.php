@@ -23,13 +23,10 @@ class NilaiController extends Controller
 
         $tahunAjaran = $this->getTahunAjaranAktif();
 
-        $semesterList = DB::table('nilai')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('nilai.semester')
-            ->toArray();
+        $semesterList = ["Ganjil","Genap"];
         Log::info('semesterList', ['semesterList' => $semesterList]);
+
+        $semester = $this->getSemester();
 
         // untuk filter tahun ajaran
         $tahunPelajaranList = DB::table('nilai')
@@ -136,7 +133,8 @@ class NilaiController extends Controller
             'tahunPelajaranList' => $tahunPelajaranList,
             'semesterList' => $semesterList,
             'kelasList' => $kelasList,
-            'tahunAjaran' => $tahunAjaran
+            'tahunAjaran' => $tahunAjaran,
+            'semester' => $semester
         ]);
     }
 
@@ -498,6 +496,13 @@ class NilaiController extends Controller
         $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
 
         return $tahunAjaran;
+    }
+
+    public function getSemester()
+    {
+        $semester = DB::table('tahun_ajaran')->where('is_current', 1)->value('semester');
+
+        return $semester;
     }
 
     public function verifyTeacherAccessToMapel($nip, $mapel)
