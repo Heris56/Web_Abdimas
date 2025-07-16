@@ -159,8 +159,8 @@
                                 <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
                                 <select id="mapelSelect" name="mapelSelect" class="form-select">
                                     <option value="">Pilih Mata Pelajaran</option>
-                                    @foreach ($mapelList as $mapel)
-                                        <option value="{{ $mapel }}">{{ $mapel }}</option>
+                                    @foreach ($mapelList as $id => $nama)
+                                        <option value="{{ $id }}">{{ $nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
