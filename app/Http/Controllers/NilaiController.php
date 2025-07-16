@@ -13,7 +13,7 @@ class NilaiController extends Controller
     public function fetchNilai(Request $request)
     {
         // 198001012005011001
-        // budi123
+        // pwd123
         $nip = session('userID');
 
         Log::info('NIP', ['nip' => $nip]);
@@ -385,16 +385,15 @@ class NilaiController extends Controller
     {
         try {
             $nip = session('userID');
-            $mapel = $request->input('mapelSelect');
+            $id_mapel = $request->input('mapelSelect');
             $tahunAjaran = $this->getTahunAjaranAktif();
             $kegiatan = $request->input('inputKegiatan');
-            $id_mapel = $this->getIdMapel($mapel);
+            $semester = $this->getSemester();
 
             Log::info('storeKegiatan called', [
                 'nip' => $nip,
                 'id_mapel' => $id_mapel,
                 'tahunAjaran' => $tahunAjaran,
-                'mapel' => $mapel,
                 'request_data' => $request->all(),
             ]);
 
@@ -403,7 +402,7 @@ class NilaiController extends Controller
             if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
                     'nip' => $nip,
-                    'mapel' => $mapel,
+                    'id_mapel' => $id_mapel,
                 ]);
                 return redirect()->back()->with('error', 'Anda tidak memiliki akses ke mapel ini');
             }
@@ -424,15 +423,25 @@ class NilaiController extends Controller
             }
 
             $students = DB::table('siswa')
-                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip, $kegiatan) {
+                ->join('paket_mapel', 'siswa.id_kelas', '=', 'paket_mapel.id_kelas')
+                ->join('guru_mapel', function ($join) use ($nip) {
+                    $join->on('paket_mapel.kode_paket', '=', 'guru_mapel.kode_paket')
+                        ->where('guru_mapel.nip_guru_mapel', '=', $nip);
+                })
+                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $semester, $nip, $kegiatan) {
                     $join->on('siswa.nisn', '=', 'nilai.nisn')
                         ->where('nilai.id_mapel', '=', $id_mapel)
                         ->where('nilai.tahun_pelajaran', '=', $tahunAjaran)
-                        ->where('nilai.nip_guru_mapel', '=', $nip)
-                        ->where('nilai.kegiatan', '=', $kegiatan);
+                        ->where('nilai.semester', '=', $semester)
+                        ->where('nilai.kegiatan', '=', $kegiatan)
+                        ->where('nilai.nip_guru_mapel', '=', $nip);
                 })
-                ->whereNull('nilai.nisn')
-                ->pluck('siswa.nisn');
+                ->whereNull('nilai.id_nilai')
+                ->where('paket_mapel.id_mapel', $id_mapel)
+                ->select('siswa.nisn')
+                ->distinct()
+                ->pluck('nisn');
+
 
 
             if ($students->isEmpty()) {
