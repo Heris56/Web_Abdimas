@@ -353,3 +353,27 @@ $(document).ready(function () {
 
     attachEditableListeners();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("cariSiswa");
+    const tableContainer = document.getElementById("tableContainer");
+
+    if (!input || !tableContainer) return;
+
+    input.addEventListener("keyup", function () {
+        const inputSearch = this.value.toLowerCase();
+        const rows = tableContainer.querySelectorAll("#nilaiTable tbody tr");
+
+        rows.forEach((row) => {
+            const namaSiswaCell = row.querySelector("td:nth-child(3)"); // Nama Siswa is the 3rd column
+            if (namaSiswaCell) {
+                const namaSiswa = namaSiswaCell.textContent.toLowerCase();
+                row.style.display = namaSiswa.includes(inputSearch)
+                    ? ""
+                    : "none";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+});
