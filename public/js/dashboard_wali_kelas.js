@@ -1,5 +1,3 @@
-console.log("Hello from dashboard-wali-kelas");
-
 document.getElementById('button-cetak').addEventListener('click', function () {
     alert('File presensi akan segera didownload');
 });
