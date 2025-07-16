@@ -11,12 +11,13 @@ class dashboard_wali_kelas_controller extends Controller
     public function get_wali_kelas_by_nip(){
         $nip = session('userID');
         $data_absen = $this->get_absen_by_nip($nip);
+        $data_siswa = $this->dataSiswa();
         $data = DB::table('wali_kelas')->where('nip_wali_kelas',$nip)->get();
         return view('dashboard-wali-kelas', [
             'data_wali_kelas' => $data,
             'data_absen'=> $data_absen,
             'tanggal_list' => $data_absen->pluck('tanggal')->filter()->unique()->sort()->values(),
-            'list_siswa' => $data_absen->unique('nisn_siswa')
+            'list_siswa' => $data_siswa->unique('nisn_siswa')
         ]);
     }
 
@@ -41,18 +42,31 @@ class dashboard_wali_kelas_controller extends Controller
 
     if($data_absen->isEmpty()){
         $data_absen = DB::table('siswa')
-        ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
-        ->where('wali_kelas.nip_wali_kelas', $nip)
-        ->where('siswa.status','aktif')
-        ->select(
-            'siswa.nama_siswa as nama_siswa',
-            'wali_kelas.id_kelas',
-            'siswa.nisn as nisn_siswa'
-        )
-        ->get();
+        ->leftJoin('absen', 'absen.nisn', '=', 'siswa.nisn')
+    ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
+    ->where('wali_kelas.nip_wali_kelas', $nip)
+    ->where('siswa.status','aktif')
+    ->select(
+        'siswa.nama_siswa as nama_siswa',
+        'wali_kelas.id_kelas',
+        'siswa.nisn as nisn_siswa'
+    )
+    ->get();
         };
 
     return $data_absen;
+    }
+
+    public function dataSiswa(){
+            
+        $data_siswa = DB::table('siswa')
+            ->join('wali_kelas', 'siswa.id_kelas', '=', 'wali_kelas.id_kelas')
+            ->where('wali_kelas.nip_wali_kelas', session('userID'))
+            ->where('siswa.status', 'aktif')
+            ->select('siswa.nisn as nisn_siswa', 'siswa.nama_siswa as nama_siswa')
+            ->get();
+        
+        return $data_siswa;
     }
 
     public function getCurrentTahunAjaran()

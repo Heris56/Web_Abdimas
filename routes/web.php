@@ -50,8 +50,8 @@ Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_control
 Route::delete('/dashboard/walikelas/delete_tanggal/{tanggal}', [dashboard_wali_kelas_controller::class, 'delete_tanggal'])->name('dashboard.walikelas.delete-tanggal');
 Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
 Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
+    Route::get("/test/get",[dashboard_wali_kelas_controller::class, 'dataSiswa'])->name('dashboard.walikelas.dataSiswa');
 });
-
 Route::middleware([CheckLoginCookie::class . ':guruMapel'])->group(function () {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 });

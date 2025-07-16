@@ -34,6 +34,13 @@
                                         $item->nisn_siswa == $siswa->nisn_siswa &&
                                         $item->tanggal == $tanggals
                                         );
+                                        if (!$presensi) {
+                                            $presensi = (object) [
+                                                'nisn_siswa' => $siswa->nisn_siswa,
+                                                'tanggal' => $tanggals,
+                                                'keterangan_absen' => null
+                                            ];
+                                        }
                                     @endphp
                                     <td>
                                         <select class="form-select"
@@ -42,9 +49,7 @@
                                             data-tanggal="{{ $tanggals }}"
                                             data-tahun_ajaran="{{ $wali->tahun_ajaran }}"
                                             onchange ="updateKehadiran(this)">
-                                            @if($presensi->keterangan_absen === '-')
-                                            <option value="" {{ ($presensi->keterangan_absen ?? '-') === '-' ? 'selected' : '' }}>-</option>
-                                            @endif
+                                            <option value="" {{ $presensi->keterangan_absen === '-' || $presensi->keterangan_absen === null ? 'selected' : '' }}>-</option>
                                             @foreach(['Hadir', 'Sakit', 'Dispensasi', 'Izin', 'Alpha'] as $keterangan_absen)
                                                 <option value="{{ $keterangan_absen }}"
                                                     {{ ($presensi->keterangan_absen ?? '') === $keterangan_absen ? 'selected' : '' }}>
