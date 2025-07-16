@@ -405,10 +405,9 @@ class NilaiController extends Controller
                     'nip' => $nip,
                     'mapel' => $mapel,
                 ]);
-                return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses ke mapel ini');
             }
 
-            // Check if kegiatan already exists for this mapel and tahun_pelajaran
             $exists = DB::table('nilai')
                 ->where('id_mapel', $id_mapel)
                 ->where('tahun_pelajaran', $tahunAjaran)
@@ -499,16 +498,16 @@ class NilaiController extends Controller
 
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
-        $listMapel = DB::table('guru_mapel')
+        $mapelList = DB::table('guru_mapel')
             ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
             ->join('mapel', 'paket_mapel.id_mapel', '=', 'mapel.id_mapel')
             ->where('guru_mapel.nip_guru_mapel', $nip_guru_mapel)
-            ->select('mapel.id_mapel', 'mapel.nama_mapel', 'guru_mapel.nip_guru_mapel')
-            ->distinct() // agar tidak terjadi duplicate data
-            ->pluck('mapel.nama_mapel')
+            ->select('mapel.id_mapel', 'mapel.nama_mapel')
+            ->distinct()
+            ->pluck('mapel.nama_mapel', 'mapel.id_mapel') // key = id, value = nama
             ->toArray();
 
-        return $listMapel;
+        return $mapelList;
     }
 
     public function getTahunAjaranAktif()

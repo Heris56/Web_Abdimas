@@ -75,7 +75,7 @@
                     @foreach ($mapelList as $index => $mapel)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab" data-mapel="{{ $mapel }}"
+                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab" data-id-mapel="{{ $index }}" data-mapel="{{ $mapel }}"
                                 type="button" role="tab" aria-controls="mapel-{{ $index }}"
                                 aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
                                 {{ $mapel }}
