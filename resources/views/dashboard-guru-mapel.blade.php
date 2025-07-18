@@ -90,17 +90,12 @@
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
                     <select id="kelasFilter" class="form-select me-2">
-                        <option value="">Semua Kelas</option>
-                        @foreach ($kelasList as $kelas)
-                            <option value="{{ $kelas }}">{{ $kelas }}</option>
-                        @endforeach
                     </select>
                 </div>
 
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
-                    <select id="tahunFilter" class="form-select">
-                        <option value="">Semua Tahun Ajaran</option>
+                    <select id="tahunFilter" class="form-select me-2">
                         @foreach ($tahunPelajaranList as $tahun)
                             <option value="{{ $tahun }}">{{ $tahun }}</option>
                         @endforeach
@@ -109,9 +104,8 @@
 
                 <!-- Semester Filter -->
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="semesterFilter" class="form-label">Semester</label>
-                    <select id="semesterFilter" class="form-select">
-                        <option value="">Semua Semester</option>
+                    <label for="semesterFilter" class="form-label m-auto me-1">Semester</label>
+                    <select id="semesterFilter" class="form-select me-2">
                         @foreach ($semesterList as $semester)
                             <option value="{{ $semester }}">{{ $semester }}</option>
                         @endforeach
@@ -137,10 +131,10 @@
             </div>
 
 
-            <div class="row-md-auto">
+            <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
-                <div id="tableContainer" class="table-responsive">
-                    <table class="table table-bordered table-sm" id="nilaiTable">
+                <div id="tableContainer" class="" style="overflow-x: auto;">
+                    <table class="table table-bordered table-sm" id="table-data">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -173,7 +167,6 @@
                             <div class="mb-3">
                                 <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
                                 <select id="mapelSelect" name="mapelSelect" class="form-select">
-                                    <option value="">Pilih Mata Pelajaran</option>
                                     @foreach ($mapelList as $id => $nama)
                                         <option value="{{ $id }}">{{ $nama }}</option>
                                     @endforeach
@@ -260,6 +253,10 @@
                 showToast('Mencetak Nilai Siswa', 'text-bg-primary');
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
             });
+        </script>
+
+        <script>
+            const mapelKelasMap = @json($mapelKelasMap);
         </script>
 </body>
 

@@ -1,24 +1,3 @@
-:root {
-    /* color settings */
-    --color-accent: #fcba03;
-    --color-light: #fefcfb;
-    --color-dark: #121212;
-    --text-dark: #121212;
-    --text-light: #fffcf2;
-    --color-button: #fdfffc;
-
-    /* fonts settings */
-    --font-head: "Poppins", sans-serif;
-    --font-body: "Lato", sans-serif;
-
-    --font-size-sm: 0.875rem; /* 14px for hints */
-    --font-size-base: 1rem; /* 16px for default/input */
-    --font-size-md: 1.125rem; /* 18px for label */
-    --font-size-lg: 1.5rem; /* 24px for title/subheading */
-    --font-size-head: 2rem; /* 32px for heading*/
-    --font-size-hero: 3rem; /* 48px for hero section */
-}
-
 html,
 body {
     height: 100%;
@@ -27,6 +6,7 @@ body {
     font-family: var(--font-body);
     font-size: var(--font-size-base);
     background-color: var(--color-light);
+    overflow-x: hidden;
 }
 
 body {
@@ -155,5 +135,62 @@ input.form-control:focus {
 td.editable:hover {
     background-color: #f5f5f5;
     cursor: pointer;
+}
+
+#tableContainer {
+    overflow-x: auto;
+    max-width: 100%;
+    display: block;
+}
+
+#table-data {
+    width: 100%;
+    table-layout: auto;
+    white-space: nowrap;
+}
+
+#table-data th,
+#table-data td {
+    padding: 0.5rem 1rem; /* (atas/bawah) (samping) */
+    text-align: left;
+    vertical-align: middle;
+}
+
+#table-data th:nth-child(3),
+#table-data td:nth-child(3) {
+    position: sticky;
+    left: 0;
+    background: var(--background);
+    z-index: 2;
+}
+
+.table-scroll-wrapper {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+.content-wrapper,
+.Contents,
+.table-scroll-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.kegiatan-cell {
+    position: relative;
+    display: inline-block;
+}
+
+.delete-btn {
+    display: none;
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--destructive);
+}
+
+.kegiatan-header:hover .delete-btn {
+    display: inline;
 }
 /* end table controls */
