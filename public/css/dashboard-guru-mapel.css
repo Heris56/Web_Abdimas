@@ -1,24 +1,3 @@
-:root {
-    /* color settings */
-    --color-accent: #fcba03;
-    --color-light: #fefcfb;
-    --color-dark: #121212;
-    --text-dark: #121212;
-    --text-light: #fffcf2;
-    --color-button: #fdfffc;
-
-    /* fonts settings */
-    --font-head: "Poppins", sans-serif;
-    --font-body: "Lato", sans-serif;
-
-    --font-size-sm: 0.875rem; /* 14px for hints */
-    --font-size-base: 1rem; /* 16px for default/input */
-    --font-size-md: 1.125rem; /* 18px for label */
-    --font-size-lg: 1.5rem; /* 24px for title/subheading */
-    --font-size-head: 2rem; /* 32px for heading*/
-    --font-size-hero: 3rem; /* 48px for hero section */
-}
-
 html,
 body {
     height: 100%;
@@ -177,23 +156,12 @@ td.editable:hover {
     vertical-align: middle;
 }
 
-/* Make 1st and 2nd column fit content */
-#table-data th:nth-child(1),
-#table-data td:nth-child(1),
-#table-data th:nth-child(2),
-#table-data td:nth-child(2) {
-    width: fit-content;
-    white-space: nowrap;
-}
-
-/* Make 3rd column stretch (e.g., "Nama Siswa") */
 #table-data th:nth-child(3),
 #table-data td:nth-child(3) {
-    width: auto;
-}
-
-#editable {
-    width: fit-content;
+    position: sticky;
+    left: 0; /* Adjust based on the width of the first column */
+    background: var(--background);
+    z-index: 2;
 }
 
 .table-scroll-wrapper {
