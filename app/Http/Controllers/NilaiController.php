@@ -39,14 +39,8 @@ class NilaiController extends Controller
         Log::info('tahunPelajaranList', ['tahunPelajaranList' => $tahunPelajaranList]);
 
         // untuk filter kelas
-        $kelasList = DB::table('siswa')
-            ->leftJoin('nilai', 'siswa.nisn', '=', 'nilai.nisn')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('siswa.id_kelas')
-            ->toArray();
-        Log::info('kelasList', ['kelasList' => $kelasList]);
+        $mapelKelasMap = $this->getMapelKelasMap($nip);
+        Log::info('kelasList', ['kelasList' => $mapelKelasMap]);
 
         // untuk buat column sesuai kegiatan
         $kegiatanList = DB::table('nilai')
@@ -133,7 +127,7 @@ class NilaiController extends Controller
             'mapelList' => $mapelList,
             'tahunPelajaranList' => $tahunPelajaranList,
             'semesterList' => $semesterList,
-            'kelasList' => $kelasList,
+            'mapelKelasMap' => $mapelKelasMap,
             'tahunAjaran' => $tahunAjaran,
             'semester' => $semester
         ]);
@@ -520,6 +514,29 @@ class NilaiController extends Controller
 
         return $mapelList;
     }
+
+    public function getMapelKelasMap($nip)
+    {
+        $mapelList = $this->getListMapelByNipGuruMapel($nip); // returns [ 'MAP01' => 'Biologi', ... ]
+
+        $mapelKelasMap = [];
+
+        foreach (array_keys($mapelList) as $id_mapel) {
+            $kelasList = DB::table('guru_mapel')
+                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+                ->join('kelas', 'paket_mapel.id_kelas', '=', 'kelas.id_kelas')
+                ->where('guru_mapel.nip_guru_mapel', $nip)
+                ->where('paket_mapel.id_mapel', $id_mapel)
+                ->select('kelas.id_kelas')
+                ->pluck('kelas.id_kelas')
+                ->toArray();
+
+            $mapelKelasMap[$id_mapel] = $kelasList;
+        }
+
+        return $mapelKelasMap;
+    }
+
 
     public function getTahunAjaranAktif()
     {

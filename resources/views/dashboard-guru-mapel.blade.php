@@ -90,9 +90,6 @@
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
                     <select id="kelasFilter" class="form-select me-2">
-                        @foreach ($kelasList as $kelas)
-                            <option value="{{ $kelas }}">{{ $kelas }}</option>
-                        @endforeach
                     </select>
                 </div>
 
@@ -255,6 +252,45 @@
             document.getElementById('button-cetak').addEventListener('click', function() {
                 showToast('Mencetak Nilai Siswa', 'text-bg-primary');
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
+            });
+        </script>
+
+        <script>
+            const mapelKelasMap = @json($mapelKelasMap);
+            document.addEventListener('DOMContentLoaded', function() {
+                const kelasFilter = document.getElementById('kelasFilter');
+
+                function populateKelasOptions(kelasArray) {
+                    kelasFilter.innerHTML = ''; // Clear current options
+                    if (!kelasArray || kelasArray.length === 0) {
+                        kelasFilter.innerHTML = '<option value="">Tidak ada kelas</option>';
+                        return;
+                    }
+                    kelasArray.forEach(kelas => {
+                        const option = document.createElement('option');
+                        option.value = kelas;
+                        option.textContent = kelas;
+                        kelasFilter.appendChild(option);
+                    });
+                }
+
+                // Listen for tab clicks
+                document.querySelectorAll('[data-id-mapel]').forEach(button => {
+                    button.addEventListener('shown.bs.tab', function(event) {
+                        const selectedMapelId = this.getAttribute('data-id-mapel');
+                        const kelasList = mapelKelasMap[selectedMapelId] || [];
+                        populateKelasOptions(kelasList);
+                    });
+                });
+
+
+                // Auto-fill for the first tab on page load
+                const firstMapelId = document.querySelector('[data-id-mapel]')?.getAttribute('data-id-mapel');
+                if (firstMapelId && mapelKelasMap[firstMapelId]) {
+                    populateKelasOptions(mapelKelasMap[firstMapelId]);
+                }
+
+
             });
         </script>
 </body>
