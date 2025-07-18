@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
+// TODO::
+// bugged pas masukin nilai ke siswa yang semesternya kosong
+// fix kegiatan fetching to limit only kegiatan that belongs to that mapel
+
 class NilaiController extends Controller
 {
     public function fetchNilai(Request $request)
@@ -259,7 +263,7 @@ class NilaiController extends Controller
             $request->validate([
                 'nisn' => 'required|string',
                 'field' => 'required|string',
-                'value' => 'nullable|string',
+                'value' => 'nullable|string|min:0|max:100',
                 'tahun_pelajaran' => 'required|string',
                 'semester' => 'required|in:Ganjil,Genap',
                 'id_mapel' => 'required|string',
@@ -511,7 +515,7 @@ class NilaiController extends Controller
             if (!$kegiatan || !$id_mapel || !$nip) {
                 return response()->json(['success' => false, 'message' => 'Data tidak lengkap'], 400);
             }
-            
+
             DB::statement('SET SQL_SAFE_UPDATES = 0');
             DB::table('nilai')
                 ->where('kegiatan', $kegiatan)

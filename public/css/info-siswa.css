@@ -297,6 +297,10 @@ body {
     margin-bottom: 1rem;
 }
 
+.head {
+    font-weight: 600 !important;
+}
+
 .subject-stats {
     font-size: 0.9rem;
     color: var(--text-dark);
