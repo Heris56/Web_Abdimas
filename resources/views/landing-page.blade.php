@@ -60,6 +60,7 @@
                     <a href="{{ route('login-walikelas') }}" class="btn">Masuk ke akun Wali
                         Kelas</a>
                     <a href="{{ route('login-gurumapel') }}" class="btn">Masuk ke akun Guru</a>
+                    <a href="{{ route('login-staff') }}" class="btn">Masuk ke akun Staff</a>
                 </div>
             </div>
 
@@ -68,27 +69,21 @@
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <span class="col-auto"><i class="bi bi-facebook"></i></span>
-                <span class="col-auto">:</span>
-                <span class="col text-start">0981284762387</span>
-            </div>
-
-            <div class="row align-items-center justify-content-start mb-2">
                 <span class="col-auto"><i class="bi bi-whatsapp"></i></span>
                 <span class="col-auto">:</span>
-                <span class="col text-start">0981284762387</span>
+                <span class="col text-start"><a href="https://wa.me/+6282119164019">&nbsp;0821-1916-4019</a></span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
-                <span class="col-auto"><i class="bi bi-telegram"></i></span>
+                <span class="col-auto"><i class="bi bi-tiktok"></i></span>
                 <span class="col-auto">:</span>
-                <span class="col text-start">0981284762387</span>
+                <span class="col text-start"><a href="https://www.tiktok.com/@smkpgri35soljer">@smkpgri35soljer</a></span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
                 <span class="col-auto"><i class="bi bi-instagram"></i></span>
                 <span class="col-auto">:</span>
-                <span class="col text-start">0981284762387</span>
+                <span class="col text-start"><a href="https://www.instagram.com/smkpgri35soljer/">@smkpgri35soljer</a></span>
             </div>
 
             <div class="row align-items-center justify-content-start mt-4 mb-2">

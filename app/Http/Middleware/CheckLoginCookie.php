@@ -28,11 +28,11 @@ class CheckLoginCookie
             switch ($userRole) {
                 case 'siswa':
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain Siswa. Silahkan lakukan login');
-                case 'waliKelas':
+                case 'wali_kelas':
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain WaliKelas. Silahkan lakukan login');
-                case 'guruMapel':
+                case 'guru_mapel':
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain GuruMapel. Silahkan lakukan login');
-                case 'Staff':
+                case 'staff':
                     return redirect()->route('landing')->with('error', 'Anda tidak memiliki akses ke halaman selain Staff. Silahkan lakukan login');
                 default:
                     // Jika role tidak dikenal, arahkan ke landing

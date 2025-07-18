@@ -35,8 +35,8 @@
     <!-- Wrapper untuk form masuk -->
     <div class="container1">
         <div class="form-box">
-            <h1 class="head">Masuk sebagai Atmint Sekolah SMK PGRI 35</h1>
-            <h2 class="subhead">Halo bang Atmint</h2>
+            <h1 class="head">Masuk sebagai Admin Sekolah SMK PGRI 35</h1>
+            <h2 class="subhead">Halo bang Admin</h2>
             @if (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
@@ -53,7 +53,7 @@
                     <label class="form-label" for="email">Email</label>
                     <input class="form-control" type="email" id="email" name="staffemail"
                         placeholder="Enter your email">
-                    {{-- <p class="form-hint">Ga bisa? hayoloo bukan atmint lu ya?</p> --}}
+                    {{-- <p class="form-hint">Email Salah</p> --}}
                 </div>
 
                 <div class="mt-3 mb-3">
@@ -61,7 +61,7 @@
                     <div class="position-relative">
                         <input class="form-control" type="password" id="password" name="staffpassword"
                         placeholder="Enter your password">
-                    {{-- <p class="form-hint">Emang password lu yang itu? bukannya udah ganti?</p> --}}
+                    {{-- <p class="form-hint">Password Salah</p> --}}
                         <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3" id="togglePassword" style="cursor: pointer;"></i>
                     </div>
 
