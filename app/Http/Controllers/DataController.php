@@ -60,7 +60,7 @@ class DataController extends Controller
             'nama' => 'required|string|max:255',
             'tahun_ajaran' => 'required|string|max:10',
             'status' => 'required|in:aktif,nonaktif',
-            'id_kelas' => ['required', 'exists:kelas,id_kelas', 'unique:wali_kelas,id_kelas'], 
+            'id_kelas' => ['required', 'exists:kelas,id_kelas', 'unique:wali_kelas,id_kelas'],
         ],
         'mapel' => [
             'id_mapel' => 'required|unique:mapel,id_mapel',
@@ -228,7 +228,7 @@ class DataController extends Controller
                 });
             }
 
-            if ($type === 'wali_kelas'){
+            if ($type === 'wali_kelas') {
                 $validationRules['id_kelas'][] = Rule::unique('wali_kelas')->where(function ($query) use ($request) {
                     return $query->where('id_kelas', $request->id_kelas);
                 });
@@ -364,6 +364,22 @@ class DataController extends Controller
                         return $query->where('kode_paket', $request->kode_paket)
                             ->where('id_kelas', $request->id_kelas);
                     })->ignore($id, $primaryKey);
+                    // --- MODIFIKASI INI UNTUK MEMBUAT 'tahun_ajaran' TIDAK REQUIRED SAAT UPDATE ---
+                    // Ambil aturan untuk tahun_ajaran
+                    $tahunAjaranRules = $validationRules['tahun_ajaran'];
+
+                    // Jika aturan saat ini adalah string, konversi ke array untuk dimodifikasi
+                    if (is_string($tahunAjaranRules)) {
+                        $tahunAjaranRules = explode('|', $tahunAjaranRules);
+                    }
+
+                    // Filter dan hapus aturan 'required' dari array
+                    $tahunAjaranRules = array_filter($tahunAjaranRules, function ($rule) {
+                        return $rule !== 'required';
+                    });
+
+                    // Terapkan kembali aturan yang sudah dimodifikasi
+                    $validationRules['tahun_ajaran'] = array_values($tahunAjaranRules); // array_values untuk reset indeks array
                     break;
                 default:
                     Log::error("Unexpected type for update in switch: {$type}");
@@ -443,7 +459,7 @@ class DataController extends Controller
                     // set mark jadi active lagi di tahun yang dipilih
                     DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_current' => 1]);
 
-                   if($tahunajaran != $currentTahunajaran) {
+                    if ($tahunajaran != $currentTahunajaran) {
                         // update semua tahun ajaran siswa
                         DB::table('siswa')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'id_kelas' => null]);
 
@@ -451,7 +467,7 @@ class DataController extends Controller
                         DB::table('guru_mapel')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'kode_paket' => null]);
                         // update tahun ajaran wali_kelas
                         DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'id_kelas' => null]);
-                   }
+                    }
                     DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_changed' => true]);
                     return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
                 } else {
