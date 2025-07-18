@@ -156,4 +156,41 @@ td.editable:hover {
     background-color: #f5f5f5;
     cursor: pointer;
 }
+
+#tableContainer {
+    width: 100%;
+    overflow-x: auto; /* enable scroll if needed */
+}
+
+#table-data {
+    width: 100%;
+    table-layout: fixed; /* important for column control */
+    border-collapse: collapse;
+}
+
+#table-data th,
+#table-data td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Make 1st and 2nd column fit content */
+#table-data th:nth-child(1),
+#table-data td:nth-child(1),
+#table-data th:nth-child(2),
+#table-data td:nth-child(2) {
+    width: fit-content;
+    white-space: nowrap;
+}
+
+/* Make 3rd column stretch (e.g., "Nama Siswa") */
+#table-data th:nth-child(3),
+#table-data td:nth-child(3) {
+    width: auto;
+}
+
+#editable {
+    width: fit-content;
+}
 /* end table controls */

@@ -24,7 +24,7 @@ class NilaiController extends Controller
 
         $tahunAjaran = $this->getTahunAjaranAktif();
 
-        $semesterList = ["Ganjil", "Genap"];
+        $semesterList = ["Genap", "Ganjil"];
         Log::info('semesterList', ['semesterList' => $semesterList]);
 
         $semester = $this->getSemester();
