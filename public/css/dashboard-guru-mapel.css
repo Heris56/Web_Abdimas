@@ -27,6 +27,7 @@ body {
     font-family: var(--font-body);
     font-size: var(--font-size-base);
     background-color: var(--color-light);
+    overflow-x: hidden;
 }
 
 body {
@@ -158,21 +159,21 @@ td.editable:hover {
 }
 
 #tableContainer {
-    width: 100%;
-    overflow-x: auto; /* enable scroll if needed */
+    overflow-x: auto;
+    max-width: 100%;
+    display: block;
 }
 
 #table-data {
-    width: 100%;
-    table-layout: fixed; /* important for column control */
-    border-collapse: collapse;
+    width: max-content;
+    white-space: nowrap;
+    table-layout: auto;
 }
 
-#table-data th,
-#table-data td {
+
+#table-data th {
+    width: max-content;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* Make 1st and 2nd column fit content */
@@ -193,4 +194,17 @@ td.editable:hover {
 #editable {
     width: fit-content;
 }
+
+.table-scroll-wrapper {
+    overflow-x: hidden; /* prevent outer scroll */
+    max-width: 100vw;
+}
+
+.content-wrapper,
+.Contents,
+.table-scroll-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 /* end table controls */

@@ -134,9 +134,9 @@
             </div>
 
 
-            <div class="row-md-auto">
+            <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
-                <div id="tableContainer" class="table-responsive" style="overflow-x: auto;">
+                <div id="tableContainer" class="" style="overflow-x: auto;">
                     <table class="table table-bordered table-sm" id="table-data">
                         <thead>
                             <tr>
@@ -170,7 +170,6 @@
                             <div class="mb-3">
                                 <label for="mapelSelect" class="form-label">Mata Pelajaran</label>
                                 <select id="mapelSelect" name="mapelSelect" class="form-select">
-                                    <option value="">Pilih Mata Pelajaran</option>
                                     @foreach ($mapelList as $id => $nama)
                                         <option value="{{ $id }}">{{ $nama }}</option>
                                     @endforeach
