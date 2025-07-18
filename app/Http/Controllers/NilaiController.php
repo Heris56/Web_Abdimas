@@ -503,13 +503,29 @@ class NilaiController extends Controller
 
     public function deleteKegiatan(Request $request)
     {
-        $kegiatan = $request->input('kegiatan');
+        try {
+            $nip = session('userID');
+            $kegiatan = $request->input('kegiatan');
+            $id_mapel = $request->input('id_mapel');
 
-        DB::statement('SET SQL_SAFE_UPDATES = 0');
-        DB::table('nilai')->where('kegiatan', $kegiatan)->delete();
-        DB::statement('SET SQL_SAFE_UPDATES = 1');
+            if (!$kegiatan || !$id_mapel || !$nip) {
+                return response()->json(['success' => false, 'message' => 'Data tidak lengkap'], 400);
+            }
+            
+            DB::statement('SET SQL_SAFE_UPDATES = 0');
+            DB::table('nilai')
+                ->where('kegiatan', $kegiatan)
+                ->where('id_mapel', $id_mapel)
+                ->where('nip_guru_mapel', $nip)
+                ->delete();
+            DB::statement('SET SQL_SAFE_UPDATES = 1');
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            // Log the error and return friendly message
+            Log::error($e);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
+        }
     }
 
     public function getListMapelByNipGuruMapel($nip_guru_mapel)

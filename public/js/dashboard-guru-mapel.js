@@ -4,6 +4,50 @@ $.ajaxSetup({
     },
 });
 
+let selectedMapelId = null;
+function getActiveMapelId() {
+    const activeTab = document.querySelector(".nav-link.active");
+    return activeTab ? activeTab.getAttribute("data-id-mapel") : null;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const kelasFilter = document.getElementById("kelasFilter");
+
+    function populateKelasOptions(kelasArray) {
+        kelasFilter.innerHTML = ""; // Clear current options
+        if (!kelasArray || kelasArray.length === 0) {
+            kelasFilter.innerHTML = '<option value="">Tidak ada kelas</option>';
+            return;
+        }
+        kelasArray.forEach((kelas) => {
+            const option = document.createElement("option");
+            option.value = kelas;
+            option.textContent = kelas;
+            kelasFilter.appendChild(option);
+        });
+    }
+
+    // Listen for tab clicks
+    document.querySelectorAll("[data-id-mapel]").forEach((button) => {
+        button.addEventListener("click", function () {
+            selectedMapelId = this.getAttribute("data-id-mapel"); // Save globally
+
+            const kelasList = mapelKelasMap[selectedMapelId] || [];
+            populateKelasOptions(kelasList);
+
+            updateTable(); // ← if this exists
+        });
+    });
+
+    // Auto-fill for the first tab on page load
+    const firstMapelId = document
+        .querySelector("[data-id-mapel]")
+        ?.getAttribute("data-id-mapel");
+    if (firstMapelId && mapelKelasMap[firstMapelId]) {
+        populateKelasOptions(mapelKelasMap[firstMapelId]);
+    }
+});
+
 $(document).ready(function () {
     // Initialize with first mapel tab
     const $firstTab = $("#mapelTabs .nav-link").first();
@@ -151,9 +195,10 @@ $(document).ready(function () {
       <th class="kegiatan-header">
         <div class="kegiatan-cell">
           ${kegiatan}
-          <button class="delete-btn" data-kegiatan="${kegiatan}"><i class="bi bi-trash-fill"></i></button>
+          <button class="delete-btn" data-kegiatan="${kegiatan}" data-id-mapel="${selectedMapelId}"><i class="bi bi-trash-fill"></i></button>
         </div>
-      </th>`
+      </th>
+        `
                             )
                             .join("")}
                     </tr>
@@ -387,12 +432,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("click", function (e) {
-    const btn = e.target.closest(".delete-btn");
-    if (!btn) return;
+    if (e.target.closest(".delete-btn")) {
+        const btn = e.target.closest(".delete-btn");
+        const kegiatan = btn.getAttribute("data-kegiatan");
+        const id_mapel = getActiveMapelId();
+        console.log("Active Mapel ID:", id_mapel);
 
-    const kegiatan = btn.dataset.kegiatan;
-
-    if (confirm(`Hapus semua nilai dengan kegiatan "${kegiatan}"?`)) {
         fetch("/dashboard/guru-mapel/delete-kegiatan", {
             method: "POST",
             headers: {
@@ -401,14 +446,23 @@ document.addEventListener("click", function (e) {
                     'meta[name="csrf-token"]'
                 ).content,
             },
-            body: JSON.stringify({ kegiatan }),
+            body: JSON.stringify({ kegiatan, id_mapel: id_mapel }),
         })
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
                     alert("Data berhasil dihapus");
-                    location.reload(); // or remove the column dynamically
+                    location.reload();
+                } else {
+                    alert(
+                        "Gagal menghapus: " +
+                            (data.message || "Tidak diketahui")
+                    );
                 }
+            })
+            .catch((err) => {
+                console.error("Error deleting:", err);
+                alert("Terjadi kesalahan pada server.");
             });
     }
 });
