@@ -46,12 +46,14 @@
                 <div class="col-md-6">
                     <label for="filterTahunAjaran" class="form-label">Filter Tahun Ajaran:</label>
                     <select class="form-select" id="filterTahunAjaran" onchange="filterByTahunAjaran()">
-                        <option value="all" {{ request('tahun_ajaran') == 'all' || !request()->has('tahun_ajaran') ? 'selected' : '' }}>
+                        <option value="all"
+                            {{ request('tahun_ajaran') == 'all' || !request()->has('tahun_ajaran') ? 'selected' : '' }}>
                             Semua Tahun Ajaran
                         </option>
-                        @if(isset($semesterList))
-                            @foreach($semesterList as $tahun)
-                                <option value="{{ $tahun }}" {{ request('tahun_ajaran') == $tahun ? 'selected' : '' }}>
+                        @if (isset($semesterList))
+                            @foreach ($semesterList as $tahun)
+                                <option value="{{ $tahun }}"
+                                    {{ request('tahun_ajaran') == $tahun ? 'selected' : '' }}>
                                     {{ $tahun }}
                                 </option>
                             @endforeach
@@ -62,14 +64,14 @@
                     <label for="filterMapel" class="form-label">Filter Mata Pelajaran:</label>
                     <select class="form-select" id="filterMapel" onchange="filterSubjects()">
                         <option value="all">Semua Mata Pelajaran</option>
-                        @foreach($nilaiByMapel as $mapel => $data)
+                        @foreach ($nilaiByMapel as $mapel => $data)
                             <option value="{{ Str::slug($mapel, '-') }}">{{ $mapel }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
 
-            @if(request('tahun_ajaran') && request('tahun_ajaran') !== 'all')
+            @if (request('tahun_ajaran') && request('tahun_ajaran') !== 'all')
                 @php
                     [$tahunAjaran, $semester] = explode(' - ', request('tahun_ajaran'));
                     $semesterText = $semester === '1' ? 'Ganjil' : 'Genap';
@@ -77,75 +79,51 @@
             @endif
 
 
-            @if(isset($nilaiByMapel) && count($nilaiByMapel) > 0)
-                @foreach($nilaiByMapel as $mapel => $data)
-                    <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
-                        <span class="head">{{ $mapel }}</span>
-                        @isset($data['guru_mapel'])
-                            @php
-                                $tahunPelajaran = $data['tahun_pelajaran'] ?? 'Tidak Tersedia';
-                            @endphp
-                            <div class="subject-stats">
-                                Guru Pengampu: {{ $data['guru_mapel'] }}
-                                @if(request('tahun_ajaran') && request('tahun_ajaran') !== 'all')
-                                    || Tahun Ajaran: {{ $tahunPelajaran }}
-                                @endif
-                            </div>
-                        @endisset
-                    </div>
-
+            @if (isset($nilaiByMapel) && count($nilaiByMapel) > 0)
+                @foreach ($nilaiByMapel as $mapel => $data)
                     @php
-                        $kegiatan_list = $data['grades']->pluck('kegiatan')->unique()->sort()->values();
-                        $grouped_data = [];
-
-                        foreach ($data['grades'] as $item) {
-                            $key = $item->id_nilai . '|' . $item->tanggal . '|' . ($item->nama_guru ?? 'Unknown');
-
-                            $grouped_data[$key] = [
-                                'tanggal' => $item->tanggal,
-                                'guru' => $item->nama_guru ?? 'Unknown',
-                                'nilai' => []
-                            ];
-
-                            foreach ($kegiatan_list as $kegiatan) {
-                                $grouped_data[$key]['nilai'][$kegiatan] = ($item->kegiatan == $kegiatan) ? $item->nilai : '-';
-                            }
-                        }
-
-                        // Urutkan berdasarkan tanggal terbaru
-                        uasort($grouped_data, function ($a, $b) {
-                            return strtotime($b['tanggal']) - strtotime($a['tanggal']);
+                        // Kelompokkan grades berdasarkan Tahun Ajaran + Semester
+                        $groupedByTahunSemester = $data['grades']->groupBy(function ($item) {
+                            $semesterAngka = $item->semester === 'Ganjil' ? '1' : '2';
+                            return $item->tahun_pelajaran . ' - ' . $semesterAngka;
                         });
                     @endphp
 
-                    <table class="table table-bordered mb-4">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kegiatan</th>
-                                <th>Nilai</th>
-                                <th>Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $no = 1; @endphp
-                            @foreach($grouped_data as $row)
-                                @foreach($row['nilai'] as $kegiatan => $nilai)
+                    @foreach ($groupedByTahunSemester as $tahunSemester => $gradesGroup)
+                        <div class="subject-section" data-mapel="{{ Str::slug($mapel, '-') }}">
+                            <span class="head">{{ $mapel }} ({{ $tahunSemester }})</span>
+                            @php
+                                $guruPengampu = $gradesGroup->first()->nama_guru ?? 'Tidak diketahui';
+                            @endphp
+                            <div class="subject-stats">
+                                Guru Pengampu: {{ $guruPengampu }}
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered mb-4">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kegiatan</th>
+                                    <th>Nilai</th>
+                                    <th>Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $no = 1; @endphp
+                                @foreach ($gradesGroup as $item)
                                     <tr>
                                         <td>{{ $no++ }}</td>
-                                        <td>{{ strtoupper($kegiatan) }}</td>
-                                        <td>{{ $nilai }}</td>
-                                        <td>{{ $row['tanggal'] }}</td>
+                                        <td>{{ strtoupper($item->kegiatan) }}</td>
+                                        <td>{{ $item->nilai }}</td>
+                                        <td>{{ $item->tanggal }}</td>
                                     </tr>
                                 @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
-
-
+                            </tbody>
+                        </table>
+                    @endforeach
                 @endforeach
             @else
-
                 @php
                     // Format lama - menyiapkan struktur data yang dikelompokkan
                     $data_nilai = [];
@@ -158,7 +136,7 @@
                         if (!isset($data_nilai[$mapel])) {
                             $data_nilai[$mapel] = [
                                 'tanggal' => $item->tanggal,
-                                'nilai' => []
+                                'nilai' => [],
                             ];
                         }
 
@@ -210,7 +188,8 @@
 
                         <div class="stats">
                             <div class="stat">
-                                <span class="stat-value">{{ $siswa->id_kelas ?? $siswa->nama_kelas ?? 'Kelas' }}</span>
+                                <span
+                                    class="stat-value">{{ $siswa->id_kelas ?? ($siswa->nama_kelas ?? 'Kelas') }}</span>
                                 <span class="stat-label">Kelas</span>
                             </div>
                             <div class="stat">
@@ -223,9 +202,11 @@
                             </div>
                         </div>
                     </div>
-                    @if(!$isGuest) {{-- Only show Ganti Password for logged-in users --}}
+                    @if (!$isGuest)
+                        {{-- Only show Ganti Password for logged-in users --}}
                         <div class="text-center mt-3">
-                            <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
+                            <a href="{{ route('siswa.formGantiPassword') }}"
+                                class="btn custom-ganti-password-btn w-100">
                                 Ganti Password
                             </a>
                         </div>
@@ -236,8 +217,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
 
     <script src="{{ asset('js/darryl.js') }}"></script>
 
@@ -257,12 +238,12 @@
                 allTables.forEach(table => table.style.display = '');
             } else {
                 // Show only selected subject
-                const selectedSection = document.querySelector(`.subject-section[data-mapel="${selected}"]`);
-                if (selectedSection) {
-                    selectedSection.style.display = '';
+                const selectedSections = document.querySelectorAll(`.subject-section[data-mapel="${selected}"]`);
+                selectedSections.forEach(section => {
+                    section.style.display = '';
 
                     // Find the table that comes right after this section
-                    let nextElement = selectedSection.nextElementSibling;
+                    let nextElement = section.nextElementSibling;
                     while (nextElement) {
                         if (nextElement.tagName === 'TABLE') {
                             nextElement.style.display = '';
@@ -270,32 +251,102 @@
                         }
                         nextElement = nextElement.nextElementSibling;
                     }
-                }
+                });
             }
         }
+
         function filterByTahunAjaran() {
             const selectedTahun = document.getElementById('filterTahunAjaran').value;
-            const nisn = "{{ $siswa->nisn }}"; // Get NISN from PHP
-            const isGuest = "{{ $isGuest ? 'true' : 'false' }}"; // Get isGuest from PHP
+            const allSections = document.querySelectorAll('.subject-section');
+            const allTables = document.querySelectorAll('table.table-bordered');
 
-            let url;
-            if (isGuest === 'true') {
-                url = "{{ route('guest.info.siswa') }}?inputNISN=" + nisn + "&tab=nilai&tahun_ajaran=" + selectedTahun;
-            } else {
-                url = "{{ route('info.nilai') }}?tahun_ajaran=" + selectedTahun;
-            }
-
-            // If selecting "Semua Tahun Ajaran", reload page without filter
             if (selectedTahun === 'all') {
-                if (isGuest === 'true') {
-                    url = "{{ route('guest.info.siswa') }}?inputNISN=" + nisn + "&tab=nilai"; // No tahun_ajaran filter for 'all'
-                } else {
-                    url = "{{ route('info.nilai') }}?tahun_ajaran=all"; // Ensure 'all' is passed to clear filter if needed by backend
-                }
+                // Show all sections and tables without filtering tahun ajaran
+                allSections.forEach(section => section.style.display = '');
+                allTables.forEach(table => table.style.display = '');
+            } else {
+                // Filter berdasarkan tahun ajaran (yang ada di dalam teks heading)
+                allSections.forEach(section => {
+                    // Contoh text: "Matematika (2023/2024 - 1)"
+                    const headingText = section.querySelector('.head').textContent || '';
+                    if (headingText.includes(selectedTahun)) {
+                        section.style.display = '';
+
+                        // Tampilkan table setelahnya juga
+                        let nextElement = section.nextElementSibling;
+                        while (nextElement) {
+                            if (nextElement.tagName === 'TABLE') {
+                                nextElement.style.display = '';
+                                break;
+                            }
+                            nextElement = nextElement.nextElementSibling;
+                        }
+                    } else {
+                        section.style.display = 'none';
+                        // Sembunyikan juga table setelahnya
+                        let nextElement = section.nextElementSibling;
+                        while (nextElement) {
+                            if (nextElement.tagName === 'TABLE') {
+                                nextElement.style.display = 'none';
+                                break;
+                            }
+                            nextElement = nextElement.nextElementSibling;
+                        }
+                    }
+                });
             }
-            window.location.href = url;
         }
+
+        // Untuk gabungkan filter keduanya tanpa reload
+        function applyFilters() {
+            const selectedTahun = document.getElementById('filterTahunAjaran').value;
+            const selectedMapel = document.getElementById('filterMapel').value;
+            const allSections = document.querySelectorAll('.subject-section');
+            const allTables = document.querySelectorAll('table.table-bordered');
+
+            allSections.forEach(section => {
+                const headingText = section.querySelector('.head').textContent || '';
+                const mapelSlug = section.getAttribute('data-mapel');
+
+                const matchTahun = (selectedTahun === 'all' || headingText.includes(selectedTahun));
+                const matchMapel = (selectedMapel === 'all' || mapelSlug === selectedMapel);
+
+                if (matchTahun && matchMapel) {
+                    section.style.display = '';
+                    // Show the corresponding table
+                    let nextElement = section.nextElementSibling;
+                    while (nextElement) {
+                        if (nextElement.tagName === 'TABLE') {
+                            nextElement.style.display = '';
+                            break;
+                        }
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                } else {
+                    section.style.display = 'none';
+                    // Hide the corresponding table
+                    let nextElement = section.nextElementSibling;
+                    while (nextElement) {
+                        if (nextElement.tagName === 'TABLE') {
+                            nextElement.style.display = 'none';
+                            break;
+                        }
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                }
+            });
+        }
+
+        // Override event handler supaya pakai gabungan filter tanpa reload
+        document.getElementById('filterTahunAjaran').onchange = applyFilters;
+        document.getElementById('filterMapel').onchange = applyFilters;
+
+        // Jalankan filter sekali saat halaman load
+        document.addEventListener('DOMContentLoaded', () => {
+            applyFilters();
+        });
     </script>
+
 
 </body>
 

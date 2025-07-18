@@ -187,7 +187,7 @@ class ControllerSiswa extends Controller
                 $semesterFilter = $semesterAngka === '1' ? 'Ganjil' : 'Genap';
             }
 
-            // Ambil data nilai
+            // Ambil data nilai dengan menghindari duplikat dari JOIN
             $data_nilai = DB::table('nilai')
                 ->join('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
                 ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
@@ -213,9 +213,10 @@ class ControllerSiswa extends Controller
                 ->orderBy('nilai.tahun_pelajaran', 'desc')
                 ->orderBy('mapel.nama_mapel')
                 ->orderBy('nilai.tanggal', 'desc')
-                ->get();
+                ->get()
+                ->unique('id_nilai'); // Hilangkan duplikat berdasarkan ID nilai yang unik
 
-            // Group nilai by mapel
+            // Group nilai by mapel saja (seperti aslinya)
             $nilaiByMapel = $data_nilai->groupBy('nama_mapel')->map(function ($grades) {
                 $guruMapel = $grades->first()->nama_guru ?? 'Tidak diketahui';
                 $tahunPelajaran = $grades->first()->tahun_pelajaran ?? null;
@@ -234,6 +235,7 @@ class ControllerSiswa extends Controller
                 if ($tahunPelajaran && $semesterAngka) {
                     $tahunPelajaranFull = $tahunPelajaran . ' - ' . $semesterAngka;
                 }
+
                 return [
                     'grades' => $grades,
                     'guru_mapel' => $guruMapel,
