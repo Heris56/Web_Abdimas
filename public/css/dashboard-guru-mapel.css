@@ -144,9 +144,9 @@ td.editable:hover {
 }
 
 #table-data {
-    width: max-content;
-    white-space: nowrap;
+    width: 100%;
     table-layout: auto;
+    white-space: nowrap;
 }
 
 #table-data th,
@@ -159,13 +159,13 @@ td.editable:hover {
 #table-data th:nth-child(3),
 #table-data td:nth-child(3) {
     position: sticky;
-    left: 0; /* Adjust based on the width of the first column */
+    left: 0;
     background: var(--background);
     z-index: 2;
 }
 
 .table-scroll-wrapper {
-    overflow-x: hidden; /* prevent outer scroll */
+    overflow-x: hidden;
     max-width: 100vw;
 }
 
