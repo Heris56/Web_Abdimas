@@ -557,7 +557,7 @@ class NilaiController extends Controller
         $kegiatanList = DB::table('nilai')
             ->select('id_mapel', 'kegiatan')
             ->where('nip_guru_mapel', $nip)
-            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('tahun_pelajaran', $tahunAjaran)
             ->distinct()
             ->orderBy('kegiatan')
             ->get()
