@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Jenssegers\Agent\Agent;
+use App\Http\Controllers\login_controller;
 
 class BlockUserOnMobileWeb
 {
@@ -25,6 +26,10 @@ class BlockUserOnMobileWeb
         $blockedRoles = ['staff', 'wali_kelas', 'guru_mapel'];
 
         if ($isMobile && in_array($userRole, $blockedRoles)) {
+            session()->flush();
+            \Cookie::queue(\Cookie::forget('userID'));
+            \Cookie::queue(\Cookie::forget('userRole'));
+            \Cookie::queue(\Cookie::forget('primarykey'));
             return response()->view('errors.blocked_mobile', ['role' => $userRole]);
         }
 
