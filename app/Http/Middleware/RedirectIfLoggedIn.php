@@ -22,11 +22,11 @@ class RedirectIfLoggedIn
             switch ($userRole) {
                 case 'siswa':
                     return redirect()->route('info.presensi')->with('success', 'Berhasil Login sebagai siswa');
-                case 'waliKelas':
+                case 'wali_kelas':
                     return redirect()->route('dashboard-wali-kelas')->with('success', 'Berhasil Login sebagai wali kelas');
-                case 'guruMapel':
+                case 'guru_mapel':
                     return redirect()->route('nilai.fetch')->with('success', 'Berhasil Login sebagai guru mapel');
-                case 'Staff':
+                case 'staff':
                     return redirect()->route('data.fetch')->with('success', 'Berhasil Login sebagai Staff');
                 default:
                     // Jika role tidak dikenal, arahkan ke landing
