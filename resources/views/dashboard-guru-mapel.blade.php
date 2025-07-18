@@ -98,7 +98,7 @@
 
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
-                    <select id="tahunFilter" class="form-select">
+                    <select id="tahunFilter" class="form-select me-2">
                         @foreach ($tahunPelajaranList as $tahun)
                             <option value="{{ $tahun }}">{{ $tahun }}</option>
                         @endforeach
@@ -107,8 +107,8 @@
 
                 <!-- Semester Filter -->
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="semesterFilter" class="form-label">Semester</label>
-                    <select id="semesterFilter" class="form-select">
+                    <label for="semesterFilter" class="form-label m-auto me-1">Semester</label>
+                    <select id="semesterFilter" class="form-select me-2">
                         @foreach ($semesterList as $semester)
                             <option value="{{ $semester }}">{{ $semester }}</option>
                         @endforeach
