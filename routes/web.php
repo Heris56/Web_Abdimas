@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\login_controller;
 use App\Http\Controllers\controllerSiswa;
+use App\Http\Middleware\BlockUserOnMobileWeb;
 use App\Http\Middleware\CheckUserAktif;
 use App\Http\Middleware\isTestMode;
 use App\Http\Middleware\RestrictAdminIP;
@@ -43,7 +44,7 @@ Route::middleware([CheckLoginCookie::class . ':siswa', CheckUserAktif::class])->
     Route::put('/siswa/update-password', [controllerSiswa::class, 'updatePassword'])->name('siswa.updatePassword');
 });
 
-Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::class])->group(function () {
+Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
     Route::get('/dashboard-wali-kelas', [dashboard_wali_kelas_controller::class, 'get_wali_kelas_by_nip'])->name('dashboard-wali-kelas');
     Route::get('/dashboard/ganti-password', [dashboard_wali_kelas_controller::class, 'formGantiPassword'])->name('dashboard.walikelas.ganti-password');
     Route::post('/dashboard/walikelas/add-tanggal', [dashboard_wali_kelas_controller::class, 'add_tanggal'])->name('dashboard.walikelas.add-tanggal');
@@ -52,7 +53,7 @@ Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::clas
     Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
     Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 });
-Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class])->group(function () {
+Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
     Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 });
 
@@ -79,7 +80,7 @@ Route::put('/dashboard/guru-mapel/ganti-password', [NilaiController::class, 'gan
 // staff
 Route::view('/login/staff', 'login-page-staff')->name('login-staff');
 Route::post('/login/staff', [login_controller::class, 'auth_login_staff'])->name('auth.staff');
-Route::middleware([RestrictAdminIP::class, CheckLoginCookie::class . ':staff'])->group(function () {
+Route::middleware([RestrictAdminIP::class, CheckLoginCookie::class . ':staff', BlockUserOnMobileWeb::class])->group(function () {
     // Route::view('/dashboard-staff', 'dashboard-staff')->name('dashboard.staff');
     Route::get('/dashboard/staff/data/{type?}', [DataController::class, 'fetchData'])->name('data.fetch');
     Route::post('dashboard/staff/data/input/{type}', [DataController::class, 'inputData'])->name('data.input');
