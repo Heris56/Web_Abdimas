@@ -93,22 +93,19 @@
                     </select>
                 </div>
 
-                {{-- <div class="col-md-auto d-flex align-items-center">
+                <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
                     <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
                     <select id="tahunFilter" class="form-select me-2">
                         <option value="{{ $tahunAjaran }}">{{ $tahunAjaran }}</option>
                     </select>
                 </div>
 
-                <!-- Semester Filter -->
-                <div class="col-md-auto d-flex align-items-center">
+                <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
                     <label for="semesterFilter" class="form-label m-auto me-1">Semester</label>
                     <select id="semesterFilter" class="form-select me-2">
-                        @foreach ($semesterList as $semester)
-                            <option value="{{ $semester }}">{{ $semester }}</option>
-                        @endforeach
+                        <option value="{{ $semester }}">{{ $semester }}</option>
                     </select>
-                </div> --}}
+                </div>
 
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
