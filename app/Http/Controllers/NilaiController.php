@@ -297,9 +297,9 @@ class NilaiController extends Controller
                     ->where('id_mapel', $id_mapel)
                     ->where('nip_guru_mapel', $nip_guru_mapel)
                     ->update([
-        'nilai' => $value,
-        'tanggal' => Carbon::now()->format('Y-m-d H:i:s') // or just now()
-    ]);
+                        'nilai' => $value,
+                        'tanggal' => Carbon::now()->format('Y-m-d H:i:s') // or just now()
+                    ]);
 
                 Log::info('Update operation', [
                     'updated_rows' => $updated,
@@ -549,6 +549,27 @@ class NilaiController extends Controller
             ->toArray();
 
         return $mapelList;
+    }
+
+    public function getKegiatanOfEachMapelByNipGuruMapel($nip)
+    {
+        $tahunAjaran = $this->getTahunAjaranAktif();
+        $kegiatanList = DB::table('nilai')
+            ->select('id_mapel', 'kegiatan')
+            ->where('nip_guru_mapel', $nip)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->distinct()
+            ->orderBy('kegiatan')
+            ->get()
+            ->groupBy('id_mapel')
+            ->map(function ($group) {
+                return $group->pluck('kegiatan')->unique()->values()->toArray();
+            })
+            ->toArray();
+
+        Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
+
+        return $kegiatanList;
     }
 
     public function getMapelKelasMap($nip)
