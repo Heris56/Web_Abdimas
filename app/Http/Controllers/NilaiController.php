@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -270,7 +271,6 @@ class NilaiController extends Controller
                 'nip_guru_mapel' => 'required|string',
             ]);
 
-            DB::beginTransaction();
 
             $record = DB::table('nilai')
                 ->where('nisn', $nisn)
@@ -286,6 +286,7 @@ class NilaiController extends Controller
                 'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND kegiatan = '$field' AND tahun_pelajaran = '$tahun_pelajaran' AND semester = '$semester' AND id_mapel = '$id_mapel' AND nip_guru_mapel = '$nip_guru_mapel'"
             ]);
 
+            DB::beginTransaction();
             if ($record) {
                 // Update existing record
                 $updated = DB::table('nilai')
@@ -295,10 +296,14 @@ class NilaiController extends Controller
                     ->where('semester', $semester)
                     ->where('id_mapel', $id_mapel)
                     ->where('nip_guru_mapel', $nip_guru_mapel)
-                    ->update(['nilai' => $value]);
+                    ->update([
+        'nilai' => $value,
+        'tanggal' => Carbon::now()->format('Y-m-d H:i:s') // or just now()
+    ]);
 
                 Log::info('Update operation', [
                     'updated_rows' => $updated,
+                    'tanggal' => now(),
                     'nilai' => $value,
                     'nisn' => $nisn,
                     'kegiatan' => $field,
