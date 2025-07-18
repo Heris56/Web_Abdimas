@@ -501,6 +501,17 @@ class NilaiController extends Controller
         }
     }
 
+    public function deleteKegiatan(Request $request)
+    {
+        $kegiatan = $request->input('kegiatan');
+
+        DB::statement('SET SQL_SAFE_UPDATES = 0');
+        DB::table('nilai')->where('kegiatan', $kegiatan)->delete();
+        DB::statement('SET SQL_SAFE_UPDATES = 1');
+
+        return response()->json(['success' => true]);
+    }
+
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
         $mapelList = DB::table('guru_mapel')

@@ -385,3 +385,30 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".delete-btn");
+    if (!btn) return;
+
+    const kegiatan = btn.dataset.kegiatan;
+
+    if (confirm(`Hapus semua nilai dengan kegiatan "${kegiatan}"?`)) {
+        fetch("/dashboard/guru-mapel/delete-kegiatan", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            },
+            body: JSON.stringify({ kegiatan }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    alert("Data berhasil dihapus");
+                    location.reload(); // or remove the column dynamically
+                }
+            });
+    }
+});
