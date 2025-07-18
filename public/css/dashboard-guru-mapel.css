@@ -176,4 +176,21 @@ td.editable:hover {
     overflow-x: hidden;
 }
 
+.kegiatan-cell {
+    position: relative;
+    display: inline-block;
+}
+
+.delete-btn {
+    display: none;
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--destructive);
+}
+
+.kegiatan-header:hover .delete-btn {
+    display: inline;
+}
 /* end table controls */

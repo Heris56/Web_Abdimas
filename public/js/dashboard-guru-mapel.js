@@ -146,7 +146,15 @@ $(document).ready(function () {
                         <th>Kelas</th>
                         <th>Tahun Ajaran</th>
                         ${data.kegiatanList
-                            .map((kegiatan) => `<th>${kegiatan}</th>`)
+                            .map(
+                                (kegiatan) => `
+      <th class="kegiatan-header">
+        <div class="kegiatan-cell">
+          ${kegiatan}
+          <button class="delete-btn" data-kegiatan="${kegiatan}"><i class="bi bi-trash-fill"></i></button>
+        </div>
+      </th>`
+                            )
                             .join("")}
                     </tr>
                 </thead>
