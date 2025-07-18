@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
@@ -11,8 +12,8 @@ class NilaiController extends Controller
 {
     public function fetchNilai(Request $request)
     {
-        // 197806152005011001
-        // budi123
+        // 198001012005011001
+        // pwd123
         $nip = session('userID');
 
         Log::info('NIP', ['nip' => $nip]);
@@ -23,13 +24,10 @@ class NilaiController extends Controller
 
         $tahunAjaran = $this->getTahunAjaranAktif();
 
-        $semesterList = DB::table('nilai')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('nilai.semester')
-            ->toArray();
+        $semesterList = ["Genap", "Ganjil"];
         Log::info('semesterList', ['semesterList' => $semesterList]);
+
+        $semester = $this->getSemester();
 
         // untuk filter tahun ajaran
         $tahunPelajaranList = DB::table('nilai')
@@ -41,14 +39,8 @@ class NilaiController extends Controller
         Log::info('tahunPelajaranList', ['tahunPelajaranList' => $tahunPelajaranList]);
 
         // untuk filter kelas
-        $kelasList = DB::table('siswa')
-            ->leftJoin('nilai', 'siswa.nisn', '=', 'nilai.nisn')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('siswa.id_kelas')
-            ->toArray();
-        Log::info('kelasList', ['kelasList' => $kelasList]);
+        $mapelKelasMap = $this->getMapelKelasMap($nip);
+        Log::info('kelasList', ['kelasList' => $mapelKelasMap]);
 
         // untuk buat column sesuai kegiatan
         $kegiatanList = DB::table('nilai')
@@ -135,8 +127,9 @@ class NilaiController extends Controller
             'mapelList' => $mapelList,
             'tahunPelajaranList' => $tahunPelajaranList,
             'semesterList' => $semesterList,
-            'kelasList' => $kelasList,
-            'tahunAjaran' => $tahunAjaran
+            'mapelKelasMap' => $mapelKelasMap,
+            'tahunAjaran' => $tahunAjaran,
+            'semester' => $semester
         ]);
     }
 
@@ -386,16 +379,15 @@ class NilaiController extends Controller
     {
         try {
             $nip = session('userID');
-            $mapel = $request->input('mapelSelect');
+            $id_mapel = $request->input('mapelSelect');
             $tahunAjaran = $this->getTahunAjaranAktif();
             $kegiatan = $request->input('inputKegiatan');
-            $id_mapel = $this->getIdMapel($mapel);
+            $semester = $this->getSemester();
 
             Log::info('storeKegiatan called', [
                 'nip' => $nip,
                 'id_mapel' => $id_mapel,
                 'tahunAjaran' => $tahunAjaran,
-                'mapel' => $mapel,
                 'request_data' => $request->all(),
             ]);
 
@@ -404,12 +396,11 @@ class NilaiController extends Controller
             if (!$assigned) {
                 Log::error('Unauthorized access to mapel', [
                     'nip' => $nip,
-                    'mapel' => $mapel,
+                    'id_mapel' => $id_mapel,
                 ]);
-                return response()->json(['message' => 'Anda tidak memiliki akses ke mapel ini'], 403);
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses ke mapel ini');
             }
 
-            // Check if kegiatan already exists for this mapel and tahun_pelajaran
             $exists = DB::table('nilai')
                 ->where('id_mapel', $id_mapel)
                 ->where('tahun_pelajaran', $tahunAjaran)
@@ -426,15 +417,25 @@ class NilaiController extends Controller
             }
 
             $students = DB::table('siswa')
-                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $nip, $kegiatan) {
+                ->join('paket_mapel', 'siswa.id_kelas', '=', 'paket_mapel.id_kelas')
+                ->join('guru_mapel', function ($join) use ($nip) {
+                    $join->on('paket_mapel.kode_paket', '=', 'guru_mapel.kode_paket')
+                        ->where('guru_mapel.nip_guru_mapel', '=', $nip);
+                })
+                ->leftJoin('nilai', function ($join) use ($id_mapel, $tahunAjaran, $semester, $nip, $kegiatan) {
                     $join->on('siswa.nisn', '=', 'nilai.nisn')
                         ->where('nilai.id_mapel', '=', $id_mapel)
                         ->where('nilai.tahun_pelajaran', '=', $tahunAjaran)
-                        ->where('nilai.nip_guru_mapel', '=', $nip)
-                        ->where('nilai.kegiatan', '=', $kegiatan);
+                        ->where('nilai.semester', '=', $semester)
+                        ->where('nilai.kegiatan', '=', $kegiatan)
+                        ->where('nilai.nip_guru_mapel', '=', $nip);
                 })
-                ->whereNull('nilai.nisn')
-                ->pluck('siswa.nisn');
+                ->whereNull('nilai.id_nilai')
+                ->where('paket_mapel.id_mapel', $id_mapel)
+                ->select('siswa.nisn')
+                ->distinct()
+                ->pluck('nisn');
+
 
 
             if ($students->isEmpty()) {
@@ -457,6 +458,7 @@ class NilaiController extends Controller
                     'nip_guru_mapel' => $nip,
                     'tahun_pelajaran' => $tahunAjaran,
                     'kegiatan' => $kegiatan,
+                    'semester' => $semester,
                     'nilai' => null,
                 ]);
             }
@@ -466,6 +468,7 @@ class NilaiController extends Controller
                 'nip' => $nip,
                 'id_mapel' => $id_mapel,
                 'tahun_pelajaran' => $tahunAjaran,
+                'semester' => $semester,
                 'kegiatan' => $kegiatan,
             ]);
             return redirect()->back()->with('success', 'Berhasil menambahkan kegiatan.');
@@ -479,25 +482,108 @@ class NilaiController extends Controller
         }
     }
 
+    public function gantiPassword(Request $request)
+    {
+        $request->validate([
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $nip = session('userID');
+
+        $ceknip = DB::table('guru_mapel')->where('nip_guru_mapel', $nip)->exists();
+
+        if (!$ceknip) {
+            return redirect()->back()->with('error', 'NIP tidak ditemukan.');
+        } else {
+            $hashedPassword = Hash::make($request->input('new_password'));
+            DB::table('guru_mapel')->where('nip_guru_mapel', $nip)->update(['password' => $hashedPassword, 'pwd_is_changed' => true]);
+            return redirect()->route('nilai.fetch')->with('success', 'Password berhasil diubah.');
+        }
+    }
+
+    public function deleteKegiatan(Request $request)
+    {
+        try {
+            $nip = session('userID');
+            $kegiatan = $request->input('kegiatan');
+            $id_mapel = $request->input('id_mapel');
+
+            if (!$kegiatan || !$id_mapel || !$nip) {
+                return response()->json(['success' => false, 'message' => 'Data tidak lengkap'], 400);
+            }
+            
+            DB::statement('SET SQL_SAFE_UPDATES = 0');
+            DB::table('nilai')
+                ->where('kegiatan', $kegiatan)
+                ->where('id_mapel', $id_mapel)
+                ->where('nip_guru_mapel', $nip)
+                ->delete();
+            DB::statement('SET SQL_SAFE_UPDATES = 1');
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            // Log the error and return friendly message
+            Log::error($e);
+            return response()->json(['success' => false, 'message' => 'Server error'], 500);
+        }
+    }
+
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
-        $listMapel = DB::table('guru_mapel')
+        $mapelList = DB::table('guru_mapel')
             ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
             ->join('mapel', 'paket_mapel.id_mapel', '=', 'mapel.id_mapel')
             ->where('guru_mapel.nip_guru_mapel', $nip_guru_mapel)
-            ->select('mapel.id_mapel', 'mapel.nama_mapel', 'guru_mapel.nip_guru_mapel')
-            ->distinct() // agar tidak terjadi duplicate data
-            ->pluck('mapel.nama_mapel')
+            ->select('mapel.id_mapel', 'mapel.nama_mapel')
+            ->distinct()
+            ->pluck('mapel.nama_mapel', 'mapel.id_mapel') // key = id, value = nama
             ->toArray();
 
-        return $listMapel;
+        return $mapelList;
     }
+
+    public function getMapelKelasMap($nip)
+    {
+        $mapelList = $this->getListMapelByNipGuruMapel($nip); // returns [ 'MAP01' => 'Biologi', ... ]
+
+        $mapelKelasMap = [];
+
+        foreach (array_keys($mapelList) as $id_mapel) {
+            $kelasList = DB::table('guru_mapel')
+                ->join('paket_mapel', 'guru_mapel.kode_paket', '=', 'paket_mapel.kode_paket')
+                ->join('kelas', 'paket_mapel.id_kelas', '=', 'kelas.id_kelas')
+                ->where('guru_mapel.nip_guru_mapel', $nip)
+                ->where('paket_mapel.id_mapel', $id_mapel)
+                ->select('kelas.id_kelas')
+                ->pluck('kelas.id_kelas')
+                ->toArray();
+
+            $mapelKelasMap[$id_mapel] = $kelasList;
+        }
+
+        return $mapelKelasMap;
+    }
+
 
     public function getTahunAjaranAktif()
     {
         $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
 
         return $tahunAjaran;
+    }
+
+    // public function getStudents()
+    // {
+    //     $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
+
+    //     return $tahunAjaran;
+    // }
+
+    public function getSemester()
+    {
+        $semester = DB::table('tahun_ajaran')->where('is_current', 1)->value('semester');
+
+        return $semester;
     }
 
     public function verifyTeacherAccessToMapel($nip, $mapel)

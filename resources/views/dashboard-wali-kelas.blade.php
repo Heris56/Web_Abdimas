@@ -40,7 +40,7 @@
                     </div>
                     <div class="column" id="kelas">
                         <H5>
-                            Wali Kelas: {{ $wali->id_kelas }}
+                            Wali Kelas: {{ $wali->id_kelas ?? 'Anda belum terdaftar' }}
                         </H5>
                     </div>
                     <div class="column" id="nip">

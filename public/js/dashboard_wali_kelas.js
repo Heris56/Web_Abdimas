@@ -1,5 +1,3 @@
-console.log("Hello from dashboard-wali-kelas");
-
 document.getElementById('button-cetak').addEventListener('click', function () {
     alert('File presensi akan segera didownload');
 });
@@ -11,7 +9,7 @@ function exportExcel() {
 
     // Get date headers from thead (excluding first and last column)
     const ths = table.querySelectorAll("thead th");
-    for (let i = 1; i < ths.length - 1; i++) {
+    for (let i = 1; i < ths.length; i++) {
         headers.push(ths[i].textContent.trim());
     }
 

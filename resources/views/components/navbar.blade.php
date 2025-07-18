@@ -5,6 +5,7 @@
     @vite(['resources/css/app.css'])
 </head>
 
+<x-change-password-modal :user-id={{ session('username') }} />
 <nav class="navbar container-fluid fixed-top">
     <!-- navigate to home/dashboard by clicking logo/name -->
     <a class="logo" href="{{ route('landing') }}">
@@ -31,10 +32,18 @@
                     {{ session('username') }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-lg-end custom-dropdown-menu">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="dropdown-item destructive-dropdown-item">Logout</button>
-                    </form>
+                    <li>
+                        <button type="button" class="dropdown-item custom-dropdown-item" data-bs-toggle="modal"
+                            data-bs-target="#changePasswordModal">
+                            Ganti Password
+                        </button>
+                    </li>
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="dropdown-item destructive-dropdown-item">Logout</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         @else
