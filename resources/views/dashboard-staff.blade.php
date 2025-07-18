@@ -136,6 +136,7 @@
                                     @elseif($type == 'wali_kelas'){{ $item->nip_wali_kelas }}
                                     @elseif($type == 'mapel'){{ $item->id_mapel }}
                                     @elseif($type == 'tahun_ajaran'){{ $item->id_tahun_ajaran }}
+                                    @elseif($type == 'paket_mapel'){{ $item->id_paket }}
                                     @else{{ '' }} @endif
                                 "
                                     {{-- Loop untuk menambahkan semua data kolom sebagai data-* attributes --}}
@@ -249,8 +250,12 @@
 
                             @foreach ($columns as $key => $label)
                                 <div class="mb-3">
+                                    @if ($type == "paket_mapel" && $key =='tahun_ajaran')
+                                          
+                                    @else
                                     <label for="update_{{ $key }}"
-                                        class="form-label">{{ $label }}</label>
+                                            class="form-label">{{ $label }}</label>   
+                                    @endif
 
                                     @if ($type == 'siswa'  && $key == 'id_kelas')
                                         <select class="form-select @error($key) is-invalid @enderror"
@@ -290,6 +295,20 @@
                                             @endforelse
                                         </select>
                                     {{-- Sesuaikan id untuk setiap input --}}
+                                    @elseif ($type == 'paket_mapel'  && $key == 'id_mapel')
+                                        <select class="form-select @error($key) is-invalid @enderror"
+                                                id="update_{{ $key }}" name="{{ $key }}" required>
+                                            <option value="" {{ old($key)? '' : 'selected' }} selected disabled>Pilih {{ $label }}</option>
+                                            @forelse ($dropdowns['mapel'] as $item)
+                                                <option value="{{  $item->id_mapel}}" {{ old($key) == $item->id_mapel ? 'selected' : '' }}>
+                                                    {{  $item->id_mapel}} - {{ $item->nama_mapel }}
+                                                </option>
+                                            @empty
+                                                <option disabled>Tidak ada mata pelajaran tersedia</option>
+                                            @endforelse
+                                        </select>
+                                        <!-- set dropdown untuk pilih mapel dan kelas -->
+                                    @elseif ($type == 'paket_mapel'  && $key == 'tahun_ajaran')
                                     @elseif ($type == 'guru_mapel' && $key == 'kode_paket')
                                         <select class="form-select @error($key) is-invalid @enderror"
                                             id="update_{{ $key }}" name="{{ $key }}" required>
