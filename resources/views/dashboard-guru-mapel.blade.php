@@ -93,12 +93,10 @@
                     </select>
                 </div>
 
-                <div class="col-md-auto d-flex align-items-center">
+                {{-- <div class="col-md-auto d-flex align-items-center">
                     <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
                     <select id="tahunFilter" class="form-select me-2">
-                        @foreach ($tahunPelajaranList as $tahun)
-                            <option value="{{ $tahun }}">{{ $tahun }}</option>
-                        @endforeach
+                        <option value="{{ $tahunAjaran }}">{{ $tahunAjaran }}</option>
                     </select>
                 </div>
 
@@ -110,7 +108,7 @@
                             <option value="{{ $semester }}">{{ $semester }}</option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
 
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
