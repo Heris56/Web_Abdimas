@@ -170,32 +170,38 @@ class login_controller extends Controller
                 $id = $user->nisn;
                 $role = "siswa";
                 $username = $user->nama_siswa;
+                $primary = 'nisn';
             } elseif (property_exists($user, 'nip_wali_kelas') && $user->nip_wali_kelas) {
                 $id = $user->nip_wali_kelas;
-                $role = "waliKelas";
+                $role = "wali_kelas";
                 $username = $user->nama;
+                $primary = 'nip_wali_kelas';
             } elseif (property_exists($user, 'nip_guru_mapel') && $user->nip_guru_mapel) {
                 $id = $user->nip_guru_mapel;
-                $role = "guruMapel";
+                $role = "guru_mapel";
                 $username = $user->nama_guru;
+                $primary = 'nip_guru_mapel';
             } elseif (property_exists($user, 'nip_staff') && $user->nip_staff) {
                 $id = $user->nip_staff;
-                $role = "Staff";
+                $role = "staff";
                 $username = $user->nama_staff;
+                $primary = 'nip_staff';
             } else {
                 return redirect()->route($error_login)->with("error", "User tidak memiliki identitas yang valid");
             }
             session([
                 'userID' => $id, // id user
                 'userRole' => $role, // untuk role user
-                'username' => $username // simpan nama user ke session untuk navbar
+                'username' => $username, // simpan nama user ke session untuk navbar
+                'primarykey' => $primary
             ]);
 
             return redirect()
                 ->route($success_login)
                 ->withCookies([
                     cookie('userID', $id, 60), // :1 == test ? >1 == final
-                    cookie('userRole', $role, 60) // :1 == test ? >1 == final
+                    cookie('userRole', $role, 60), // :1 == test ? >1 == final
+                    cookie('primarykey', $primary)
                 ])
                 ->with("success", "berhasil Login");
         } else {
