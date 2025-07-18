@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+
+// TODO::
+// bugged pas masukin nilai ke siswa yang semesternya kosong
+// fix kegiatan fetching to limit only kegiatan that belongs to that mapel
 
 class NilaiController extends Controller
 {
@@ -259,14 +264,13 @@ class NilaiController extends Controller
             $request->validate([
                 'nisn' => 'required|string',
                 'field' => 'required|string',
-                'value' => 'nullable|string',
+                'value' => 'nullable|string|min:0|max:100',
                 'tahun_pelajaran' => 'required|string',
                 'semester' => 'required|in:Ganjil,Genap',
                 'id_mapel' => 'required|string',
                 'nip_guru_mapel' => 'required|string',
             ]);
 
-            DB::beginTransaction();
 
             $record = DB::table('nilai')
                 ->where('nisn', $nisn)
@@ -282,6 +286,7 @@ class NilaiController extends Controller
                 'query' => "SELECT * FROM nilai WHERE nisn = '$nisn' AND kegiatan = '$field' AND tahun_pelajaran = '$tahun_pelajaran' AND semester = '$semester' AND id_mapel = '$id_mapel' AND nip_guru_mapel = '$nip_guru_mapel'"
             ]);
 
+            DB::beginTransaction();
             if ($record) {
                 // Update existing record
                 $updated = DB::table('nilai')
@@ -291,10 +296,14 @@ class NilaiController extends Controller
                     ->where('semester', $semester)
                     ->where('id_mapel', $id_mapel)
                     ->where('nip_guru_mapel', $nip_guru_mapel)
-                    ->update(['nilai' => $value]);
+                    ->update([
+                        'nilai' => $value,
+                        'tanggal' => Carbon::now()->format('Y-m-d H:i:s') // or just now()
+                    ]);
 
                 Log::info('Update operation', [
                     'updated_rows' => $updated,
+                    'tanggal' => now(),
                     'nilai' => $value,
                     'nisn' => $nisn,
                     'kegiatan' => $field,
@@ -511,7 +520,7 @@ class NilaiController extends Controller
             if (!$kegiatan || !$id_mapel || !$nip) {
                 return response()->json(['success' => false, 'message' => 'Data tidak lengkap'], 400);
             }
-            
+
             DB::statement('SET SQL_SAFE_UPDATES = 0');
             DB::table('nilai')
                 ->where('kegiatan', $kegiatan)
@@ -540,6 +549,27 @@ class NilaiController extends Controller
             ->toArray();
 
         return $mapelList;
+    }
+
+    public function getKegiatanOfEachMapelByNipGuruMapel($nip)
+    {
+        $tahunAjaran = $this->getTahunAjaranAktif();
+        $kegiatanList = DB::table('nilai')
+            ->select('id_mapel', 'kegiatan')
+            ->where('nip_guru_mapel', $nip)
+            ->where('tahun_pelajaran', $tahunAjaran)
+            ->distinct()
+            ->orderBy('kegiatan')
+            ->get()
+            ->groupBy('id_mapel')
+            ->map(function ($group) {
+                return $group->pluck('kegiatan')->unique()->values()->toArray();
+            })
+            ->toArray();
+
+        Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
+
+        return $kegiatanList;
     }
 
     public function getMapelKelasMap($nip)
