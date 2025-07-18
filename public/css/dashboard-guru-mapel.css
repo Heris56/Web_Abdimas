@@ -170,10 +170,11 @@ td.editable:hover {
     table-layout: auto;
 }
 
-
-#table-data th {
-    width: max-content;
-    white-space: nowrap;
+#table-data th,
+#table-data td {
+    padding: 0.5rem 1rem; /* (atas/bawah) (samping) */
+    text-align: left;
+    vertical-align: middle;
 }
 
 /* Make 1st and 2nd column fit content */
