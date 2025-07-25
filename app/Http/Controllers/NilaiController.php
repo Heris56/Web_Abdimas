@@ -20,7 +20,6 @@ class NilaiController extends Controller
         // 198001012005011001
         // pwd123
         $nip = session('userID');
-
         Log::info('NIP', ['nip' => $nip]);
 
         // untuk filter mapel
@@ -48,11 +47,7 @@ class NilaiController extends Controller
         Log::info('kelasList', ['kelasList' => $mapelKelasMap]);
 
         // untuk buat column sesuai kegiatan
-        $kegiatanList = DB::table('nilai')
-            ->distinct()
-            ->orderBy('kegiatan')
-            ->pluck('kegiatan')
-            ->toArray();
+        $kegiatanList = $this->getListKegiatanByMapel();
         Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
 
         // query untuk minta data nilai dan lainnya
@@ -96,10 +91,10 @@ class NilaiController extends Controller
         Log::info('Test query data', ['testData' => $testData->toArray()]);
 
         // simpan nilai nama kegiatan ke list
-        foreach ($kegiatanList as $kegiatan) {
-            $alias = str_replace(' ', '_', strtolower($kegiatan));
-            $query->addSelect(DB::raw("MAX(CASE WHEN kegiatan = '$kegiatan' THEN nilai END) as `$alias`"));
-        }
+        // foreach ($kegiatanList as $kegiatan) {
+        //     $alias = str_replace(' ', '_', strtolower($kegiatan));
+        //     $query->addSelect(DB::raw("MAX(CASE WHEN kegiatan = '$kegiatan' THEN nilai END) as `$alias`"));
+        // }
 
         $data_nilai = $query
             ->groupBy(
@@ -125,6 +120,7 @@ class NilaiController extends Controller
                 'nama_mapel' => $data_nilai->isEmpty() ? '' : $data_nilai[0]->nama_mapel
             ]);
         }
+        dd($data_nilai, $kegiatanList, $mapelList, $semesterList, $tahunPelajaranList, $mapelKelasMap, $tahunAjaran, $semester);
 
         return view('dashboard-guru-mapel', [
             'data_nilai' => $data_nilai,
@@ -571,6 +567,30 @@ class NilaiController extends Controller
 
         return $kegiatanList;
     }
+
+    // returns something like this
+    // [
+    //     'MAP01' => ['Quiz 1', 'Quiz 2'],
+    //     'MAP02' => ['Tugas 1'],
+    // ]
+    public function getListKegiatanByMapel()
+    {
+        $nip = session('userID');
+        $kegiatanList = DB::table('nilai')
+            ->where('nip_guru_mapel', $nip)
+            ->select('id_mapel', 'kegiatan')
+            ->distinct()
+            ->orderBy('kegiatan')
+            ->get()
+            ->groupBy('id_mapel')
+            ->map(function ($items) {
+                return $items->pluck('kegiatan')->toArray();
+            })
+            ->toArray();
+
+        return $kegiatanList;
+    }
+
 
     public function getMapelKelasMap($nip)
     {
