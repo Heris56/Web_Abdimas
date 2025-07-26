@@ -165,7 +165,14 @@
                                                 <td>{{ $siswa['nisn'] }}</td>
                                                 <td>{{ $siswa['nama_siswa'] }}</td>
                                                 @foreach ($kelasData['kegiatan'] as $kegiatan)
-                                                    <td>{{ $siswa['nilai'][$kegiatan] ?? '-' }}</td>
+                                                    <td class="editable" data-nisn="{{ $siswa['nisn'] }}"
+                                                        data-field="{{ $kegiatan }}"
+                                                        data-tahun_pelajaran="{{ $siswa['tahun_pelajaran'] ?? '' }}"
+                                                        data-semester="{{ $siswa['semester'] ?? '' }}"
+                                                        data-id_mapel="{{ $mapelId ?? '' }}"
+                                                        data-nip="{{ $siswa['nip_guru_mapel'] ?? '' }}">
+                                                        {{ $siswa['nilai'][$kegiatan] ?? '-' }}
+                                                    </td>
                                                 @endforeach
                                             </tr>
                                         @endforeach
@@ -184,7 +191,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="inputNilaiModalLabel">Tambah Kegiatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="inputKegiatanForm" action="{{ route('nilai.tambah-kegiatan') }}" method="POST">
