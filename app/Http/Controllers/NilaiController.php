@@ -65,7 +65,6 @@ class NilaiController extends Controller
                 }
             }
         }
-        dd($data, $kegiatanList, $mapelList,  $siswaList, $tahunAjaran, $semester, $nilaiList, $kelasList);
 
         return view('dashboard-guru-mapel', [
             'data' => $data,

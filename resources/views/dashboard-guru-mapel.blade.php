@@ -72,14 +72,15 @@
             <!-- Filter -->
             <div class="row-md-auto">
                 <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
-                    @foreach ($mapelList as $index => $mapel)
+                    @foreach ($data as $mapelId => $mapelData)
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab"
-                                data-id-mapel="{{ $index }}" data-mapel="{{ $mapel }}" type="button"
-                                role="tab" aria-controls="mapel-{{ $index }}"
-                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                {{ $mapel }}
+                            <button class="nav-link {{ $loop->first ? 'active' : '' }}"
+                                id="mapel-{{ $mapelId }}-tab" data-bs-toggle="tab"
+                                data-bs-target="#mapel-{{ $mapelId }}" data-id-mapel="{{ $mapelId }}"
+                                data-mapel="{{ $mapelData['nama_mapel'] }}" type="button" role="tab"
+                                aria-controls="mapel-{{ $mapelId }}"
+                                aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                {{ $mapelData['nama_mapel'] }}
                             </button>
                         </li>
                     @endforeach
@@ -90,7 +91,19 @@
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
                     <select id="kelasFilter" class="form-select me-2">
+                        @php
+                            $allKelas = [];
+                            foreach ($data as $mapelData) {
+                                foreach ($mapelData['kelas'] as $kelasNama => $kelasData) {
+                                    $allKelas[$kelasNama] = true;
+                                }
+                            }
+                        @endphp
+                        @foreach (array_keys($allKelas) as $kelasNama)
+                            <option value="{{ $kelasNama }}">{{ $kelasNama }}</option>
+                        @endforeach
                     </select>
+
                 </div>
 
                 <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
@@ -128,21 +141,39 @@
 
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
-                <div id="tableContainer" class="" style="overflow-x: auto;">
-                    <table class="table table-bordered table-sm" id="table-data">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Tahun Ajaran</th>
-                                @foreach ($kegiatanList as $kegiatan)
-                                    <th>{{ $kegiatan }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                    </table>
+                <div class="tab-content mt-3">
+                    @foreach ($data as $mapelId => $mapelData)
+                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                            id="mapel-{{ $mapelId }}" role="tabpanel"
+                            aria-labelledby="mapel-{{ $mapelId }}-tab">
+                            @foreach ($mapelData['kelas'] as $kelasNama => $kelasData)
+                                <table class="table table-bordered table-sm" id="table-data">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>NISN</th>
+                                            <th>Nama Siswa</th>
+                                            @foreach ($kelasData['kegiatan'] as $kegiatan)
+                                                <th>{{ $kegiatan }}</th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($kelasData['siswa'] as $index => $siswa)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $siswa['nisn'] }}</td>
+                                                <td>{{ $siswa['nama_siswa'] }}</td>
+                                                @foreach ($kelasData['kegiatan'] as $kegiatan)
+                                                    <td>{{ $siswa['nilai'][$kegiatan] ?? '-' }}</td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endforeach
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -248,10 +279,6 @@
                 showToast('Mencetak Nilai Siswa', 'text-bg-primary');
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
             });
-        </script>
-
-        <script>
-            const mapelKelasMap = @json($mapelKelasMap);
         </script>
 </body>
 
