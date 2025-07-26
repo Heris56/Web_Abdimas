@@ -103,7 +103,6 @@
                             <option value="{{ $kelasNama }}">{{ $kelasNama }}</option>
                         @endforeach
                     </select>
-
                 </div>
 
                 <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
@@ -141,7 +140,7 @@
 
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
-                <div class="tab-content mt-3">
+                <div class="tab-content mt-3" id="tableContainer">
                     @foreach ($data as $mapelId => $mapelData)
                         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
                             id="mapel-{{ $mapelId }}" role="tabpanel"
@@ -154,7 +153,14 @@
                                             <th>NISN</th>
                                             <th>Nama Siswa</th>
                                             @foreach ($kelasData['kegiatan'] as $kegiatan)
-                                                <th>{{ $kegiatan }}</th>
+                                                <th class="kegiatan-header">
+                                                    <div class="kegiatan-cell">
+                                                        {{ $kegiatan }}
+                                                        <button class="delete-btn" data-kegiatan="{{ $kegiatan }}"
+                                                            data-id-mapel="{{ $mapelId }}"><i
+                                                                class="bi bi-trash-fill"></i></button>
+                                                    </div>
+                                                </th>
                                             @endforeach
                                         </tr>
                                     </thead>
@@ -287,6 +293,10 @@
                 showToast('Mencetak Nilai Siswa', 'text-bg-primary');
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
             });
+        </script>
+
+        <script>
+            const nilaiData = @json($data);
         </script>
 </body>
 

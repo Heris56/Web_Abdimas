@@ -66,6 +66,19 @@ class NilaiController extends Controller
             }
         }
 
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data,
+                'kegiatanList' => $kegiatanList,
+                'mapelList' => $mapelList,
+                'kelasList' => $kelasList,
+                'nilaiList' => $nilaiList,
+                'siswaList' => $siswaList,
+                'tahunAjaran' => $tahunAjaran,
+                'semester' => $semester
+            ]);
+        }
+
         return view('dashboard-guru-mapel', [
             'data' => $data,
             'kegiatanList' => $kegiatanList,
