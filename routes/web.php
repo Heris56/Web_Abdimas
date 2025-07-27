@@ -53,10 +53,10 @@ Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::clas
     Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
     Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 });
-Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
-    Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
-});
+// Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
+// });
 
+Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 // func login
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
 Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');

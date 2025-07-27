@@ -119,6 +119,15 @@
                     </select>
                 </div>
 
+                {{-- loading indicator --}}
+                <div id="loadingOverlay" class="d-none">
+                    <div id="loadingIndicator" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
                         <a class="btn button-primary" href="#" data-bs-toggle="modal"
@@ -156,7 +165,8 @@
                                                 <th class="kegiatan-header">
                                                     <div class="kegiatan-cell">
                                                         {{ $kegiatan }}
-                                                        <button class="delete-btn" data-kegiatan="{{ $kegiatan }}"
+                                                        <button class="delete-btn"
+                                                            data-kegiatan="{{ $kegiatan }}"
                                                             data-id-mapel="{{ $mapelId }}"><i
                                                                 class="bi bi-trash-fill"></i></button>
                                                     </div>

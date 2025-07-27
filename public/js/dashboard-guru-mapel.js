@@ -12,46 +12,30 @@ function getActiveMapelId() {
     return activeTab ? activeTab.getAttribute("data-id-mapel") : null;
 }
 
-function fetchFilteredData(mapel, tahun, kelas, semester) {
-    console.log("Fetching data:", {
-        mapel: mapel,
-        tahun_pelajaran: tahun,
-        id_kelas: kelas,
-        semester: semester,
-    });
+function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+const fetchFilteredData = debounce((mapel, tahun, kelas, semester) => {
+    const $loadingOverlay = $("#loadingOverlay");
+    const $filters = $(
+        "#tahunFilter, #kelasFilter, #semesterFilter, #mapelFilter"
+    );
+
+    // Show the overlay
+    $loadingOverlay.removeClass("d-none");
+    $filters.prop("disabled", true);
 
     $.ajax({
         url: "/dashboard/guru-mapel",
         type: "GET",
-        data: {
-            mapel: mapel,
-            tahun_pelajaran: tahun,
-            id_kelas: kelas,
-            semester: semester,
-        },
+        data: { mapel, tahun_pelajaran: tahun, id_kelas: kelas, semester },
         success: function (response) {
-            console.log("AJAX success:", response);
-
-            console.log("Available keys in response:", Object.keys(response));
-
-            console.log("Trying to access:", {
-                mapel,
-                kelas,
-                availableMapelKeys: Object.keys(response),
-                availableKelasKeys: Object.keys(response[mapel]?.kelas || {}),
-            });
-
-            console.log("Type of response.data:", typeof response.data);
-            console.log("response.data:", response.data);
-
-            console.log(
-                "response.data keys:",
-                Object.keys(response.data || {})
-            );
-
             let matchedMapel = null;
-
-            // Loop through the keys of response.data to find the one with matching mapel
             for (const key in response.data) {
                 if (response.data[key].nama_mapel === mapel) {
                     matchedMapel = response.data[key];
@@ -60,32 +44,28 @@ function fetchFilteredData(mapel, tahun, kelas, semester) {
             }
 
             const kelasData = matchedMapel?.kelas?.[kelas] || {};
-
             const extractedData = {
                 kegiatanList: kelasData.kegiatan || [],
                 data_nilai: kelasData.siswa || [],
             };
 
-            console.log("extractedData:", extractedData);
             updateTable(extractedData);
-
             $("#tahunFilter").val(tahun);
             $("#kelasFilter").val(kelas);
             $("#semesterFilter").val(semester);
         },
         error: function (xhr, status, error) {
-            console.error("Filter error:", {
-                status,
-                error,
-                responseText: xhr.responseText,
-            });
             showToast(
                 "Failed to load data: " + (xhr.responseJSON?.message || error),
                 "text-bg-danger"
             );
         },
+        complete: function () {
+            $loadingOverlay.addClass("d-none"); // Hide overlay
+            $filters.prop("disabled", false);
+        },
     });
-}
+}, 300);
 
 function updateTable(data) {
     if (!data || typeof data !== "object") {
@@ -109,7 +89,8 @@ function updateTable(data) {
                     <th>Nama Siswa</th>
                     ${kegiatanList
                         .map(
-                            (kegiatan) => `
+                            (kegiatan) =>
+                                `
                         <th class="kegiatan-header">
                             <div class="kegiatan-cell">
                                 ${kegiatan}
@@ -355,7 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 $(document).ready(function () {
-    $("#tableContainer").html('<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>');
+    $("#tableContainer").html(
+        '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>'
+    );
 
     const $firstTab = $("#mapelTabs .nav-link").first();
     if ($firstTab.length) {

@@ -65,6 +65,7 @@ class NilaiController extends Controller
                 }
             }
         }
+        // dd($data);
 
         if ($request->ajax()) {
             return response()->json([

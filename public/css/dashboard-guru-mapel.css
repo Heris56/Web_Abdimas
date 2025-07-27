@@ -140,6 +140,7 @@ td.editable:hover {
 #tableContainer {
     overflow-x: auto;
     max-width: 100%;
+    min-height: 200px;
     display: block;
 }
 
