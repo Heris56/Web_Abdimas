@@ -88,7 +88,7 @@ function updateTable(data) {
 
     const siswaList = data.data_nilai || [];
     const kegiatanList = data.kegiatanList || [];
-    const tahunAjaran = data.tahunAjaran || [];
+    const tahunAjaran = data.tahun_ajaran || [];
     const semester = data.semester || [];
     const id_mapel = data.id_mapel || [];
     const nip = data.nip || [];
@@ -161,14 +161,18 @@ function attachEditableListeners() {
         var $cell = $(this);
         var nisn = $cell.data("nisn");
         var field = $cell.data("field");
-        var tahun_pelajaran = $cell.data("tahun_pelajaran") || "";
-        var semester = $cell.data("semester") || "";
-        var id_mapel = $cell.data("id_mapel") || "";
+        const tahun_pelajaran = $cell.attr("data-tahun_pelajaran") || "";
+        const semester = $cell.attr("data-semester") || "";
+        const id_mapel = $cell.attr("data-id_mapel") || "";
+
         var nip = $cell.data("nip") || "";
         var currentValue =
             $cell.text().trim() === "-" ? "" : $cell.text().trim();
 
         console.log("All cell data:", $cell.data());
+        console.log("HTML attr:", $cell[0].outerHTML);
+        console.log("data():", $cell.data());
+        console.log("attr():", $cell.attr("data-tahun_pelajaran"));
 
         $cell.html(
             `<input type="text" value="${currentValue}" class="form-control form-control-sm">`
