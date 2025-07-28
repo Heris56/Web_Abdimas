@@ -94,7 +94,7 @@ function updateTable(data) {
     const nip = data.nip || [];
 
     let tableHtml = `
-        <table class="table table-bordered table-sm">
+        <table class="table table-bordered table-sm" id="table-data">
             <thead>
                 <tr>
                     <th>No</th>
@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const rows = tableContainer.querySelectorAll("#table-data tbody tr");
 
         rows.forEach((row) => {
-            const namaSiswaCell = row.querySelector("td:nth-child(3)"); // Nama Siswa is the 3rd column
+            const namaSiswaCell = row.querySelector("td:nth-child(3)"); // Nama Siswa di kolom ke3
             if (namaSiswaCell) {
                 const namaSiswa = namaSiswaCell.textContent.toLowerCase();
                 row.style.display = namaSiswa.includes(inputSearch)

@@ -150,7 +150,9 @@
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
                 <div class="tab-content mt-3" id="tableContainer">
-                    @foreach ($data as $mapelId => $mapelData)
+                    {{-- isi via js, jadi tidak perlu render initial table --}}
+
+                    {{-- @foreach ($data as $mapelId => $mapelData)
                         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
                             id="mapel-{{ $mapelId }}" role="tabpanel"
                             aria-labelledby="mapel-{{ $mapelId }}-tab">
@@ -195,7 +197,7 @@
                                 </table>
                             @endforeach
                         </div>
-                    @endforeach
+                    @endforeach --}}
                 </div>
             </div>
         </div>
@@ -302,10 +304,6 @@
                 showToast('Mencetak Nilai Siswa', 'text-bg-primary');
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
             });
-        </script>
-
-        <script>
-            const nilaiData = @json($data);
         </script>
 </body>
 
