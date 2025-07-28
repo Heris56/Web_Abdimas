@@ -53,6 +53,7 @@ const fetchFilteredData = debounce((mapel, tahun, kelas, semester) => {
                 semester: matchedMapel?.semester || "",
                 tahun_ajaran: matchedMapel?.tahun_ajaran || "",
                 id_mapel: mapelKey || "",
+                nip: matchedMapel?.nip || "",
                 nama_mapel: matchedMapel?.nama_mapel || "",
             };
             console.log("DEBUG extractedData:", extractedData);
@@ -87,6 +88,10 @@ function updateTable(data) {
 
     const siswaList = data.data_nilai || [];
     const kegiatanList = data.kegiatanList || [];
+    const tahunAjaran = data.tahunAjaran || [];
+    const semester = data.semester || [];
+    const id_mapel = data.id_mapel || [];
+    const nip = data.nip || [];
 
     let tableHtml = `
         <table class="table table-bordered table-sm">
@@ -130,11 +135,11 @@ function updateTable(data) {
                                         data-nisn="${row.nisn}"
                                         data-field="${kegiatan}"
                                         data-tahun_pelajaran="${
-                                            row.tahun_pelajaran || ""
+                                            tahunAjaran || ""
                                         }"
-                                        data-semester="${row.semester || ""}"
-                                        data-id_mapel="${row.id_mapel || ""}"
-                                        data-nip="${row.nip_guru_mapel || ""}">
+                                        data-semester="${semester || ""}"
+                                        data-id_mapel="${id_mapel || ""}"
+                                        data-nip="${nip || ""}">
                                         ${row.nilai?.[kegiatan] ?? "-"}
                                     </td>`;
                             })

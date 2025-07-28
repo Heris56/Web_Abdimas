@@ -55,6 +55,7 @@ class NilaiController extends Controller
                     $nilaiKey = $siswa->nisn . '|' . $idMapel;
                     $nilai = $nilaiList[$nilaiKey] ?? collect();
 
+                    $data[$idMapel]['nip'] = $nip;
                     $data[$idMapel]['semester'] = $semester;
                     $data[$idMapel]['tahun_ajaran'] = $tahunAjaran;
                     $data[$idMapel]['nama_mapel'] = $namaMapel;
