@@ -165,8 +165,7 @@
                                                 <th class="kegiatan-header">
                                                     <div class="kegiatan-cell">
                                                         {{ $kegiatan }}
-                                                        <button class="delete-btn"
-                                                            data-kegiatan="{{ $kegiatan }}"
+                                                        <button class="delete-btn" data-kegiatan="{{ $kegiatan }}"
                                                             data-id-mapel="{{ $mapelId }}"><i
                                                                 class="bi bi-trash-fill"></i></button>
                                                     </div>
@@ -183,10 +182,10 @@
                                                 @foreach ($kelasData['kegiatan'] as $kegiatan)
                                                     <td class="editable" data-nisn="{{ $siswa['nisn'] }}"
                                                         data-field="{{ $kegiatan }}"
-                                                        data-tahun_pelajaran="{{ $siswa['tahun_pelajaran'] ?? '' }}"
-                                                        data-semester="{{ $siswa['semester'] ?? '' }}"
-                                                        data-id_mapel="{{ $mapelId ?? '' }}"
-                                                        data-nip="{{ $siswa['nip_guru_mapel'] ?? '' }}">
+                                                        data-semester="{{ $mapelData['semester'] }}"
+                                                        data-tahun_pelajaran="{{ $mapelData['tahun_ajaran'] }}"
+                                                        data-id_mapel="{{ $mapelId }}"
+                                                        data-nip="{{ session('username') ?? '' }}">
                                                         {{ $siswa['nilai'][$kegiatan] ?? '-' }}
                                                     </td>
                                                 @endforeach

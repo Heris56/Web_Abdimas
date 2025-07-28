@@ -55,6 +55,8 @@ class NilaiController extends Controller
                     $nilaiKey = $siswa->nisn . '|' . $idMapel;
                     $nilai = $nilaiList[$nilaiKey] ?? collect();
 
+                    $data[$idMapel]['semester'] = $semester;
+                    $data[$idMapel]['tahun_ajaran'] = $tahunAjaran;
                     $data[$idMapel]['nama_mapel'] = $namaMapel;
                     $data[$idMapel]['kelas'][$kelas]['kegiatan'] = $kegiatan;
                     $data[$idMapel]['kelas'][$kelas]['siswa'][] = [
@@ -626,7 +628,7 @@ class NilaiController extends Controller
     public function getAllSiswa()
     {
         $siswaPerKelas = DB::table('siswa')
-            ->select('id_kelas', 'nisn', 'nama_siswa')
+            ->select('id_kelas', 'nisn', 'nama_siswa') //, 'tahun_ajaran')
             ->get()
             ->groupBy('id_kelas');
 

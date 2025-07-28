@@ -35,10 +35,13 @@ const fetchFilteredData = debounce((mapel, tahun, kelas, semester) => {
         type: "GET",
         data: { mapel, tahun_pelajaran: tahun, id_kelas: kelas, semester },
         success: function (response) {
+            console.log("FULL RESPONSE DATA:", response.data);
+
             let matchedMapel = null;
             for (const key in response.data) {
                 if (response.data[key].nama_mapel === mapel) {
                     matchedMapel = response.data[key];
+                    mapelKey = key;
                     break;
                 }
             }
@@ -47,7 +50,12 @@ const fetchFilteredData = debounce((mapel, tahun, kelas, semester) => {
             const extractedData = {
                 kegiatanList: kelasData.kegiatan || [],
                 data_nilai: kelasData.siswa || [],
+                semester: matchedMapel?.semester || "",
+                tahun_ajaran: matchedMapel?.tahun_ajaran || "",
+                id_mapel: mapelKey || "",
+                nama_mapel: matchedMapel?.nama_mapel || "",
             };
+            console.log("DEBUG extractedData:", extractedData);
 
             updateTable(extractedData);
             $("#tahunFilter").val(tahun);
