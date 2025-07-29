@@ -53,8 +53,16 @@ Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::clas
     Route::put('/dashboard/walikelas/update-password', [dashboard_wali_kelas_controller::class, 'updatePassword'])->name('gantiPassword.walikelas');
     Route::post('/dashboard/walikelas/edit-kehadiran', [dashboard_wali_kelas_controller::class, 'edit_kehadiran'])->name('dashboard.walikelas.edit-kehadiran');
 });
-// Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
-// });
+
+Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
+    Route::prefix("/dashboard/guru-mapel")->group(function () {
+        Route::post('/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
+        Route::post('/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
+        Route::post('/tambah-kegiatan', [NilaiController::class, 'tambahKegiatan'])->name('nilai.tambah-kegiatan');
+        Route::post('/delete-kegiatan', [NilaiController::class, 'deleteKegiatan'])->name('nilai.delete-kegiatan');
+        Route::put('/ganti-password', [NilaiController::class, 'gantiPassword'])->name('nilai.ganti-password');
+    });
+});
 
 Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 // func login
@@ -68,14 +76,6 @@ Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa'
 Route::post('/logout', [login_controller::class, 'logout'])->name('logout');
 
 
-
-// dashboard/guru-mapel
-// Route::view('/dashboard-guru-mapel', 'dashboard-guru-mapel')->name('dashboard.mapel');
-Route::post('/dashboard/guru-mapel/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
-Route::post('/dashboard/guru-mapel/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
-Route::post('/dashboard/guru-mapel/tambah-kegiatan', [NilaiController::class, 'tambahKegiatan'])->name('nilai.tambah-kegiatan');
-Route::post('/dashboard/guru-mapel/delete-kegiatan', [NilaiController::class, 'deleteKegiatan'])->name('nilai.delete-kegiatan');
-Route::put('/dashboard/guru-mapel/ganti-password', [NilaiController::class, 'gantiPassword'])->name('nilai.ganti-password');
 
 // staff
 Route::view('/login/staff', 'login-page-staff')->name('login-staff');
