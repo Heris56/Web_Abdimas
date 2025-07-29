@@ -536,9 +536,11 @@ class NilaiController extends Controller
     // ]
     public function getListKegiatanByMapel()
     {
+        $tahunAjaran = $this->getTahunAjaranAktif();
         $nip = session('userID');
         $kegiatanList = DB::table('nilai')
             ->where('nip_guru_mapel', $nip)
+            ->where('tahun_pelajaran', $tahunAjaran)
             ->select('id_mapel', 'kegiatan')
             ->distinct()
             ->orderBy('kegiatan')
@@ -627,8 +629,10 @@ class NilaiController extends Controller
 
     public function getAllSiswa()
     {
+        $tahunAjaran = $this->getTahunAjaranAktif();
         $siswaPerKelas = DB::table('siswa')
             ->select('id_kelas', 'nisn', 'nama_siswa') //, 'tahun_ajaran')
+            ->where('tahun_ajaran', $tahunAjaran)
             ->get()
             ->groupBy('id_kelas');
 
