@@ -432,18 +432,29 @@ document.addEventListener("click", function (e) {
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
-                    alert("Data berhasil dihapus");
-                    location.reload();
+                    showToast("Data berhasil dihapus", "text-bg-success");
+                    const activeMapel =
+                        $("#mapelTabs .nav-link.active").data("mapel") || "";
+                    fetchFilteredData(
+                        activeMapel,
+                        $("#tahunFilter").val() || "",
+                        $("#kelasFilter").val() || "",
+                        $("#semesterFilter").val() || ""
+                    );
                 } else {
-                    alert(
+                    showToast(
                         "Gagal menghapus: " +
-                            (data.message || "Tidak diketahui")
+                            (data.message || "Tidak diketahui"),
+                        "text-bg-danger"
                     );
                 }
             })
             .catch((err) => {
                 console.error("Error deleting:", err);
-                alert("Terjadi kesalahan pada server.");
+                showToast(
+                    "Terjadi kesalahan saat menghapus kegiatan!",
+                    "text-bg-danger"
+                );
             });
     }
 });
