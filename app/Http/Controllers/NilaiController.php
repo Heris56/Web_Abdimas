@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 // TODO::
-// bugged pas masukin nilai ke siswa yang semesternya kosong
-// fix kegiatan fetching to limit only kegiatan that belongs to that mapel
+// keknya kegiatannya ga beda juga kalo beda kelas
 
 class NilaiController extends Controller
 {
@@ -68,7 +67,7 @@ class NilaiController extends Controller
                 }
             }
         }
-        // dd($data);
+        // dd($data, $kelasList);
 
         if ($request->ajax()) {
             return response()->json([

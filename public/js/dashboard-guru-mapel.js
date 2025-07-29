@@ -325,6 +325,19 @@ document.querySelectorAll("[data-id-mapel]").forEach((button) => {
         const semester = document.getElementById("semesterFilter").value;
 
         fetchFilteredData(selectedMapelId, tahun, selectedKelas, semester);
+
+        const kelasList = mapelKelasData[selectedMapelId] || [];
+
+        const kelasFilter = document.getElementById("kelasFilter");
+        kelasFilter.innerHTML = ""; // reset
+
+        kelasList.forEach((kelas, index) => {
+            const option = document.createElement("option");
+            option.value = kelas;
+            option.textContent = kelas;
+            if (index === 0) option.selected = true;
+            kelasFilter.appendChild(option);
+        });
     });
 });
 

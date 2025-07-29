@@ -91,17 +91,7 @@
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
                     <select id="kelasFilter" class="form-select me-2">
-                        @php
-                            $allKelas = [];
-                            foreach ($data as $mapelData) {
-                                foreach ($mapelData['kelas'] as $kelasNama => $kelasData) {
-                                    $allKelas[$kelasNama] = true;
-                                }
-                            }
-                        @endphp
-                        @foreach (array_keys($allKelas) as $kelasNama)
-                            <option value="{{ $kelasNama }}">{{ $kelasNama }}</option>
-                        @endforeach
+                        {{-- isi dari js --}}
                     </select>
                 </div>
 
@@ -208,8 +198,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="inputNilaiModalLabel">Tambah Kegiatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="inputKegiatanForm" action="{{ route('nilai.tambah-kegiatan') }}" method="POST">
@@ -305,6 +294,16 @@
                 exportExcel('Nilai Siswa', 'Nilai Siswa');
             });
         </script>
+
+        <script>
+            // untuk filter kelas
+            const mapelKelasData =
+                @json($kelasList); // { BIO01: ["X-RPL-1"], ENG: ["X-RPL-1", "X-RPL-2"] }
+
+            // auto select on page load
+            document.querySelector("[data-id-mapel].active")?.click();
+        </script>
+
 </body>
 
 </html>
