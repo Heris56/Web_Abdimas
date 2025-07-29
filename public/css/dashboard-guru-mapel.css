@@ -183,12 +183,12 @@ td.editable:hover {
 }
 
 .delete-btn {
-    display: none;
-    margin-left: 8px;
+    position: absolute;
     background: transparent;
     border: none;
     cursor: pointer;
     color: var(--destructive);
+    display: none;
 }
 
 .kegiatan-header:hover .delete-btn {

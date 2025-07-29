@@ -108,7 +108,7 @@ function updateTable(data) {
                             <div class="kegiatan-cell">
                                 ${kegiatan}
                                 <button class="delete-btn" data-kegiatan="${kegiatan}" data-id-mapel="${window.selectedMapelId}">
-                                    <i class="bi bi-trash-fill"></i>
+                                    <i class="bi bi-x-circle-fill"></i>
                                 </button>
                             </div>
                         </th>
