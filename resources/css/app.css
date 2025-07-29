@@ -650,6 +650,10 @@ input.form-control:focus {
 .modal-title {
     color: var(--foreground);
 }
+
+.modal-body {
+    color: var(--foreground);
+}
 /* END MODAL CONTROLS */
 
 /* START LOADING CONTROLS */

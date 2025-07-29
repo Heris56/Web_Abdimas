@@ -61,6 +61,7 @@
 
     <!-- Navbar -->
     <x-navbar></x-navbar>
+    <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">

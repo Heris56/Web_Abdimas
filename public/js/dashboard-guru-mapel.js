@@ -7,6 +7,13 @@ $.ajaxSetup({
 let selectedMapelId = null;
 let selectedKelas = null;
 
+// confirm modal
+let kegiatanToDelete = null;
+let mapelIdToDelete = null;
+const confirmModal = new bootstrap.Modal(
+    document.getElementById("confirmDialog")
+);
+
 function getActiveMapelId() {
     const activeTab = document.querySelector(".nav-link.active");
     return activeTab ? activeTab.getAttribute("data-id-mapel") : null;
@@ -413,11 +420,21 @@ $(document).ready(function () {
 });
 
 document.addEventListener("click", function (e) {
-    if (e.target.closest(".delete-btn")) {
-        const btn = e.target.closest(".delete-btn");
-        const kegiatan = btn.getAttribute("data-kegiatan");
-        const id_mapel = getActiveMapelId();
-        console.log("Active Mapel ID:", id_mapel);
+    const btn = e.target.closest(".delete-btn");
+    if (!btn) return;
+
+    kegiatanToDelete = btn.dataset.kegiatan;
+    mapelIdToDelete = getActiveMapelId();
+
+    console.log("Active Mapel ID:", mapelIdToDelete);
+
+    confirmModal.show(); // Only show modal here — don’t delete yet!
+});
+
+document
+    .getElementById("confirmDeleteBtn")
+    .addEventListener("click", function () {
+        if (!kegiatanToDelete || !mapelIdToDelete) return;
 
         fetch("/dashboard/guru-mapel/delete-kegiatan", {
             method: "POST",
@@ -427,7 +444,10 @@ document.addEventListener("click", function (e) {
                     'meta[name="csrf-token"]'
                 ).content,
             },
-            body: JSON.stringify({ kegiatan, id_mapel: id_mapel }),
+            body: JSON.stringify({
+                kegiatan: kegiatanToDelete,
+                id_mapel: mapelIdToDelete,
+            }),
         })
             .then((res) => res.json())
             .then((data) => {
@@ -456,5 +476,8 @@ document.addEventListener("click", function (e) {
                     "text-bg-danger"
                 );
             });
-    }
-});
+
+        confirmModal.hide();
+        kegiatanToDelete = null;
+        mapelIdToDelete = null;
+    });
