@@ -61,6 +61,7 @@
 
     <!-- Navbar -->
     <x-navbar></x-navbar>
+    <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
@@ -72,14 +73,15 @@
             <!-- Filter -->
             <div class="row-md-auto">
                 <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
-                    @foreach ($mapelList as $index => $mapel)
+                    @foreach ($data as $mapelId => $mapelData)
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}"
-                                id="mapel-{{ $index }}-tab" data-bs-toggle="tab"
-                                data-id-mapel="{{ $index }}" data-mapel="{{ $mapel }}" type="button"
-                                role="tab" aria-controls="mapel-{{ $index }}"
-                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                {{ $mapel }}
+                            <button class="nav-link {{ $loop->first ? 'active' : '' }}"
+                                id="mapel-{{ $mapelId }}-tab" data-bs-toggle="tab"
+                                data-bs-target="#mapel-{{ $mapelId }}" data-id-mapel="{{ $mapelId }}"
+                                data-mapel="{{ $mapelData['nama_mapel'] }}" type="button" role="tab"
+                                aria-controls="mapel-{{ $mapelId }}"
+                                aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                {{ $mapelData['nama_mapel'] }}
                             </button>
                         </li>
                     @endforeach
@@ -90,6 +92,7 @@
                 <div class="col-md-auto d-flex align-items-center">
                     <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
                     <select id="kelasFilter" class="form-select me-2">
+                        {{-- isi dari js --}}
                     </select>
                 </div>
 
@@ -105,6 +108,15 @@
                     <select id="semesterFilter" class="form-select me-2">
                         <option value="{{ $semester }}">{{ $semester }}</option>
                     </select>
+                </div>
+
+                {{-- loading indicator --}}
+                <div id="loadingOverlay" class="d-none">
+                    <div id="loadingIndicator" class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-auto ms-auto">
@@ -128,21 +140,55 @@
 
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
-                <div id="tableContainer" class="" style="overflow-x: auto;">
-                    <table class="table table-bordered table-sm" id="table-data">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Tahun Ajaran</th>
-                                @foreach ($kegiatanList as $kegiatan)
-                                    <th>{{ $kegiatan }}</th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                    </table>
+                <div class="tab-content mt-3" id="tableContainer">
+                    {{-- isi via js, jadi tidak perlu render initial table --}}
+
+                    {{-- @foreach ($data as $mapelId => $mapelData)
+                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                            id="mapel-{{ $mapelId }}" role="tabpanel"
+                            aria-labelledby="mapel-{{ $mapelId }}-tab">
+                            @foreach ($mapelData['kelas'] as $kelasNama => $kelasData)
+                                <table class="table table-bordered table-sm" id="table-data">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>NISN</th>
+                                            <th>Nama Siswa</th>
+                                            @foreach ($kelasData['kegiatan'] as $kegiatan)
+                                                <th class="kegiatan-header">
+                                                    <div class="kegiatan-cell">
+                                                        {{ $kegiatan }}
+                                                        <button class="delete-btn" data-kegiatan="{{ $kegiatan }}"
+                                                            data-id-mapel="{{ $mapelId }}"><i
+                                                                class="bi bi-trash-fill"></i></button>
+                                                    </div>
+                                                </th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($kelasData['siswa'] as $index => $siswa)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $siswa['nisn'] }}</td>
+                                                <td>{{ $siswa['nama_siswa'] }}</td>
+                                                @foreach ($kelasData['kegiatan'] as $kegiatan)
+                                                    <td class="editable" data-nisn="{{ $siswa['nisn'] }}"
+                                                        data-field="{{ $kegiatan }}"
+                                                        data-semester="{{ $mapelData['semester'] }}"
+                                                        data-tahun_pelajaran="{{ $mapelData['tahun_ajaran'] }}"
+                                                        data-id_mapel="{{ $mapelId }}"
+                                                        data-nip="{{ session('username') ?? '' }}">
+                                                        {{ $siswa['nilai'][$kegiatan] ?? '-' }}
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endforeach
+                        </div>
+                    @endforeach --}}
                 </div>
             </div>
         </div>
@@ -251,8 +297,14 @@
         </script>
 
         <script>
-            const mapelKelasMap = @json($mapelKelasMap);
+            // untuk filter kelas
+            const mapelKelasData =
+                @json($kelasList); // { BIO01: ["X-RPL-1"], ENG: ["X-RPL-1", "X-RPL-2"] }
+
+            // auto select on page load
+            document.querySelector("[data-id-mapel].active")?.click();
         </script>
+
 </body>
 
 </html>

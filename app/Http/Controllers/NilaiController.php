@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 // TODO::
-// bugged pas masukin nilai ke siswa yang semesternya kosong
-// fix kegiatan fetching to limit only kegiatan that belongs to that mapel
+// keknya kegiatannya ga beda juga kalo beda kelas
 
 class NilaiController extends Controller
 {
@@ -20,119 +19,76 @@ class NilaiController extends Controller
         // 198001012005011001
         // pwd123
         $nip = session('userID');
-
         Log::info('NIP', ['nip' => $nip]);
 
-        // untuk filter mapel
+        // untuk tabs mapel
         $mapelList = $this->getListMapelByNipGuruMapel($nip);
+        $mapelIds = array_keys($mapelList);
         Log::info('mapelList', ['mapelList' => $mapelList]);
 
-        $tahunAjaran = $this->getTahunAjaranAktif();
-
-        $semesterList = ["Genap", "Ganjil"];
-        Log::info('semesterList', ['semesterList' => $semesterList]);
-
-        $semester = $this->getSemester();
-
-        // untuk filter tahun ajaran
-        $tahunPelajaranList = DB::table('nilai')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->distinct()
-            ->pluck('nilai.tahun_pelajaran')
-            ->toArray();
-        Log::info('tahunPelajaranList', ['tahunPelajaranList' => $tahunPelajaranList]);
-
         // untuk filter kelas
-        $mapelKelasMap = $this->getMapelKelasMap($nip);
-        Log::info('kelasList', ['kelasList' => $mapelKelasMap]);
+        $kelasList = $this->getListKelasByMapel($nip);
+        Log::info('kelasList', ['kelasList' => $kelasList]);
 
         // untuk buat column sesuai kegiatan
-        $kegiatanList = DB::table('nilai')
-            ->distinct()
-            ->orderBy('kegiatan')
-            ->pluck('kegiatan')
-            ->toArray();
+        $kegiatanList = $this->getListKegiatanByMapel();
         Log::info('kegiatanList', ['kegiatanList' => $kegiatanList]);
 
-        // query untuk minta data nilai dan lainnya
-        $query = DB::table('nilai')
-            ->leftJoin('siswa', 'nilai.nisn', '=', 'siswa.nisn')
-            ->leftJoin('mapel', 'nilai.id_mapel', '=', 'mapel.id_mapel')
-            ->leftJoin('guru_mapel', 'nilai.nip_guru_mapel', '=', 'guru_mapel.nip_guru_mapel')
-            ->where('guru_mapel.nip_guru_mapel', $nip)
-            ->select(
-                'siswa.nisn',
-                'siswa.id_kelas',
-                'siswa.nama_siswa',
-                'mapel.nama_mapel',
-                'mapel.id_mapel',
-                'nilai.tahun_pelajaran',
-                'nilai.semester',
-                'guru_mapel.nip_guru_mapel',
-                'guru_mapel.nama_guru'
-            );
+        $siswaList = $this->getAllSiswa();
+        Log::info('siswaList', ['siswaList' => $siswaList]);
 
-        // menerapkan setiap filter
-        if ($request->has('mapel') && !empty($request->input('mapel'))) {
-            $query->where('mapel.nama_mapel', $request->input('mapel'));
-            Log::info('Applied mapel filter', ['mapel' => $request->input('mapel')]);
-        }
-        if ($request->has('tahun_pelajaran') && !empty($request->input('tahun_pelajaran'))) {
-            $query->where('nilai.tahun_pelajaran', $request->input('tahun_pelajaran'));
-            Log::info('Applied tahun_pelajaran filter', ['tahun_pelajaran' => $request->input('tahun_pelajaran')]);
-        }
-        if ($request->has('id_kelas') && !empty($request->input('id_kelas'))) {
-            $query->where('siswa.id_kelas', $request->input('id_kelas'));
-            Log::info('Applied id_kelas filter', ['id_kelas' => $request->input('id_kelas')]);
-        }
-        if ($request->has('semester') && !empty($request->input('semester'))) {
-            $query->where('nilai.semester', $request->input('semester'));
-            Log::info('Applied semester filter', ['semester' => $request->input('semester')]);
-        }
+        $nilaiList = $this->getNilaiList($mapelIds);
+        Log::info('nilaiList', ['nilaiList' => $nilaiList]);
 
-        // Debug query
-        $testData = $query->get();
-        Log::info('Test query data', ['testData' => $testData->toArray()]);
+        $tahunAjaran = $this->getTahunAjaranAktif();
+        $semester = $this->getSemesterAktif();
 
-        // simpan nilai nama kegiatan ke list
-        foreach ($kegiatanList as $kegiatan) {
-            $alias = str_replace(' ', '_', strtolower($kegiatan));
-            $query->addSelect(DB::raw("MAX(CASE WHEN kegiatan = '$kegiatan' THEN nilai END) as `$alias`"));
+        // build main query
+        $data = [];
+        foreach ($mapelList as $idMapel => $namaMapel) {
+            foreach ($kelasList[$idMapel] ?? [] as $kelas) {
+                $siswaKelas = $siswaList[$kelas] ?? collect();
+                $kegiatan = $kegiatanList[$idMapel] ?? [];
+
+                foreach ($siswaKelas as $siswa) {
+                    $nilaiKey = $siswa->nisn . '|' . $idMapel;
+                    $nilai = $nilaiList[$nilaiKey] ?? collect();
+
+                    $data[$idMapel]['nip'] = $nip;
+                    $data[$idMapel]['semester'] = $semester;
+                    $data[$idMapel]['tahun_ajaran'] = $tahunAjaran;
+                    $data[$idMapel]['nama_mapel'] = $namaMapel;
+                    $data[$idMapel]['kelas'][$kelas]['kegiatan'] = $kegiatan;
+                    $data[$idMapel]['kelas'][$kelas]['siswa'][] = [
+                        'nisn' => $siswa->nisn,
+                        'nama_siswa' => $siswa->nama_siswa,
+                        'nilai' => $nilai->toArray(),
+                    ];
+                }
+            }
         }
-
-        $data_nilai = $query
-            ->groupBy(
-                'siswa.nisn',
-                'siswa.id_kelas',
-                'siswa.nama_siswa',
-                'mapel.nama_mapel',
-                'mapel.id_mapel',
-                'nilai.tahun_pelajaran',
-                'nilai.semester',
-                'guru_mapel.nip_guru_mapel',
-                'guru_mapel.nama_guru'
-            )
-            ->get();
-
-        Log::info('Pivoted data', ['data_nilai' => $data_nilai->toArray()]);
+        // dd($data, $kelasList);
 
         if ($request->ajax()) {
             return response()->json([
-                'data_nilai' => $data_nilai,
+                'data' => $data,
                 'kegiatanList' => $kegiatanList,
-                'semesterList' => $semesterList,
-                'nama_mapel' => $data_nilai->isEmpty() ? '' : $data_nilai[0]->nama_mapel
+                'mapelList' => $mapelList,
+                'kelasList' => $kelasList,
+                'nilaiList' => $nilaiList,
+                'siswaList' => $siswaList,
+                'tahunAjaran' => $tahunAjaran,
+                'semester' => $semester
             ]);
         }
 
         return view('dashboard-guru-mapel', [
-            'data_nilai' => $data_nilai,
+            'data' => $data,
             'kegiatanList' => $kegiatanList,
             'mapelList' => $mapelList,
-            'tahunPelajaranList' => $tahunPelajaranList,
-            'semesterList' => $semesterList,
-            'mapelKelasMap' => $mapelKelasMap,
+            'kelasList' => $kelasList,
+            'nilaiList' => $nilaiList,
+            'siswaList' => $siswaList,
             'tahunAjaran' => $tahunAjaran,
             'semester' => $semester
         ]);
@@ -391,7 +347,7 @@ class NilaiController extends Controller
             $id_mapel = $request->input('mapelSelect');
             $tahunAjaran = $this->getTahunAjaranAktif();
             $kegiatan = $request->input('inputKegiatan');
-            $semester = $this->getSemester();
+            $semester = $this->getSemesterAktif();
 
             Log::info('storeKegiatan called', [
                 'nip' => $nip,
@@ -537,6 +493,7 @@ class NilaiController extends Controller
         }
     }
 
+    // returns [ 'MAP01' => 'Biologi', ... ]
     public function getListMapelByNipGuruMapel($nip_guru_mapel)
     {
         $mapelList = DB::table('guru_mapel')
@@ -572,7 +529,33 @@ class NilaiController extends Controller
         return $kegiatanList;
     }
 
-    public function getMapelKelasMap($nip)
+    // returns something like this
+    // [
+    //     'MAP01' => ['Quiz 1', 'Quiz 2'],
+    //     'MAP02' => ['Tugas 1'],
+    // ]
+    public function getListKegiatanByMapel()
+    {
+        $tahunAjaran = $this->getTahunAjaranAktif();
+        $nip = session('userID');
+        $kegiatanList = DB::table('nilai')
+            ->where('nip_guru_mapel', $nip)
+            ->where('tahun_pelajaran', $tahunAjaran)
+            ->select('id_mapel', 'kegiatan')
+            ->distinct()
+            ->orderBy('kegiatan')
+            ->get()
+            ->groupBy('id_mapel')
+            ->map(function ($items) {
+                return $items->pluck('kegiatan')->toArray();
+            })
+            ->toArray();
+
+        return $kegiatanList;
+    }
+
+
+    public function getListKelasByMapel($nip)
     {
         $mapelList = $this->getListMapelByNipGuruMapel($nip); // returns [ 'MAP01' => 'Biologi', ... ]
 
@@ -602,14 +585,20 @@ class NilaiController extends Controller
         return $tahunAjaran;
     }
 
-    // public function getStudents()
-    // {
-    //     $tahunAjaran = DB::table('tahun_ajaran')->where('is_current', 1)->value('tahun');
+    public function getNilaiList(array $mapelIds)
+    {
+        return DB::table('nilai')
+            ->whereIn('id_mapel', $mapelIds)
+            ->select('nisn', 'id_mapel', 'kegiatan', 'nilai')
+            ->get()
+            ->groupBy(fn($n) => $n->nisn . '|' . $n->id_mapel)
+            ->map(function ($group) {
+                return collect($group)->pluck('nilai', 'kegiatan');
+            });
+    }
 
-    //     return $tahunAjaran;
-    // }
 
-    public function getSemester()
+    public function getSemesterAktif()
     {
         $semester = DB::table('tahun_ajaran')->where('is_current', 1)->value('semester');
 
@@ -636,5 +625,17 @@ class NilaiController extends Controller
         return DB::table('mapel')
             ->where('nama_mapel', $mapel)
             ->value('id_mapel');
+    }
+
+    public function getAllSiswa()
+    {
+        $tahunAjaran = $this->getTahunAjaranAktif();
+        $siswaPerKelas = DB::table('siswa')
+            ->select('id_kelas', 'nisn', 'nama_siswa') //, 'tahun_ajaran')
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->get()
+            ->groupBy('id_kelas');
+
+        return $siswaPerKelas;
     }
 }
