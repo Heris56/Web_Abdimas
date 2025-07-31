@@ -82,7 +82,7 @@
 
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
-            <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
+            <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari {{ $type }}">
             <div class="btns input-nilai me-3">
                 <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
                     Input Data {{ $buttonText }}
@@ -699,6 +699,9 @@
                 exportExcel('{{ $buttonText }}', '{{ str_replace(' ', '_', $buttonText) }}_{{ date('YmdHis') }}');
             });
         </script>
+
+    <script src="{{ asset('js/staff.js') }}"></script>
+
 </body>
 
 </html>
