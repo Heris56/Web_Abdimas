@@ -36,7 +36,7 @@
     <div class="container1">
         <div class="form-box">
             <h1 class="head">Masuk sebagai Admin Sekolah SMK PGRI 35</h1>
-            <h2 class="subhead">Halo bang Admin</h2>
+            <h2 class="subhead">Halo Admin</h2>
             @if (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}

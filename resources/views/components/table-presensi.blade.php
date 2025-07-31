@@ -42,7 +42,7 @@
                                 $presensi = (object) [
                                     'nisn_siswa' => $siswa->nisn_siswa,
                                     'tanggal' => $tanggals,
-                                    'keterangan_absen' => null
+                                    'keterangan_absen' => null,
                                 ];
                             }
                         @endphp
