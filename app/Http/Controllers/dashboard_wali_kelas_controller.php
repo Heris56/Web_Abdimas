@@ -107,7 +107,7 @@ class dashboard_wali_kelas_controller extends Controller
             [
             'tanggal' => $request->input('tanggal'),
             'nisn' => $siswa->nisn_siswa,
-            'keterangan_absen' => '-',
+            'keterangan_absen' => 'Hadir',
             'tahun_ajaran' => $tahun_ajaran,
             ];
         }
