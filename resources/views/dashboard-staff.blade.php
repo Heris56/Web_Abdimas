@@ -83,6 +83,18 @@
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
             <input type="text" class="form-control me-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari {{ $type }}">
+            
+            {{-- Conditional Status Filter --}}
+            @if (in_array($type, ['siswa', 'wali_kelas', 'guru_mapel']))
+               <div class="me-3">
+                   <select class="form-select" id="statusFilter">
+                       <option value="">Semua Status</option>
+                       <option value="aktif">Aktif</option>
+                    <option value="nonaktif">Nonaktif</option>
+                   </select>
+                </div>
+            @endif
+
             <div class="btns input-nilai me-3">
                 <a href="#" data-bs-toggle="modal" data-bs-target="#inputNilaiModal">
                     Input Data {{ $buttonText }}
@@ -117,13 +129,12 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             @foreach ($columns as $key => $label)
-                                <td>
+                                <td @if ($key == 'status') data-status="{{ strtolower($item->$key ?? '') }}" @endif>
                                     @if ($key == 'is_current')
                                         {{ $item->$key ? 'True' : 'False' }}
                                     @else
                                     {{ $item->$key ?? '-' }}
                                     @endif
-                                    
                                 </td>
                             @endforeach
                             <td class="text-center">
