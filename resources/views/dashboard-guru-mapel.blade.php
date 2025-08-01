@@ -106,12 +106,16 @@
 
             <div class="row-md-auto mt-3 mb-3 d-flex text-center">
                 <div class="col-md-4 me-auto d-flex align-items-center">
-                    <input type="text" class="form-control" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="cariSiswa" name="cariSiswa"
+                            placeholder="Cari Siswa">
+                    </div>
                 </div>
 
                 <div class="col-md-auto d-flex align-items-center">
                     {{-- <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label> --}}
-                    <select id="kelasFilter" class="form-select me-2">
+                    <select id="kelasFilter" class="form-select form-select-lg me-2">
                         {{-- isi dari js --}}
                     </select>
                 </div>

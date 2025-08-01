@@ -84,6 +84,12 @@ input.form-control:focus {
     padding: 0.5rem 1.5rem;
     display: flex;
     align-items: center;
+
+    /* border control (sync contents) */
+    background-color: var(--card);
+    border: 1px var(--border) solid;
+    border-bottom: none;
+    border-radius: var(--radius);
 }
 
 .Tabs input {
@@ -92,7 +98,13 @@ input.form-control:focus {
 
 .Contents {
     grid-area: Contents;
-    padding: 0 1.5rem;
+    padding: 0 1.25rem;
+
+    /* border control (sync tabs) */
+    background-color: var(--card);
+    border: 1px var(--border) solid;
+    border-radius: var(--radius);
+    border-top: none;
 }
 
 .head {
