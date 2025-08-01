@@ -78,8 +78,9 @@
 
             <div class="col-md-auto">
                 <div class="btns cetak-nilai">
-                    <button id="button-cetak" class="btn btn-success">
-                        Cetak Nilai Siswa
+                    <button id="button-cetak" class="btn btn-outline-success">
+                        <i class="bi bi-file-earmark-arrow-down fs-4"></i>
+                        {{-- <span class="ms-2">Cetak</span> --}}
                     </button>
                 </div>
             </div>

@@ -206,4 +206,8 @@ td.editable:hover {
 .kegiatan-header:hover .delete-btn {
     display: inline;
 }
+
+.btn-outline-success{
+border: solid 1px !important;
+}
 /* end table controls */
