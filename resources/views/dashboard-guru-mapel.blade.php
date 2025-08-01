@@ -66,7 +66,23 @@
     <div class="content-wrapper container-fluid">
         <div class="Tabs d-flex align-items-center">
             <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
-            <input type="text" class="form-control ms-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
+
+            <div class="col-md-auto ms-auto">
+                <div class="btns input-nilai me-3">
+                    <a class="btn button-primary" href="#" data-bs-toggle="modal"
+                        data-bs-target="#inputNilaiModal">
+                        Tambah Kegiatan
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-auto">
+                <div class="btns cetak-nilai">
+                    <button id="button-cetak" class="btn btn-success">
+                        Cetak Nilai Siswa
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="Contents">
@@ -89,8 +105,12 @@
             </div>
 
             <div class="row-md-auto mt-3 mb-3 d-flex text-center">
+                <div class="col-md-4 me-auto d-flex align-items-center">
+                    <input type="text" class="form-control" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
+                </div>
+
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
+                    {{-- <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label> --}}
                     <select id="kelasFilter" class="form-select me-2">
                         {{-- isi dari js --}}
                     </select>
@@ -118,25 +138,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-auto ms-auto">
-                    <div class="btns input-nilai me-3">
-                        <a class="btn button-primary" href="#" data-bs-toggle="modal"
-                            data-bs-target="#inputNilaiModal">
-                            Tambah Kegiatan
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-auto">
-                    <div class="btns cetak-nilai">
-                        <button id="button-cetak" class="btn btn-success">
-                            Cetak Nilai Siswa
-                        </button>
-                    </div>
-                </div>
             </div>
-
 
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
