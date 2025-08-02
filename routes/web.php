@@ -56,6 +56,7 @@ Route::middleware([CheckLoginCookie::class . ':wali_kelas', CheckUserAktif::clas
 
 Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::class, BlockUserOnMobileWeb::class])->group(function () {
     Route::prefix("/dashboard/guru-mapel")->group(function () {
+        Route::get('/', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
         Route::post('/input-nilai', [NilaiController::class, 'inputNilai'])->name('nilai.input');
         Route::post('/update-nilai', [NilaiController::class, 'updateNilai'])->name('nilai.update');
         Route::post('/tambah-kegiatan', [NilaiController::class, 'tambahKegiatan'])->name('nilai.tambah-kegiatan');
@@ -64,7 +65,6 @@ Route::middleware([CheckLoginCookie::class . ':guru_mapel', CheckUserAktif::clas
     });
 });
 
-Route::get('/dashboard/guru-mapel', [NilaiController::class, 'fetchNilai'])->name('nilai.fetch');
 // func login
 Route::post('/login/siswa', [login_controller::class, 'auth_login_siswa'])->name('login.siswa');
 Route::post('/login/gurumapel', [login_controller::class, 'auth_login_gurumapel'])->name('login.gurumapel');
