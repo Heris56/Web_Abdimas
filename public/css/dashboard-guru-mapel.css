@@ -82,15 +82,16 @@ td.editable:hover {
 
 #table-data {
     width: 100%;
-    table-layout: auto;
+    table-layout: fixed;
     white-space: nowrap;
 }
 
 #table-data th,
 #table-data td {
-    padding: 0.5rem 1rem; /* (atas/bawah) (samping) */
+    padding: 0.725rem 1rem; /* (atas/bawah) (samping) */
     text-align: left;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 #table-data th:nth-child(3),
@@ -99,6 +100,12 @@ td.editable:hover {
     left: 0;
     background-color: transparent;
     z-index: 2;
+}
+
+#table-data th:nth-child(1),
+#table-data td:nth-child(1) {
+    width: 4rem;
+    text-align: center;
 }
 
 .table-scroll-wrapper {
