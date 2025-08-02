@@ -68,7 +68,9 @@
             <!-- Filter -->
             <div class="row-md-auto mt-3 mb-3 d-flex">
 
-                <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
+                <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span>
+                    <span class="badge text-bg-secondary ms-1" id="kelasBadge"></span>
+                </div>
 
                 <div class="col-md-auto ms-auto">
                     <div class="btns input-nilai me-3">
@@ -207,8 +209,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="inputNilaiModalLabel">Tambah Kegiatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="inputKegiatanForm" action="{{ route('nilai.tambah-kegiatan') }}" method="POST">
@@ -300,8 +301,8 @@
         <script src="{{ asset('js/dashboard-guru-mapel.js') }}"></script>
         <script>
             document.getElementById('button-cetak').addEventListener('click', function() {
-                showToast('Mencetak Nilai Siswa', 'text-bg-primary');
-                exportExcel('Nilai Siswa', 'Nilai Siswa');
+                const selectedKelas = document.getElementById('kelasFilter').value;
+                exportExcel('Nilai Siswa ' + selectedKelas, 'Nilai_Siswa_' + selectedKelas);
             });
         </script>
 

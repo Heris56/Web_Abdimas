@@ -124,7 +124,7 @@ function updateTable(data) {
                         .join("")}
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 ${siswaList
                     .map(
                         (row, i) => `
@@ -351,6 +351,12 @@ document.querySelectorAll("[data-id-mapel]").forEach((button) => {
 document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("cariSiswa");
     const tableContainer = document.getElementById("tableContainer");
+
+    const selectedKelas = document.getElementById("kelasFilter").value;
+    const badge = document.getElementById("kelasBadge");
+    if (badge) {
+        badge.textContent = selectedKelas;
+    }
 
     const el = document.querySelector(".Contents");
     if (el instanceof Element) {
