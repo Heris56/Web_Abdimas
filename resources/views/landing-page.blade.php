@@ -34,6 +34,30 @@
 </head>
 
 <body>
+    @if (session('success'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showFloatingAlert("{{ session('success') }}", "success");
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showFloatingAlert("{{ session('error') }}", "danger");
+            });
+        </script>
+    @endif
+
+    @if (session('warning'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                showFloatingAlert("{{ session('warning') }}", "warning");
+            });
+        </script>
+    @endif
+
     <style>
         body {
             padding: 0;
@@ -42,6 +66,8 @@
     <!-- Wrapper -->
     <div class="container1">
         <div class="background"></div>
+        <div id="floating-alert" class="position-fixed top-0 start-50 translate-middle-x mt-3"
+            style="z-index: 1055; width: 100%; max-width: 500px;"></div>
 
         <div class="main-content d-flex flex-column">
             <div class="row-md-auto">
@@ -77,13 +103,15 @@
             <div class="row align-items-center justify-content-start mb-2">
                 <span class="col-auto"><i class="bi bi-tiktok"></i></span>
                 <span class="col-auto">:</span>
-                <span class="col text-start"><a href="https://www.tiktok.com/@smkpgri35soljer">@smkpgri35soljer</a></span>
+                <span class="col text-start"><a
+                        href="https://www.tiktok.com/@smkpgri35soljer">@smkpgri35soljer</a></span>
             </div>
 
             <div class="row align-items-center justify-content-start mb-2">
                 <span class="col-auto"><i class="bi bi-instagram"></i></span>
                 <span class="col-auto">:</span>
-                <span class="col text-start"><a href="https://www.instagram.com/smkpgri35soljer/">@smkpgri35soljer</a></span>
+                <span class="col text-start"><a
+                        href="https://www.instagram.com/smkpgri35soljer/">@smkpgri35soljer</a></span>
             </div>
 
             <div class="row align-items-center justify-content-start mt-4 mb-2">
@@ -98,21 +126,28 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cek session flash message dari Laravel dan tampilkan dengan alert()
-            @if (session('success'))
-                alert("Berhasil: {{ session('success') }}");
-            @endif
+        function showFloatingAlert(message, type = "success") {
+            const container = document.getElementById("floating-alert");
+            if (!container) return;
 
-            @if (session('error'))
-                alert("Error: {{ session('error') }}");
-            @endif
+            const alert = document.createElement("div");
+            alert.className = `alert alert-${type} alert-dismissible fade show shadow`;
+            alert.role = "alert";
+            alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
 
-            @if (session('warning'))
-                alert("Peringatan: {{ session('warning') }}");
-            @endif
-        });
+            container.appendChild(alert);
+
+            // Auto dismiss after 4s
+            setTimeout(() => {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            }, 4000);
+        }
     </script>
+
 </body>
 
 </html>
