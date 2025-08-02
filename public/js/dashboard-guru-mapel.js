@@ -352,6 +352,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("cariSiswa");
     const tableContainer = document.getElementById("tableContainer");
 
+    const el = document.querySelector(".Contents");
+    if (el instanceof Element) {
+        const styles = getComputedStyle(el);
+        console.log("Color:", styles.color);
+        console.log("Background color:", styles.backgroundColor);
+        console.log("Filter:", styles.filter);
+    } else {
+        console.error("Element not found");
+    }
+
     if (!input || !tableContainer) return;
 
     input.addEventListener("keyup", function () {
@@ -374,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 $(document).ready(function () {
     $("#tableContainer").html(
-        '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>'
+        '<div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>'
     );
 
     const $firstTab = $("#mapelTabs .nav-link").first();

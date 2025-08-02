@@ -213,7 +213,7 @@ input.form-control::placeholder {
 }
 
 input.form-control:focus {
-    box-shadow: 0 0 0 1px var(--ring);
+    box-shadow: 0 0 3px 2px hsla(44, 98%, 50%, 0.25); /* based on --ring value */
     border: 1px solid var(--primary);
     background-color: transparent;
 }

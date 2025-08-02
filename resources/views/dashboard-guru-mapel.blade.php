@@ -60,7 +60,7 @@
     @endif
 
     <!-- Navbar -->
-    <x-navbar></x-navbar>
+    <x-navbar :showSearch="true" />
     <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
@@ -109,9 +109,9 @@
             <div class="row-md-auto mt-3 mb-3 d-flex text-center">
                 <div class="col-md-4 me-auto d-flex align-items-center">
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control" id="cariSiswa" name="cariSiswa"
-                            placeholder="Cari Siswa">
+                            placeholder="Cari Siswa" aria-describedby="basic-addon">
                     </div>
                 </div>
 
@@ -137,13 +137,13 @@
                 </div>
 
                 {{-- loading indicator --}}
-                <div id="loadingOverlay" class="d-none">
+                {{-- <div id="loadingOverlay" class="d-none">
                     <div id="loadingIndicator" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
+                        <div class="spinner-border text-warning" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <div class="row-md-auto table-scroll-wrapper">
