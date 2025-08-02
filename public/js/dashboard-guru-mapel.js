@@ -101,7 +101,7 @@ function updateTable(data) {
     const nip = data.nip || [];
 
     let tableHtml = `
-        <table class="table table-bordered table-sm" id="table-data">
+        <table class="table table-bordeless table-striped table-sm" id="table-data">
             <thead>
                 <tr>
                     <th>No</th>

@@ -60,7 +60,7 @@
     @endif
 
     <!-- Navbar -->
-    <x-navbar :showSearch="true" />
+    <x-navbar :showSearch="false" />
     <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
@@ -68,8 +68,8 @@
             <!-- Filter -->
             <div class="row-md-auto mt-3 mb-3 d-flex">
 
-                <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span>
-                    <span class="badge text-bg-secondary ms-1" id="kelasBadge"></span>
+                <div class="header mb-2 mt-2 position-relative"><span class="head">Nilai Siswa</span>
+                    <span class="badge position-absolute text-bg-warning ms-1" id="kelasBadge"></span>
                 </div>
 
                 <div class="col-md-auto ms-auto">
