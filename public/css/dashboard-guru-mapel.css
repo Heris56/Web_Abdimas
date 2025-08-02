@@ -1,71 +1,3 @@
-html,
-body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    background-color: var(--color-light);
-    overflow-x: hidden;
-}
-
-body {
-    /* navbar 80px + margin 20px */
-    padding-top: 6.25rem;
-}
-
-/* Navbar section */
-/* Button navbar controls */
-.navbar-button a {
-    text-decoration: none;
-    color: var(--text-dark);
-    background-color: var(--color-light);
-    padding: 0.875rem 1rem;
-    border-radius: 0.5rem;
-}
-
-.navbar-button:active {
-    transform: scale(0.97);
-}
-
-.navbar {
-    background-color: var(--color-accent);
-    height: 80px;
-    align-items: center;
-    padding: 0.5rem 1rem;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: var(--font-size-lg);
-    color: inherit;
-}
-
-.logo-img {
-    margin-right: 0.5rem;
-}
-/* End navbar section */
-
-/* Input controls */
-input.form-control {
-    height: 3rem;
-    font-size: var(--font-size-base);
-    border: 1px solid var(--color-dark);
-    border-radius: 4px;
-    background-color: var(--color-light);
-    color: var(--color-dark);
-    outline: none;
-}
-
-input.form-control:focus {
-    box-shadow: 0 0 0 3px var(--color-accent);
-    border: 1px var(--color-accent);
-    background-color: var(--color-light);
-}
-
 .content-wrapper {
     display: grid;
     grid-template-columns: 0fr 2fr;
@@ -75,7 +7,7 @@ input.form-control:focus {
     grid-auto-flow: row;
     justify-items: stretch;
     grid-template-areas:
-        "Profile Tabs"
+        "Profile Contents"
         "Profile Contents";
 }
 
@@ -84,15 +16,19 @@ input.form-control:focus {
     padding: 0.5rem 1.5rem;
     display: flex;
     align-items: center;
-}
-
-.Tabs input {
-    width: 400px;
+    margin: 0px 1.5rem;
 }
 
 .Contents {
     grid-area: Contents;
-    padding: 0 1.5rem;
+    margin: 1.5rem 1.5rem;
+    padding: 1rem 2rem;
+
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--foreground);
+    border-radius: var(--radius);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .head {
@@ -115,13 +51,13 @@ input.form-control:focus {
 
 /* table controls */
 .table {
-    background-color: var(--color-light);
+    background-color: transparent;
 }
 
 .table thead th,
 .table tbody td,
 .table tbody th {
-    background-color: var(--color-light);
+    background-color: transparent;
 }
 
 .editable-input {
@@ -146,23 +82,30 @@ td.editable:hover {
 
 #table-data {
     width: 100%;
-    table-layout: auto;
+    table-layout: fixed;
     white-space: nowrap;
 }
 
 #table-data th,
 #table-data td {
-    padding: 0.5rem 1rem; /* (atas/bawah) (samping) */
+    padding: 0.725rem 1rem; /* (atas/bawah) (samping) */
     text-align: left;
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 #table-data th:nth-child(3),
 #table-data td:nth-child(3) {
     position: sticky;
     left: 0;
-    background: var(--background);
+    background-color: transparent;
     z-index: 2;
+}
+
+#table-data th:nth-child(1),
+#table-data td:nth-child(1) {
+    width: 4rem;
+    text-align: center;
 }
 
 .table-scroll-wrapper {
@@ -193,5 +136,9 @@ td.editable:hover {
 
 .kegiatan-header:hover .delete-btn {
     display: inline;
+}
+
+.btn-outline-success {
+    border: solid 1px !important;
 }
 /* end table controls */

@@ -101,7 +101,7 @@ function updateTable(data) {
     const nip = data.nip || [];
 
     let tableHtml = `
-        <table class="table table-bordered table-sm" id="table-data">
+        <table class="table table-bordeless table-striped table-sm" id="table-data">
             <thead>
                 <tr>
                     <th>No</th>
@@ -124,7 +124,7 @@ function updateTable(data) {
                         .join("")}
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="table-group-divider">
                 ${siswaList
                     .map(
                         (row, i) => `
@@ -352,6 +352,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("cariSiswa");
     const tableContainer = document.getElementById("tableContainer");
 
+    const selectedKelas = document.getElementById("kelasFilter").value;
+    const badge = document.getElementById("kelasBadge");
+    if (badge) {
+        badge.textContent = selectedKelas;
+    }
+
+    const el = document.querySelector(".Contents");
+    if (el instanceof Element) {
+        const styles = getComputedStyle(el);
+        console.log("Color:", styles.color);
+        console.log("Background color:", styles.backgroundColor);
+        console.log("Filter:", styles.filter);
+    } else {
+        console.error("Element not found");
+    }
+
     if (!input || !tableContainer) return;
 
     input.addEventListener("keyup", function () {
@@ -374,7 +390,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 $(document).ready(function () {
     $("#tableContainer").html(
-        '<div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>'
+        '<div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>'
     );
 
     const $firstTab = $("#mapelTabs .nav-link").first();

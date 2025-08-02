@@ -60,19 +60,39 @@
     @endif
 
     <!-- Navbar -->
-    <x-navbar></x-navbar>
+    <x-navbar :showSearch="false" />
     <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
-        <div class="Tabs d-flex align-items-center">
-            <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
-            <input type="text" class="form-control ms-auto" id="cariSiswa" name="cariSiswa" placeholder="Cari Siswa">
-        </div>
-
         <div class="Contents">
             <!-- Filter -->
+            <div class="row-md-auto mt-3 mb-3 d-flex">
+
+                <div class="header mb-2 mt-2 position-relative"><span class="head">Nilai Siswa</span>
+                    <span class="badge position-absolute text-bg-warning ms-1" id="kelasBadge"></span>
+                </div>
+
+                <div class="col-md-auto ms-auto">
+                    <div class="btns input-nilai me-3">
+                        <a class="btn button-primary" href="#" data-bs-toggle="modal"
+                            data-bs-target="#inputNilaiModal">
+                            Tambah Kegiatan
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-auto">
+                    <div class="btns cetak-nilai">
+                        <button id="button-cetak" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-arrow-down fs-4"></i>
+                            {{-- <span class="ms-2">Cetak</span> --}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="row-md-auto">
-                <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
+                <ul class="nav nav-underline" id="mapelTabs" role="tablist">
                     @foreach ($data as $mapelId => $mapelData)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ $loop->first ? 'active' : '' }}"
@@ -89,9 +109,17 @@
             </div>
 
             <div class="row-md-auto mt-3 mb-3 d-flex text-center">
+                <div class="col-md-4 me-auto d-flex align-items-center">
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="cariSiswa" name="cariSiswa"
+                            placeholder="Cari Siswa" aria-describedby="basic-addon">
+                    </div>
+                </div>
+
                 <div class="col-md-auto d-flex align-items-center">
-                    <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label>
-                    <select id="kelasFilter" class="form-select me-2">
+                    {{-- <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label> --}}
+                    <select id="kelasFilter" class="form-select form-select-lg me-2">
                         {{-- isi dari js --}}
                     </select>
                 </div>
@@ -111,32 +139,14 @@
                 </div>
 
                 {{-- loading indicator --}}
-                <div id="loadingOverlay" class="d-none">
+                {{-- <div id="loadingOverlay" class="d-none">
                     <div id="loadingIndicator" class="text-center">
-                        <div class="spinner-border text-primary" role="status">
+                        <div class="spinner-border text-warning" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-md-auto ms-auto">
-                    <div class="btns input-nilai me-3">
-                        <a class="btn button-primary" href="#" data-bs-toggle="modal"
-                            data-bs-target="#inputNilaiModal">
-                            Tambah Kegiatan
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-md-auto">
-                    <div class="btns cetak-nilai">
-                        <button id="button-cetak" class="btn btn-success">
-                            Cetak Nilai Siswa
-                        </button>
-                    </div>
-                </div>
+                </div> --}}
             </div>
-
 
             <div class="row-md-auto table-scroll-wrapper">
                 <!-- Table -->
@@ -291,8 +301,8 @@
         <script src="{{ asset('js/dashboard-guru-mapel.js') }}"></script>
         <script>
             document.getElementById('button-cetak').addEventListener('click', function() {
-                showToast('Mencetak Nilai Siswa', 'text-bg-primary');
-                exportExcel('Nilai Siswa', 'Nilai Siswa');
+                const selectedKelas = document.getElementById('kelasFilter').value;
+                exportExcel('Nilai Siswa ' + selectedKelas, 'Nilai_Siswa_' + selectedKelas);
             });
         </script>
 

@@ -48,15 +48,18 @@
                 <!-- Isi Username -->
                 <div class="mb-2">
                     <label for="inputUsername" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="inputUsername" value="{{ old('inputUsername') }}" name="inputUsername" required>
+                    <input type="text" class="form-control" id="inputUsername" value="{{ old('inputUsername') }}"
+                        name="inputUsername" required>
                 </div>
 
                 <!-- password -->
                 <div class="mb-4">
                     <label for="inputPassword" class="form-label">Password</label>
                     <div class="position-relative">
-                        <input type="password" class="form-control" id="inputPassword" name="inputPassword" value="{{ old('inputPassword') }}" required>
-                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3" id="togglePassword" style="cursor: pointer;"></i>
+                        <input type="password" class="form-control" id="inputPassword" name="inputPassword"
+                            value="{{ old('inputPassword') }}" required>
+                        <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y me-3"
+                            id="togglePassword" style="cursor: pointer;"></i>
                     </div>
                 </div>
 
@@ -76,17 +79,27 @@
     </script>
 
     <script>
-        window.addEventListener("DOMContentLoaded", function () {
-        const togglePassword = document.getElementById("togglePassword");
-        const password = document.getElementById("inputPassword");
+        window.addEventListener("DOMContentLoaded", function() {
+            const togglePassword = document.getElementById("togglePassword");
+            const password = document.getElementById("inputPassword");
 
-        togglePassword.addEventListener("click", function (e) {
-            const type =
-            password.getAttribute("type") === "password" ? "text" : "password";
-            password.setAttribute("type", type);
-            this.classList.toggle("bi-eye");
+            togglePassword.addEventListener("click", function(e) {
+                const type =
+                    password.getAttribute("type") === "password" ? "text" : "password";
+                password.setAttribute("type", type);
+                this.classList.toggle("bi-eye");
+            });
+
+            const el = document.querySelector(".form-box");
+            if (el instanceof Element) {
+                const styles = getComputedStyle(el);
+                console.log("Color:", styles.color);
+                console.log("Background color:", styles.backgroundColor);
+                console.log("Filter:", styles.filter);
+            } else {
+                console.error("Element not found");
+            }
         });
-    });
     </script>
 </body>
 
