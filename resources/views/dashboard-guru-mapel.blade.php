@@ -64,32 +64,33 @@
     <x-confirm-modal />
 
     <div class="content-wrapper container-fluid">
-        <div class="Tabs d-flex align-items-center">
-            <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
-
-            <div class="col-md-auto ms-auto">
-                <div class="btns input-nilai me-3">
-                    <a class="btn button-primary" href="#" data-bs-toggle="modal"
-                        data-bs-target="#inputNilaiModal">
-                        Tambah Kegiatan
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-auto">
-                <div class="btns cetak-nilai">
-                    <button id="button-cetak" class="btn btn-outline-success">
-                        <i class="bi bi-file-earmark-arrow-down fs-4"></i>
-                        {{-- <span class="ms-2">Cetak</span> --}}
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <div class="Contents">
             <!-- Filter -->
+            <div class="row-md-auto mt-3 mb-3 d-flex">
+
+                <div class="header mb-2 mt-2"><span class="head">Nilai Siswa</span></div>
+
+                <div class="col-md-auto ms-auto">
+                    <div class="btns input-nilai me-3">
+                        <a class="btn button-primary" href="#" data-bs-toggle="modal"
+                            data-bs-target="#inputNilaiModal">
+                            Tambah Kegiatan
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-auto">
+                    <div class="btns cetak-nilai">
+                        <button id="button-cetak" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-arrow-down fs-4"></i>
+                            {{-- <span class="ms-2">Cetak</span> --}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="row-md-auto">
-                <ul class="nav nav-tabs" id="mapelTabs" role="tablist">
+                <ul class="nav nav-underline" id="mapelTabs" role="tablist">
                     @foreach ($data as $mapelId => $mapelData)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{ $loop->first ? 'active' : '' }}"
@@ -206,7 +207,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="inputNilaiModalLabel">Tambah Kegiatan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="inputKegiatanForm" action="{{ route('nilai.tambah-kegiatan') }}" method="POST">

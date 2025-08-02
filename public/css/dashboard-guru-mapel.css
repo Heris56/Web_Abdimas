@@ -75,7 +75,7 @@ input.form-control:focus {
     grid-auto-flow: row;
     justify-items: stretch;
     grid-template-areas:
-        "Profile Tabs"
+        "Profile Contents"
         "Profile Contents";
 }
 
@@ -84,6 +84,7 @@ input.form-control:focus {
     padding: 0.5rem 1.5rem;
     display: flex;
     align-items: center;
+    margin: 0px 1.5rem;
 
     /* border control (sync contents) */
     background-color: var(--card);
@@ -98,13 +99,13 @@ input.form-control:focus {
 
 .Contents {
     grid-area: Contents;
-    padding: 0 1.25rem;
+    margin: 0px 1.5rem;
+    padding: 1rem 2rem;
 
     /* border control (sync tabs) */
     background-color: var(--card);
     border: 1px var(--border) solid;
     border-radius: var(--radius);
-    border-top: none;
 }
 
 .head {
