@@ -218,7 +218,9 @@ class DataController extends Controller
             if ($type === 'paket_mapel') {
                 $validationRules['id_mapel'][] = Rule::unique('paket_mapel')->where(function ($query) use ($request) {
                     return $query->where('kode_paket', $request->kode_paket)
-                        ->where('id_kelas', $request->id_kelas);
+                        ->where('id_kelas', $request->id_kelas)
+                        ->where('id_mapel', $request->id_mapel)
+                        ->where('tahun_ajaran', $request->tahun_ajaran);
                 });
             }
             if ($type === 'tahun_ajaran') {
@@ -360,6 +362,7 @@ class DataController extends Controller
                     break;
                 case 'paket_mapel':
                     $primaryKey = 'id_paket';
+
                     $validationRules['id_mapel'][] = Rule::unique('paket_mapel')->where(function ($query) use ($request) {
                         return $query->where('kode_paket', $request->kode_paket)
                             ->where('id_kelas', $request->id_kelas);
