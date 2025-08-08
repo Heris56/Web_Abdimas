@@ -33,10 +33,12 @@
         <div class="Tabs">
             <ul class="nav nav-pills justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
+                    <a class="nav-link" aria-current="page"
+                        href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn]) : route('info.presensi') }}">Presensi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
+                    <a class="nav-link"
+                        href="{{ $isGuest ? route('guest.info.siswa', ['inputNISN' => $siswa->nisn, 'tab' => 'nilai']) : route('info.nilai') }}">Nilai</a>
                 </li>
             </ul>
         </div>
@@ -105,7 +107,8 @@
                     <div class="avatar-wrapper">
                         <div class="avatar">
                             <div class="avatar-inner">
-                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture" class="avatar-img">
+                                <img src="{{ asset('images/userprofile.png') }}" alt="Profile Picture"
+                                    class="avatar-img">
                             </div>
                             <div class="avatar-border"></div>
                         </div>
@@ -132,11 +135,11 @@
                         </div>
                     </div>
                     @if(!$isGuest) {{-- Only show Ganti Password for logged-in users --}}
-                    <div class="text-center mt-3">
-                        <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
-                            Ganti Password
-                        </a>
-                    </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ route('siswa.formGantiPassword') }}" class="btn custom-ganti-password-btn w-100">
+                                Ganti Password
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>
