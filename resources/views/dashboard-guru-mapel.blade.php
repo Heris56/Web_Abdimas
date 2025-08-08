@@ -38,6 +38,7 @@
 </head>
 
 <body>
+    {{-- TODO:: nambahin null state, navtabs benerin warnanya --}}
     {{-- Handle messages thrown when something happens --}}
     @if (session('success'))
         <script>
@@ -91,69 +92,74 @@
                 </div>
             </div>
 
-            <div class="row-md-auto">
-                <ul class="nav nav-underline" id="mapelTabs" role="tablist">
-                    @foreach ($data as $mapelId => $mapelData)
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ $loop->first ? 'active' : '' }}"
-                                id="mapel-{{ $mapelId }}-tab" data-bs-toggle="tab"
-                                data-bs-target="#mapel-{{ $mapelId }}" data-id-mapel="{{ $mapelId }}"
-                                data-mapel="{{ $mapelData['nama_mapel'] }}" type="button" role="tab"
-                                aria-controls="mapel-{{ $mapelId }}"
-                                aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                {{ $mapelData['nama_mapel'] }}
-                            </button>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+            @if ($data == [])
+                <div class="alert alert-warning text-center" role="alert">
+                    Tidak ada data tersedia!
+                </div>
+            @else
+                <div class="row-md-auto">
+                    <ul class="nav nav-underline" id="mapelTabs" role="tablist">
+                        @foreach ($data as $mapelId => $mapelData)
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ $loop->first ? 'active' : '' }}"
+                                    id="mapel-{{ $mapelId }}-tab" data-bs-toggle="tab"
+                                    data-bs-target="#mapel-{{ $mapelId }}" data-id-mapel="{{ $mapelId }}"
+                                    data-mapel="{{ $mapelData['nama_mapel'] }}" type="button" role="tab"
+                                    aria-controls="mapel-{{ $mapelId }}"
+                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                    {{ $mapelData['nama_mapel'] }}
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
 
-            <div class="row-md-auto mt-3 mb-3 d-flex text-center">
-                <div class="col-md-4 me-auto d-flex align-items-center">
-                    <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" id="cariSiswa" name="cariSiswa"
-                            placeholder="Cari Siswa" aria-describedby="basic-addon">
+                <div class="row-md-auto mt-3 mb-3 d-flex text-center">
+                    <div class="col-md-4 me-auto d-flex align-items-center">
+                        <div class="input-group">
+                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="cariSiswa" name="cariSiswa"
+                                placeholder="Cari Siswa" aria-describedby="basic-addon">
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-auto d-flex align-items-center">
-                    {{-- <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label> --}}
-                    <select id="kelasFilter" class="form-select form-select-lg me-2">
-                        {{-- isi dari js --}}
-                    </select>
-                </div>
+                    <div class="col-md-auto d-flex align-items-center">
+                        {{-- <label for="kelasFilter" class="form-label m-auto me-1">Kelas</label> --}}
+                        <select id="kelasFilter" class="form-select form-select-lg me-2">
+                            {{-- isi dari js --}}
+                        </select>
+                    </div>
 
-                <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
-                    <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
-                    <select id="tahunFilter" class="form-select me-2">
-                        <option value="{{ $tahunAjaran }}">{{ $tahunAjaran }}</option>
-                    </select>
-                </div>
+                    <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
+                        <label for="tahunFilter" class="form-label text-nowrap m-auto me-1">Tahun Ajaran</label>
+                        <select id="tahunFilter" class="form-select me-2">
+                            <option value="{{ $tahunAjaran }}">{{ $tahunAjaran }}</option>
+                        </select>
+                    </div>
 
-                <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
-                    <label for="semesterFilter" class="form-label m-auto me-1">Semester</label>
-                    <select id="semesterFilter" class="form-select me-2">
-                        <option value="{{ $semester }}">{{ $semester }}</option>
-                    </select>
-                </div>
+                    <div class="col-md-auto d-flex align-items-center" style="display: none !important;">
+                        <label for="semesterFilter" class="form-label m-auto me-1">Semester</label>
+                        <select id="semesterFilter" class="form-select me-2">
+                            <option value="{{ $semester }}">{{ $semester }}</option>
+                        </select>
+                    </div>
 
-                {{-- loading indicator --}}
-                {{-- <div id="loadingOverlay" class="d-none">
+                    {{-- loading indicator --}}
+                    {{-- <div id="loadingOverlay" class="d-none">
                     <div id="loadingIndicator" class="text-center">
                         <div class="spinner-border text-warning" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 </div> --}}
-            </div>
+                </div>
 
-            <div class="row-md-auto table-scroll-wrapper">
-                <!-- Table -->
-                <div class="tab-content mt-3" id="tableContainer">
-                    {{-- isi via js, jadi tidak perlu render initial table --}}
+                <div class="row-md-auto table-scroll-wrapper">
+                    <!-- Table -->
+                    <div class="tab-content mt-3" id="tableContainer">
+                        {{-- isi via js, jadi tidak perlu render initial table --}}
 
-                    {{-- @foreach ($data as $mapelId => $mapelData)
+                        {{-- @foreach ($data as $mapelId => $mapelData)
                         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
                             id="mapel-{{ $mapelId }}" role="tabpanel"
                             aria-labelledby="mapel-{{ $mapelId }}-tab">
@@ -199,8 +205,9 @@
                             @endforeach
                         </div>
                     @endforeach --}}
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
 
         <div class="modal fade" id="inputNilaiModal" tabindex="-1" aria-labelledby="inputNilaiModalLabel"
