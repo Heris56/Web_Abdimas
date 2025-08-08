@@ -96,7 +96,7 @@
             @elseif (in_array($type, ['paket_mapel']))
                 <div class="me-3">
                    <select class="form-select" id="filterKodePaket">
-                       <option value="">Semua Kode Paket</option>
+                       <option value="">Kode Paket</option>
                        @forelse($dropdowns['paket_mapel'] as $item)
                             <option value="{{ $item->kode_paket }}">{{ $item->kode_paket }}</option>
                         @empty
