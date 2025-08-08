@@ -410,7 +410,7 @@ class NilaiController extends Controller
                     'tahun_pelajaran' => $tahunAjaran,
                     'nip' => $nip,
                 ]);
-                return response()->json(['message' => 'Tidak ada siswa yang bisa ditambahkan untuk kegiatan ini'], 400);
+                return redirect()->back()->with('error', 'Tidak ada siswa yang bisa ditambahkan untuk kegiatan ini');
             }
 
 
