@@ -21,6 +21,10 @@ class RestrictAdminIP
 
         ];
         if (!in_array($request->ip(), $allowedIP)) {
+            session()->flush();
+            \Cookie::queue(\Cookie::forget('userID'));
+            \Cookie::queue(\Cookie::forget('userRole'));
+            \Cookie::queue(\Cookie::forget('primarykey'));
             return abort(403, 'Akses admin hanya diizinkan dari IP tertentu.');
         }
 
