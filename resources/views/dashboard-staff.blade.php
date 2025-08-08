@@ -100,7 +100,7 @@
                        @forelse($dropdowns['paket_mapel'] as $item)
                             <option value="{{ $item->kode_paket }}">{{ $item->kode_paket }}</option>
                         @empty
-                        <option disabled>Tidak ada Paket tersedia</option>
+                        <option disabled>Paket Kosong</option>
                        @endforelse
                    </select>
                 </div>
