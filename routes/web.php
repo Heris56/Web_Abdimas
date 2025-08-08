@@ -76,7 +76,6 @@ Route::get('/api/siswa', [login_controller::class, 'getsiswa'])->name('getsiswa'
 Route::post('/logout', [login_controller::class, 'logout'])->name('logout');
 
 
-
 // staff
 Route::view('/login/staff', 'login-page-staff')->name('login-staff');
 Route::post('/login/staff', [login_controller::class, 'auth_login_staff'])->name('auth.staff');

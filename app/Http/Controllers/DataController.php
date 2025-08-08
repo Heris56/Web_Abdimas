@@ -471,6 +471,7 @@ class DataController extends Controller
                         // update tahun ajaran wali_kelas
                         DB::table('wali_kelas')->where('status', "aktif")->update(['tahun_ajaran' => $tahunajaran, 'id_kelas' => null]);
                     }
+                    Log::info("Tahun ajaran diganti oleh: ID: {$id}");
                     DB::table('tahun_ajaran')->where('id_tahun_ajaran', $idTahunAjaran)->update(['is_changed' => true]);
                     return redirect()->back()->with('success', 'Konfirmasi password berhasil! Tahun ajaran berhasil berubah');
                 } else {
