@@ -82,7 +82,7 @@ td.editable:hover {
 
 #table-data {
     width: 100%;
-    table-layout: fixed;
+    table-layout: auto;
     white-space: nowrap;
 }
 
@@ -98,7 +98,7 @@ td.editable:hover {
 #table-data td:nth-child(3) {
     position: sticky;
     left: 0;
-    background-color: transparent;
+    background-color: var(--background);
     z-index: 2;
 }
 
