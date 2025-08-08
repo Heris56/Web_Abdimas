@@ -28,6 +28,10 @@ class CheckUserAktif
             return redirect()->route('login-staff')->with('error', 'Sesi Anda telah berakhir atau tidak valid. Silakan login kembali.');
         }
         if ($useraktif != "aktif") {
+            session()->flush();
+            \Cookie::queue(\Cookie::forget('userID'));
+            \Cookie::queue(\Cookie::forget('userRole'));
+            \Cookie::queue(\Cookie::forget('primarykey'));
             return abort(403, 'User tidak dalam keadaan aktif, silahkan hubungi admin');
         }
         return $next($request);

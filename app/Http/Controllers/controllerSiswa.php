@@ -94,19 +94,21 @@ class ControllerSiswa extends Controller
 
         // Ambil data siswa
         $siswa = DB::table('siswa')
-            ->join('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
+            ->leftJoin('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
             ->where('siswa.nisn', $nisn)
             ->select(
                 'siswa.nisn',
                 'siswa.nama_siswa',
                 'siswa.tahun_ajaran',
-                'kelas.id_kelas',
+                'siswa.id_kelas' ?? null, // Allow null for guest users
                 'kelas.jurusan'
             )
             ->first();
-
-        if (!$siswa) {
-            return redirect()->route('cari')->with('error', 'Student data not found for the provided NISN.');
+        $guestSiswa = DB::table('siswa')
+            ->where('siswa.nisn', $nisn)
+            ->first();
+        if (!$guestSiswa) {
+            return redirect()->route('cari')->with('error', 'Student data not found.');
         }
 
         // Ambil data presensi
@@ -155,18 +157,20 @@ class ControllerSiswa extends Controller
 
             // Get student information
             $siswa = DB::table('siswa')
-                ->join('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
+                ->leftJoin('kelas', 'siswa.id_kelas', '=', 'kelas.id_kelas')
                 ->where('siswa.nisn', $nisn)
                 ->select(
                     'siswa.nisn',
                     'siswa.nama_siswa',
                     'siswa.tahun_ajaran',
-                    'kelas.id_kelas',
+                    'siswa.id_kelas',
                     'kelas.jurusan'
                 )
                 ->first();
-
-            if (!$siswa) {
+            $guestSiswa = DB::table('siswa')
+                ->where('siswa.nisn', $nisn)
+                ->first();
+            if (!$guestSiswa) {
                 return redirect()->route('cari')->with('error', 'Student data not found.');
             }
 
