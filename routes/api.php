@@ -3,16 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KeuanganController;
+use function Pest\Laravel\json;
 
 Route::get('/getsiswa', [KeuanganController::class,'getsiswa'])->name('api.siswa');
 
-Route::get('/testapi', function (Request $request) {
-    return 'test api';
+Route::middleware(['auth:sanctum'])->group(function(){
+    Route::get('/testapi', function (Request $request) {
+        return response()->json([
+            "message" => "Test Data"
+        ], 200);
+    });
+    Route::post('/logoutstaff', [KeuanganController::class, 'LogoutKeuangan'])->name('api.logoutstaffKeuangan');
 });
-
 Route::post('/addstaff', [KeuanganController::class,'CreateACCKeuangan'])->name('api.createstaff');
 Route::post('/loginstaff', [KeuanganController::class, 'LoginKeuangan'])->name('api.loginstaffKeuangan');
-
 
 Route::get('/user', function (Request $request) {
     return $request->user();

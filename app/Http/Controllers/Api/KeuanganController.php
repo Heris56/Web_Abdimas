@@ -34,6 +34,14 @@ class KeuanganController extends Controller
         ], 200);
     }
 
+    public function LogoutKeuangan(Request $request){
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            "message" => "Logout berhasil"
+        ], 200);
+    }
+
     public function CreateACCKeuangan(){
        DB::beginTransaction();
         try {
