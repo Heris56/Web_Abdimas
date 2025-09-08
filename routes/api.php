@@ -10,6 +10,10 @@ Route::get('/testapi', function (Request $request) {
     return 'test api';
 });
 
+Route::post('/addstaff', [KeuanganController::class,'CreateACCKeuangan'])->name('api.createstaff');
+Route::post('/loginstaff', [KeuanganController::class, 'LoginKeuangan'])->name('api.loginstaffKeuangan');
+
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
