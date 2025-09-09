@@ -10,10 +10,11 @@ Route::get('/getsiswa', [KeuanganController::class,'getsiswa'])->name('api.siswa
 Route::middleware(['auth:sanctum'])->group(function(){
     Route::get('/testapi', function (Request $request) {
         return response()->json([
-            "message" => "Test Data"
+            "message" => "Test Data Ganti"
         ], 200);
     });
     Route::post('/logoutstaff', [KeuanganController::class, 'LogoutKeuangan'])->name('api.logoutstaffKeuangan');
+    Route::get('/getProfile', [KeuanganController::class, 'getProfile']);
 });
 Route::post('/addstaff', [KeuanganController::class,'CreateACCKeuangan'])->name('api.createstaff');
 Route::post('/loginstaff', [KeuanganController::class, 'LoginKeuangan'])->name('api.loginstaffKeuangan');

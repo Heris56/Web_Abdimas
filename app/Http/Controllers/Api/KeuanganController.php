@@ -12,16 +12,39 @@ use Illuminate\Support\Facades\Hash;
 
 class KeuanganController extends Controller
 {
-    public function getsiswa(){
-        $siswa = DB::table('siswa')->get();
+    public function getsiswa(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $siswa = DB::table('siswa')->paginate($perPage);
 
-        return $siswa;
+        return response()->json([
+            "message" => "Berhasil Fetch Siswa",
+            "data" => $siswa->items(),
+            "meta" => [
+                "current_page" => $siswa->currentPage(),
+                "last_page" => $siswa->lastPage(),
+                "per_page" => $siswa->perPage(),
+                "total" => $siswa->total(),
+            ]
+        ], 200);
     }
 
-    public function LoginKeuangan(Request $request){
+    public function getProfile(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'message' => "Berhasil Fetch Profile",
+            'id' => $user->id,
+            'nama' => $user->nama,
+            'email' => $user->email,
+        ], 200);
+    }
+
+    public function LoginKeuangan(Request $request)
+    {
         $staff = StaffKeuangan::where('email', $request->email)->first();
 
-        if(! $staff || ! Hash::check($request->password, $staff->password)){
+        if (!$staff || !Hash::check($request->password, $staff->password)) {
             return response()->json(['message' => 'email atau password salah']);
         }
 
@@ -29,12 +52,13 @@ class KeuanganController extends Controller
         $token = $staff->createToken('staff-token')->plainTextToken;
 
         return response()->json([
-        'message' => 'Login berhasil',
-        'token'   => $token
+            'message' => 'Login berhasil',
+            'token' => $token
         ], 200);
     }
 
-    public function LogoutKeuangan(Request $request){
+    public function LogoutKeuangan(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
@@ -42,14 +66,15 @@ class KeuanganController extends Controller
         ], 200);
     }
 
-    public function CreateACCKeuangan(){
-       DB::beginTransaction();
+    public function CreateACCKeuangan()
+    {
+        DB::beginTransaction();
         try {
             StaffKeuangan::create([
-                'nama'     => 'Haikal Risnandar',
-                'email'    => 'haikal@example.com',
-                'password' => Hash::make('rahasia123'), 
-                'status'   => 'Aktif'
+                'nama' => 'Darryl Rambi',
+                'email' => 'darryl@example.com',
+                'password' => Hash::make('rahasia123'),
+                'status' => 'Aktif'
             ]);
 
             DB::commit();
@@ -59,7 +84,7 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal membuat akun staff keuangan',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }
