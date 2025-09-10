@@ -13,6 +13,8 @@ Route::middleware(['auth:sanctum'])->group(function(){
             "message" => "Test Data Ganti"
         ], 200);
     });
+    Route::get('/getpembayaran', [KeuanganController::class,'getPembayaran'])->name('api.Pembayaran');
+    Route::get('/gettipepembayaran', [KeuanganController::class,'getTipePembayaran'])->name('api.TipePembayaran');
     Route::post('/logoutstaff', [KeuanganController::class, 'LogoutKeuangan'])->name('api.logoutstaffKeuangan');
     Route::get('/getProfile', [KeuanganController::class, 'getProfile']);
 });

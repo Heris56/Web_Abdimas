@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tagihan;
+use App\Models\Siswa;
 use App\Models\StaffKeuangan;
+use App\Models\TipePembayaran;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -15,7 +18,7 @@ class KeuanganController extends Controller
     public function getsiswa(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $siswa = DB::table('siswa')->paginate($perPage);
+        $siswa = Siswa::paginate($perPage);
 
         return response()->json([
             "message" => "Berhasil Fetch Siswa",
@@ -27,7 +30,27 @@ class KeuanganController extends Controller
                 "total" => $siswa->total(),
             ]
         ], 200);
-    }
+    } 
+    public function getPembayaran(Request $request)
+    {
+        $pembayaran = Tagihan::with('siswa')->get();
+
+        return response()->json([
+            "message" => "Berhasil Fetch data Pembayaran",
+            "data" => $pembayaran,
+            
+        ], 200);
+    } 
+    public function getTipePembayaran(Request $request)
+    {
+        $tipePembayaran = TipePembayaran::all();
+
+        return response()->json([
+            "message" => "Berhasil Fetch data Tipe Pembayaran",
+            "data" => $tipePembayaran,
+            
+        ], 200);
+    } 
 
     public function getProfile(Request $request)
     {
@@ -53,7 +76,12 @@ class KeuanganController extends Controller
 
         return response()->json([
             'message' => 'Login berhasil',
-            'token' => $token
+            'token' => $token,
+            'user' => [
+                'id' => $staff->id,
+                'nama' => $staff->nama,
+                'email' => $staff->email,
+            ]
         ], 200);
     }
 
