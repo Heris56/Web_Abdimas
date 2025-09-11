@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Models\Siswa;
 use App\Models\StaffKeuangan;
@@ -30,7 +31,7 @@ class KeuanganController extends Controller
                 "total" => $siswa->total(),
             ]
         ], 200);
-    } 
+    }
     public function getPembayaran(Request $request)
     {
         $pembayaran = Tagihan::with('siswa')->get();
@@ -38,9 +39,9 @@ class KeuanganController extends Controller
         return response()->json([
             "message" => "Berhasil Fetch data Pembayaran",
             "data" => $pembayaran,
-            
+
         ], 200);
-    } 
+    }
     public function getTipePembayaran(Request $request)
     {
         $tipePembayaran = TipePembayaran::all();
@@ -48,9 +49,9 @@ class KeuanganController extends Controller
         return response()->json([
             "message" => "Berhasil Fetch data Tipe Pembayaran",
             "data" => $tipePembayaran,
-            
+
         ], 200);
-    } 
+    }
 
     public function getProfile(Request $request)
     {
@@ -112,6 +113,22 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal membuat akun staff keuangan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function dataPembayaran(Request $request)
+    {
+        try {
+            $dataTransaksi = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
+            return response()->json([
+                'message' => 'Berhasil Fetch Data Transaksi',
+                'data' => $dataTransaksi
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Fetch Data Transaksi',
                 'error' => $e->getMessage()
             ], 500);
         }

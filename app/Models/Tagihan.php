@@ -25,4 +25,9 @@ class Tagihan extends Model
     {
         return $this->belongsTo(Siswa::class, 'nisn', 'nisn');
     }
+
+    public function tipePembayaran()
+    {
+        return $this->belongsTo(TipePembayaran::class, 'id_tipe_pembayaran', 'id_tipe_pembayaran');
+    }
 }

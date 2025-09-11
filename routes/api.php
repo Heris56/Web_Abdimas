@@ -5,20 +5,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KeuanganController;
 use function Pest\Laravel\json;
 
-Route::get('/getsiswa', [KeuanganController::class,'getsiswa'])->name('api.siswa');
+Route::get('/getsiswa', [KeuanganController::class, 'getsiswa'])->name('api.siswa');
+Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->name('api.datapembayaran');
 
-Route::middleware(['auth:sanctum'])->group(function(){
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
         return response()->json([
             "message" => "Test Data Ganti"
         ], 200);
     });
-    Route::get('/getpembayaran', [KeuanganController::class,'getPembayaran'])->name('api.Pembayaran');
-    Route::get('/gettipepembayaran', [KeuanganController::class,'getTipePembayaran'])->name('api.TipePembayaran');
+    Route::get('/getpembayaran', [KeuanganController::class, 'getPembayaran'])->name('api.Pembayaran');
+    Route::get('/gettipepembayaran', [KeuanganController::class, 'getTipePembayaran'])->name('api.TipePembayaran');
     Route::post('/logoutstaff', [KeuanganController::class, 'LogoutKeuangan'])->name('api.logoutstaffKeuangan');
     Route::get('/getProfile', [KeuanganController::class, 'getProfile']);
 });
-Route::post('/addstaff', [KeuanganController::class,'CreateACCKeuangan'])->name('api.createstaff');
+Route::post('/addstaff', [KeuanganController::class, 'CreateACCKeuangan'])->name('api.createstaff');
 Route::post('/loginstaff', [KeuanganController::class, 'LoginKeuangan'])->name('api.loginstaffKeuangan');
 
 Route::get('/user', function (Request $request) {
