@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
+use App\Models\Pengeluaran;
 use App\Models\Tagihan;
 use App\Models\Siswa;
 use App\Models\StaffKeuangan;
@@ -121,14 +122,30 @@ class KeuanganController extends Controller
     public function dataPembayaran(Request $request)
     {
         try {
-            $dataTransaksi = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
+            $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
             return response()->json([
                 'message' => 'Berhasil Fetch Data Transaksi',
-                'data' => $dataTransaksi
+                'data' => $dataPembayaran
             ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal Fetch Data Transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function dataPengeluaran(Request $request)
+    {
+        try {
+            $dataPengeluaran = Pengeluaran::all();
+            return response()->json([
+                'message' => 'Berhasil Fetch Data Pengeluaran',
+                'data' => $dataPengeluaran
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Fetch Data Pengeluaran',
                 'error' => $e->getMessage()
             ], 500);
         }
