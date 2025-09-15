@@ -150,4 +150,29 @@ class KeuanganController extends Controller
             ], 500);
         }
     }
+
+    public function insertPengeluaran(Request $request)
+    {
+        $request->validate([
+            'nominal' => 'required|numeric',
+            'tanggal' => 'required|date',
+            'keterangan' => 'required|string|max:255',
+        ]);
+        try {
+            $pengeluaran = Pengeluaran::create([
+                'nominal' => $request->nominal,
+                'keterangan' => $request->keterangan,
+                'tanggal' => $request->tanggal,
+            ]);
+            return response()->json([
+                'message' => 'Pengeluaran berhasil ditambahkan',
+                'data' => $pengeluaran
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menambahkan pengeluaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

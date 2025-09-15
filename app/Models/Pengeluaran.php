@@ -13,6 +13,7 @@ class Pengeluaran extends Model
     protected $fillable = [
         'nominal',
         'keterangan',
+        'tanggal',
     ];
     protected $hidden = [
         'deleted_at'

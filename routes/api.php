@@ -8,7 +8,7 @@ use function Pest\Laravel\json;
 Route::get('/getsiswa', [KeuanganController::class, 'getsiswa'])->name('api.siswa');
 Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->name('api.datapembayaran');
 Route::get('/datapengeluaran', [KeuanganController::class, 'dataPengeluaran'])->name('api.datapengeluaran');
-
+Route::post('/insertpengeluaran', [KeuanganController::class, 'insertPengeluaran'])->name('api.addpengeluaran');
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
         return response()->json([
