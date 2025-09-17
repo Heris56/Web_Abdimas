@@ -29,14 +29,14 @@ class KeuanganController extends Controller
 
         $query = Siswa::query();
 
-        if($search){
-            $query->where(function($q) use ($search){
+        if ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama_siswa', 'like', "%{$search}%")
-                ->orWhere('nisn', 'like', "%{$search}%");
+                    ->orWhere('nisn', 'like', "%{$search}%");
             });
         }
 
-        if($status){
+        if ($status) {
             $query->where('status', $status);
         }
 
@@ -56,6 +56,7 @@ class KeuanganController extends Controller
     public function getPembayaran(Request $request)
     {
         $pembayaran = Tagihan::with('siswa')->get();
+        sleep(seconds: 0); // for debugging timeout
 
         return response()->json([
             "message" => "Berhasil Fetch data Pembayaran",
@@ -66,6 +67,7 @@ class KeuanganController extends Controller
     public function getTipePembayaran(Request $request)
     {
         $tipePembayaran = TipePembayaran::all();
+        sleep(seconds: 0); // for debugging timeout
 
         return response()->json([
             "message" => "Berhasil Fetch data Tipe Pembayaran",
