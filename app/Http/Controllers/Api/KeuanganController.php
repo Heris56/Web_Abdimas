@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Traits\LogActivity;
 use App\Models\Pembayaran;
 use App\Models\Pengeluaran;
 use App\Models\Tagihan;
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Hash;
 
 class KeuanganController extends Controller
 {
+
+    use LogActivity;
+
     public function getsiswa(Request $request)
     {
         $perPage = $request->input('per_page', 10);
@@ -180,6 +184,16 @@ class KeuanganController extends Controller
                 'keterangan' => $request->keterangan,
                 'tanggal' => $request->tanggal,
             ]);
+
+            $this->logActivity(
+                "create",
+                "cashflow_pengeluaran",
+                $pengeluaran->id_pengeluaran,
+                null,
+                $pengeluaran->getAttributes(),
+                "tambah data pengeluaran baru"
+            );
+
             return response()->json([
                 'message' => 'Pengeluaran berhasil ditambahkan',
                 'data' => $pengeluaran
@@ -191,4 +205,5 @@ class KeuanganController extends Controller
             ], 500);
         }
     }
+
 }
