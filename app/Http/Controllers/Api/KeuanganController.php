@@ -20,7 +20,23 @@ class KeuanganController extends Controller
     public function getsiswa(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $siswa = Siswa::paginate($perPage);
+        $search = $request->input("search");
+        $status = $request->input("status");
+
+        $query = Siswa::query();
+
+        if($search){
+            $query->where(function($q) use ($search){
+                $q->where('nama_siswa', 'like', "%{$search}%")
+                ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+
+        if($status){
+            $query->where('status', $status);
+        }
+
+        $siswa = $query->paginate($perPage);
 
         return response()->json([
             "message" => "Berhasil Fetch Siswa",
