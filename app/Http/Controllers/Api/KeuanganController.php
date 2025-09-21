@@ -55,24 +55,48 @@ class KeuanganController extends Controller
     }
     public function getPembayaran(Request $request)
     {
-        $pembayaran = Tagihan::with('siswa')->get();
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input("search");
+        $query = Tagihan::with('siswa');
         sleep(seconds: 0); // for debugging timeout
 
+        $pembayaran = $query->paginate($perPage);
         return response()->json([
             "message" => "Berhasil Fetch data Pembayaran",
-            "data" => $pembayaran,
-
+            "data" => $pembayaran->items(),
+            "meta" => [
+                "current_page" => $pembayaran->currentPage(),
+                "last_page" => $pembayaran->lastPage(),
+                "per_page" => $pembayaran->perPage(),
+                "total" => $pembayaran->total(),
+            ]
         ], 200);
     }
     public function getTipePembayaran(Request $request)
     {
-        $tipePembayaran = TipePembayaran::all();
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input("search");
+
+        $query = TipePembayaran::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_tipe', "like", "%{$search}%");
+            });
+        }
+
+        $tipePembayaran = $query->paginate($perPage);
         sleep(seconds: 0); // for debugging timeout
 
         return response()->json([
             "message" => "Berhasil Fetch data Tipe Pembayaran",
-            "data" => $tipePembayaran,
-
+            "data" => $tipePembayaran->items(),
+            "meta" => [
+                "current_page" => $tipePembayaran->currentPage(),
+                "last_page" => $tipePembayaran->lastPage(),
+                "per_page" => $tipePembayaran->perPage(),
+                "total" => $tipePembayaran->total(),
+            ]
         ], 200);
     }
 
