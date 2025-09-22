@@ -210,6 +210,10 @@ class KeuanganController extends Controller
                     "last_page" => $dataPengeluaran->lastPage(),
                     "per_page" => $dataPengeluaran->perPage(),
                     "total" => $dataPengeluaran->total(),
+                ],
+                'links' => [
+                    'next' => $dataPengeluaran->nextPageUrl(),
+                    'prev' => $dataPengeluaran->previousPageUrl(),
                 ]
             ], 200);
         } catch (Exception $e) {
