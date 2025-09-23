@@ -18,6 +18,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/getpembayaran', [KeuanganController::class, 'getPembayaran'])->name('api.Pembayaran');
     Route::get('/gettipepembayaran', [KeuanganController::class, 'getTipePembayaran'])->name('api.TipePembayaran');
     Route::post('/logoutstaff', [KeuanganController::class, 'LogoutKeuangan'])->name('api.logoutstaffKeuangan');
+    Route::post('/passchangestaff', [KeuanganController::class, 'ChangePassword'])->name('api.passchangestaffKeuangan');
     Route::get('/getProfile', [KeuanganController::class, 'getProfile']);
 });
 Route::post('/addstaff', [KeuanganController::class, 'CreateACCKeuangan'])->name('api.createstaff');
