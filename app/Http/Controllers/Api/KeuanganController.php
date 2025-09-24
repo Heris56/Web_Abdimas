@@ -232,4 +232,36 @@ class KeuanganController extends Controller
         }
     }
 
+    public function insertPembayaran(Request $request)
+    {
+        $request->validate([
+            'jumlah_pembayaran' => 'required|numeric',
+            'id_pembayaran' => 'required|numeric|exists:cashflow_tagihan,id_pembayaran',
+        ]);
+        try {
+            $pembayaran = Pembayaran::create([
+                'jumlah_pembayaran' => $request->jumlah_pembayaran,
+                'id_pembayaran' => $request->id_pembayaran,
+            ]);
+
+            $this->logActivity(
+                "create",
+                "cashflow_tagihan_pembayaran",
+                $pembayaran->id_pembayaran,
+                null,
+                $pembayaran->getAttributes(),
+                "tambah data pembayaran baru"
+            );
+
+            return response()->json([
+                'message' => 'Pembayaran berhasil ditambahkan',
+                'data' => $pembayaran
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menambahkan pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

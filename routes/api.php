@@ -9,6 +9,7 @@ Route::get('/getsiswa', [KeuanganController::class, 'getsiswa'])->name('api.sisw
 Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->name('api.datapembayaran');
 Route::get('/datapengeluaran', [KeuanganController::class, 'dataPengeluaran'])->name('api.datapengeluaran');
 Route::post('/insertpengeluaran', [KeuanganController::class, 'insertPengeluaran'])->name('api.addpengeluaran');
+Route::post('/insertpembayaran', [KeuanganController::class, 'insertPembayaran'])->name('api.addpembayaran');
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
         return response()->json([
