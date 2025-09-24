@@ -10,10 +10,12 @@ use App\Models\Tagihan;
 use App\Models\Siswa;
 use App\Models\StaffKeuangan;
 use App\Models\TipePembayaran;
+use Auth;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 
 class KeuanganController extends Controller
@@ -155,7 +157,6 @@ class KeuanganController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Akun staff keuangan berhasil dibuat'], 201);
-
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -163,6 +164,23 @@ class KeuanganController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function ChangePassword(Request $request)
+    {
+        $request->validate([
+            "new_password" => "required|min:8|confirmed"
+        ]);
+
+        $user = Auth::user();
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            "message" => "Password Berhasil Diganti"
+        ], 200);
+
     }
 
     public function dataPembayaran(Request $request)
@@ -184,10 +202,38 @@ class KeuanganController extends Controller
     public function dataPengeluaran(Request $request)
     {
         try {
-            $dataPengeluaran = Pengeluaran::all();
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $status = $request->input("status");
+
+            $query = Pengeluaran::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('keterangan', 'like', "%{$search}%")
+                        ->orWhere('nominal', 'like', "%{$search}%");
+                });
+            }
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $dataPengeluaran = $query->paginate($perPage);
+
             return response()->json([
                 'message' => 'Berhasil Fetch Data Pengeluaran',
-                'data' => $dataPengeluaran
+                'data' => $dataPengeluaran->items(),
+                "meta" => [
+                    "current_page" => $dataPengeluaran->currentPage(),
+                    "last_page" => $dataPengeluaran->lastPage(),
+                    "per_page" => $dataPengeluaran->perPage(),
+                    "total" => $dataPengeluaran->total(),
+                ],
+                'links' => [
+                    'next' => $dataPengeluaran->nextPageUrl(),
+                    'prev' => $dataPengeluaran->previousPageUrl(),
+                ]
             ], 200);
         } catch (Exception $e) {
             return response()->json([
