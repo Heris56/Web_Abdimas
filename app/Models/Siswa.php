@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Siswa extends Model
 {
-    public $incrementing = false; 
-    protected $keyType = 'string'; 
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'siswa';
     protected $primaryKey = "nisn";
     protected $fillable = [
@@ -18,4 +18,8 @@ class Siswa extends Model
         'tahun_ajaran',
         'id_kelas',
     ];
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
+    }
 }

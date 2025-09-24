@@ -15,6 +15,7 @@ class Tagihan extends Model
         'status_pembayaran',
         'tanggal_pembuatan_tagihan',
         'nisn',
+        'jadwal_pembayaran',
         'id_tipe_pembayaran'
     ];
 

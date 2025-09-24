@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLogs;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
 use App\Models\Pengeluaran;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Log;
 
 
 class KeuanganController extends Controller
@@ -306,6 +308,103 @@ class KeuanganController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal menambahkan pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function inputTagihanAllSiswa(Request $request)
+    {
+        $request->validate([
+            'id_tipe_pembayaran' => 'required|exists:cashflow_tipe_pembayaran,id_tipe_pembayaran',
+            'status_pembayaran' => 'nullable|string|in:belum_lunas,lunas,menunggu',
+            'tanggal_pembuatan_tagihan' => 'nullable|date',
+        ]);
+
+        $status = $request->status_pembayaran ?? 'belum_lunas';
+        $tanggalMulai = $request->tanggal_pembuatan_tagihan
+            ? \Carbon\Carbon::parse($request->tanggal_pembuatan_tagihan)
+            : now();
+
+        // Ambil semua siswa
+        $siswaList = Siswa::all();
+
+        $tagihanData = [];
+        foreach ($siswaList as $siswa) {
+            for ($i = 0; $i < 12; $i++) {
+                $jadwalPembayaran = $tanggalMulai->copy()->addMonths($i);
+
+                $tagihanData[] = [
+                    'nisn' => $siswa->nisn,
+                    'id_tipe_pembayaran' => $request->id_tipe_pembayaran,
+                    'status_pembayaran' => 'belum_lunas',
+                    'tanggal_pembuatan_tagihan' => $tanggalMulai,
+                    'jadwal_pembayaran' => $jadwalPembayaran->toDateString(),
+                ];
+            }
+        }
+
+        // Insert sekaligus (lebih cepat daripada create satu-satu)
+        Tagihan::insert($tagihanData);
+
+        $this->logActivity(
+            "create",
+            "cashflow_tagihan",
+            null, // No specific ID for bulk insert
+            null,
+            ['total_records' => count($tagihanData)],
+            "Menambah tagihan SPP untuk " . count($siswaList) . " siswa"
+        );
+
+        return response()->json([
+            'message' => 'Tagihan berhasil dibuat untuk semua siswa selama 12 bulan',
+            'total_siswa' => count($siswaList),
+            'total_tagihan' => count($tagihanData),
+        ], 201);
+    }
+
+    public function dataLog(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $status = $request->input("status");
+
+            $query = ActivityLogs::query()->with('user');
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('description', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($uq) use ($search) {
+                            $uq->where('nama', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $log = $query->paginate($perPage);
+
+            return response()->json([
+                'message' => 'Berhasil Fetch Data Log',
+                'data' => $log->items(),
+                "meta" => [
+                    "current_page" => $log->currentPage(),
+                    "last_page" => $log->lastPage(),
+                    "per_page" => $log->perPage(),
+                    "total" => $log->total(),
+                ],
+                'links' => [
+                    'next' => $log->nextPageUrl(),
+                    'prev' => $log->previousPageUrl(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Fetch Data Log',
                 'error' => $e->getMessage()
             ], 500);
         }

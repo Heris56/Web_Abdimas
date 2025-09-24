@@ -10,6 +10,10 @@ Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->na
 Route::get('/datapengeluaran', [KeuanganController::class, 'dataPengeluaran'])->name('api.datapengeluaran');
 Route::post('/insertpengeluaran', [KeuanganController::class, 'insertPengeluaran'])->name('api.addpengeluaran');
 Route::post('/insertpembayaran', [KeuanganController::class, 'insertPembayaran'])->name('api.addpembayaran');
+Route::post('/inserttagihan', [KeuanganController::class, 'inputTagihanAllSiswa'])->name('api.inputtagihanallsiswa');
+Route::get('/gettipepembayarans', [KeuanganController::class, 'getTipePembayaran'])->name('api.TipePembayaran');
+Route::get('/getlogs', [KeuanganController::class, 'dataLog'])->name('api.dataLog');
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
         return response()->json([
