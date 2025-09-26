@@ -409,4 +409,60 @@ class KeuanganController extends Controller
             ], 500);
         }
     }
+
+    public function insertTipePembayaran(Request $request)
+    {
+        $request->validate([
+            'nama_tipe' => 'required|string|max:255',
+            'is_bulanan' => 'nullable|boolean',
+            'is_sekali_bayar' => 'nullable|boolean',
+            'is_pertaun' => 'nullable|boolean',
+            'is_persemester' => 'nullable|boolean',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $tipe = TipePembayaran::create($request->all());
+
+        return response()->json([
+            'message' => 'Tipe Pembayaran created successfully',
+            'data' => $tipe
+        ], 201);
+    }
+
+    /**
+     * Update existing TipePembayaran
+     */
+    public function updateTipePembayaran(Request $request, $id)
+    {
+        $tipe = TipePembayaran::findOrFail($id);
+
+        $request->validate([
+            'nama_tipe' => 'sometimes|required|string|max:255',
+            'is_bulanan' => 'nullable|boolean',
+            'is_sekali_bayar' => 'nullable|boolean',
+            'is_pertaun' => 'nullable|boolean',
+            'is_persemester' => 'nullable|boolean',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $tipe->update($request->all());
+
+        return response()->json([
+            'message' => 'Tipe Pembayaran updated successfully',
+            'data' => $tipe
+        ], 200);
+    }
+
+    /**
+     * Delete TipePembayaran (Soft Delete)
+     */
+    public function deleteTipePembayaran($id)
+    {
+        $tipe = TipePembayaran::findOrFail($id);
+        $tipe->delete();
+
+        return response()->json([
+            'message' => 'Tipe Pembayaran deleted successfully'
+        ], 200);
+    }
 }
