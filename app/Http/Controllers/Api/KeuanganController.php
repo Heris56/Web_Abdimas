@@ -151,8 +151,8 @@ class KeuanganController extends Controller
         DB::beginTransaction();
         try {
             StaffKeuangan::create([
-                'nama' => 'Darryl Rambi',
-                'email' => 'darryl@example.com',
+                'nama' => 'Raphael Permana Barus',
+                'email' => 'raphael@example.com',
                 'password' => Hash::make('rahasia123'),
                 'status' => 'Aktif'
             ]);
@@ -207,8 +207,9 @@ class KeuanganController extends Controller
             $perPage = $request->input('per_page', 10);
             $search = $request->input("search");
             $status = $request->input("status");
+            $tipe = $request->input("tipe", 0);
 
-            $query = Pengeluaran::query();
+            $query = Pengeluaran::with(['tipe_kas']);
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -219,6 +220,10 @@ class KeuanganController extends Controller
 
             if ($status) {
                 $query->where('status', $status);
+            }
+
+            if($tipe && $tipe != 0){
+                $query->where("id_kas", $tipe);
             }
 
             $dataPengeluaran = $query->paginate($perPage);
