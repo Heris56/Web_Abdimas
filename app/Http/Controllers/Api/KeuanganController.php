@@ -222,7 +222,7 @@ class KeuanganController extends Controller
                 $query->where('status', $status);
             }
 
-            if($tipe && $tipe != 0){
+            if ($tipe && $tipe != 0) {
                 $query->where("id_kas", $tipe);
             }
 
@@ -434,9 +434,6 @@ class KeuanganController extends Controller
         ], 201);
     }
 
-    /**
-     * Update existing TipePembayaran
-     */
     public function updateTipePembayaran(Request $request, $id)
     {
         $tipe = TipePembayaran::findOrFail($id);
@@ -458,9 +455,6 @@ class KeuanganController extends Controller
         ], 200);
     }
 
-    /**
-     * Delete TipePembayaran (Soft Delete)
-     */
     public function deleteTipePembayaran($id)
     {
         $tipe = TipePembayaran::findOrFail($id);
