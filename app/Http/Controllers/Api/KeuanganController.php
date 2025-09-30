@@ -27,123 +27,176 @@ class KeuanganController extends Controller
 
     public function getsiswa(Request $request)
     {
-        $perPage = $request->input('per_page', 10);
-        $search = $request->input("search");
-        $status = $request->input("status");
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $status = $request->input("status");
 
-        $query = Siswa::query();
+            $query = Siswa::query();
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_siswa', 'like', "%{$search}%")
-                    ->orWhere('nisn', 'like', "%{$search}%");
-            });
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                        ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $siswa = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Siswa",
+                "data" => $siswa->items(),
+                "meta" => [
+                    "current_page" => $siswa->currentPage(),
+                    "last_page" => $siswa->lastPage(),
+                    "per_page" => $siswa->perPage(),
+                    "total" => $siswa->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Siswa',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $siswa = $query->paginate($perPage);
-
-        return response()->json([
-            "message" => "Berhasil Fetch Siswa",
-            "data" => $siswa->items(),
-            "meta" => [
-                "current_page" => $siswa->currentPage(),
-                "last_page" => $siswa->lastPage(),
-                "per_page" => $siswa->perPage(),
-                "total" => $siswa->total(),
-            ]
-        ], 200);
     }
     public function getPembayaran(Request $request)
     {
-        $perPage = $request->input('per_page', 10);
-        $search = $request->input("search");
-        $query = Tagihan::with('siswa');
-        sleep(seconds: 0); // for debugging timeout
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $query = Tagihan::with('siswa');
+            sleep(seconds: 0); // for debugging timeout
 
-        $pembayaran = $query->paginate($perPage);
-        return response()->json([
-            "message" => "Berhasil Fetch data Pembayaran",
-            "data" => $pembayaran->items(),
-            "meta" => [
-                "current_page" => $pembayaran->currentPage(),
-                "last_page" => $pembayaran->lastPage(),
-                "per_page" => $pembayaran->perPage(),
-                "total" => $pembayaran->total(),
-            ]
-        ], 200);
+            $pembayaran = $query->paginate($perPage);
+            return response()->json([
+                "message" => "Berhasil Fetch data Pembayaran",
+                "data" => $pembayaran->items(),
+                "meta" => [
+                    "current_page" => $pembayaran->currentPage(),
+                    "last_page" => $pembayaran->lastPage(),
+                    "per_page" => $pembayaran->perPage(),
+                    "total" => $pembayaran->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
     }
     public function getTipePembayaran(Request $request)
     {
-        $perPage = $request->input('per_page', 10);
-        $search = $request->input("search");
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
 
-        $query = TipePembayaran::query();
+            $query = TipePembayaran::query();
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_tipe', "like", "%{$search}%");
-            });
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_tipe', "like", "%{$search}%");
+                });
+            }
+
+            $tipePembayaran = $query->paginate($perPage);
+            sleep(seconds: 0); // for debugging timeout
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Tipe Pembayaran",
+                "data" => $tipePembayaran->items(),
+                "meta" => [
+                    "current_page" => $tipePembayaran->currentPage(),
+                    "last_page" => $tipePembayaran->lastPage(),
+                    "per_page" => $tipePembayaran->perPage(),
+                    "total" => $tipePembayaran->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Tipe Pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
-        $tipePembayaran = $query->paginate($perPage);
-        sleep(seconds: 0); // for debugging timeout
-
-        return response()->json([
-            "message" => "Berhasil Fetch data Tipe Pembayaran",
-            "data" => $tipePembayaran->items(),
-            "meta" => [
-                "current_page" => $tipePembayaran->currentPage(),
-                "last_page" => $tipePembayaran->lastPage(),
-                "per_page" => $tipePembayaran->perPage(),
-                "total" => $tipePembayaran->total(),
-            ]
-        ], 200);
     }
 
     public function getProfile(Request $request)
     {
-        $user = $request->user();
-        return response()->json([
-            'message' => "Berhasil Fetch Profile",
-            'id' => $user->id,
-            'nama' => $user->nama,
-            'email' => $user->email,
-        ], 200);
+        try {
+            $user = $request->user();
+            return response()->json([
+                'message' => "Berhasil Fetch Profile",
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'email' => $user->email,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Pofile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
     }
 
     public function LoginKeuangan(Request $request)
     {
-        $staff = StaffKeuangan::where('email', $request->email)->first();
+        DB::beginTransaction();
+        try {
+            $staff = StaffKeuangan::where('email', $request->email)->first();
 
-        if (!$staff || !Hash::check($request->password, $staff->password)) {
-            return response()->json(['message' => 'email atau password salah']);
+            if (!$staff || !Hash::check($request->password, $staff->password)) {
+                return response()->json(['message' => 'email atau password salah']);
+            }
+
+            //generate token
+            $token = $staff->createToken('staff-token')->plainTextToken;
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Login berhasil',
+                'token' => $token,
+                'user' => [
+                    'id' => $staff->id,
+                    'nama' => $staff->nama,
+                    'email' => $staff->email,
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Login Keuangan',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
-        //generate token
-        $token = $staff->createToken('staff-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login berhasil',
-            'token' => $token,
-            'user' => [
-                'id' => $staff->id,
-                'nama' => $staff->nama,
-                'email' => $staff->email,
-            ]
-        ], 200);
     }
 
     public function LogoutKeuangan(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        DB::beginTransaction();
+        try {
+            $request->user()->currentAccessToken()->delete();
+            DB::commit();
 
-        return response()->json([
-            "message" => "Logout berhasil"
-        ], 200);
+            return response()->json([
+                "message" => "Logout berhasil"
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Logout',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function CreateACCKeuangan()
@@ -170,28 +223,45 @@ class KeuanganController extends Controller
 
     public function ChangePassword(Request $request)
     {
-        $request->validate([
-            "new_password" => "required|min:8|confirmed"
-        ]);
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                "new_password" => "required|min:8|confirmed"
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        $user->password = Hash::make($request->new_password);
-        $user->save();
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            DB::commit();
 
-        return response()->json([
-            "message" => "Password Berhasil Diganti"
-        ], 200);
-
+            return response()->json([
+                "message" => "Password Berhasil Diganti"
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Mengganti password',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function dataPembayaran(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
             $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
             return response()->json([
                 'message' => 'Berhasil Fetch Data Transaksi',
-                'data' => $dataPembayaran
+                'data' => $dataPembayaran,
+                "meta" => [
+                    "current_page" => $dataPembayaran->currentPage(),
+                    "last_page" => $dataPembayaran->lastPage(),
+                    "per_page" => $dataPembayaran->perPage(),
+                    "total" => $dataPembayaran->total(),
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
