@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TagihanRequest;
 use App\Models\ActivityLogs;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
@@ -242,6 +243,97 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Mengganti password',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function TagihanSiswa(Request $request)
+    {
+        try {
+            $request->validate([
+                'nisn' => 'required',
+                'tipe' => 'required',
+                'idTahunAjaran' => 'nullable|integer',
+            ]);
+
+            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
+            $query = Tagihan::with(['tipePembayaran'])->where("id_tipe_pembayaran", $request->tipe)
+                ->where("nisn", $request->nisn);
+            switch ($tipePeriode) {
+                case "sekali":
+                    break;
+                case "tahunan":
+                    $query->where("id_tahun_ajaran", $request->idTahunAjaran);
+                    break;
+                case "semester":
+                    $query->where("id_tahun_ajaran", $request->idTahunAjaran);
+                    break;
+                case "bulanan":
+                    break;
+                default:
+                    return response()->json([
+                        'message' => 'Tidak ditemukan tipe tagihan',
+                    ], 404);
+            }
+
+            $data = $query->get();
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "data" => $data,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Mendapatkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createTagihan(TagihanRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
+
+            $nisn = $data['nisn'];
+            $tipeTagihanID = $data['id_tipe_pembayaran'];
+            $idTahunAjaran = $data['id_tahun_ajaran'] ?? null;
+
+            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("tipe_periodik");
+            $tipetagihan = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("nama_tipe");
+
+            switch ($tipePeriode) {
+                case "sekali":
+                    Tagihan::create([
+                        "nisn" => $nisn,
+                        "status_pembayaran" => "Belum Lunas",
+                        'id_tipe_pembayaran' => $tipeTagihanID,
+                        'id_tahun_ajaran' => null,
+                        'tanggal_pembuatan_tagihan' => now(),
+                        'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                    ]);
+                    break;
+                case "tahunan":
+                    break;
+                case "semester":
+                    break;
+                case "bulanan":
+                    break;
+                default:
+                    return response()->json([
+                        'message' => 'Tidak ditemukan tipe tagihan',
+                    ], 404);
+            }
+
+            DB::commit();
+
+            return response()->json(["message" => "Berhasil menambahkan $tipetagihan"]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Tagihan',
                 'error' => $e->getMessage()
             ], 500);
         }

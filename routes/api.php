@@ -17,6 +17,8 @@ Route::get('/getlogs', [KeuanganController::class, 'dataLog'])->name('api.dataLo
 Route::post('/inserttipepembayaran', [KeuanganController::class, 'insertTipePembayaran'])->name('api.inserttipepembayaran');
 Route::put('/updatetipepembayaran/{id}', [KeuanganController::class, 'updateTipePembayaran'])->name('api.updatetipepembayaran');
 Route::delete('/deletetipepembayaran/{id}', [KeuanganController::class, 'deleteTipePembayaran'])->name('api.deletepengeluaran');
+Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
+Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
