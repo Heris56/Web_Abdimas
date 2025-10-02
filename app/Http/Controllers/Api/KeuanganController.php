@@ -489,14 +489,17 @@ class KeuanganController extends Controller
     {
         $request->validate([
             'nama_tipe' => 'required|string|max:255',
-            'is_bulanan' => 'nullable|boolean',
-            'is_sekali_bayar' => 'nullable|boolean',
-            'is_pertaun' => 'nullable|boolean',
-            'is_persemester' => 'nullable|boolean',
-            'keterangan' => 'nullable|string',
+            'nominal' => 'required|numeric',
+            'tipe_periodik' => 'required|string|in:bulanan,sekali,semester,tahunan',
+            'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $tipe = TipePembayaran::create($request->all());
+        $tipe = TipePembayaran::create([
+            'nama_tipe' => $request->nama_tipe,
+            'nominal' => $request->nominal,
+            'tipe_periodik' => $request->tipe_periodik,
+            'keterangan' => $request->keterangan,
+        ]);
 
         return response()->json([
             'message' => 'Tipe Pembayaran created successfully',
@@ -504,26 +507,31 @@ class KeuanganController extends Controller
         ], 201);
     }
 
+
     public function updateTipePembayaran(Request $request, $id)
     {
         $tipe = TipePembayaran::findOrFail($id);
 
         $request->validate([
-            'nama_tipe' => 'sometimes|required|string|max:255',
-            'is_bulanan' => 'nullable|boolean',
-            'is_sekali_bayar' => 'nullable|boolean',
-            'is_pertaun' => 'nullable|boolean',
-            'is_persemester' => 'nullable|boolean',
-            'keterangan' => 'nullable|string',
+            'nama_tipe' => 'required|string|max:255',
+            'nominal' => 'required|numeric',
+            'tipe_periodik' => 'required|string|in:bulanan,sekali,semester,tahunan',
+            'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $tipe->update($request->all());
+        $tipe->update([
+            'nama_tipe' => $request->nama_tipe,
+            'nominal' => $request->nominal,
+            'tipe_periodik' => $request->tipe_periodik,
+            'keterangan' => $request->keterangan,
+        ]);
 
         return response()->json([
             'message' => 'Tipe Pembayaran updated successfully',
             'data' => $tipe
         ], 200);
     }
+
 
     public function deleteTipePembayaran($id)
     {

@@ -12,10 +12,12 @@ class TipePembayaran extends Model
     protected $primaryKey = "id_tipe_pembayaran";
     protected $fillable = [
         'nama_tipe',
+        'tipe_periodik',
         'is_bulanan',
         'is_sekali_bayar',
         'is_pertaun',
         'is_persemester',
         'keterangan',
+        'nominal',
     ];
 }
