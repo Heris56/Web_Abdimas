@@ -23,7 +23,7 @@ class SiswaFactory extends Factory
             'nisn' => $this->faker->unique()->numerify('##########'), // 10 digit angka
             'nama_siswa' => $this->faker->name(),
             'password' => Hash::make('password123'), // default password
-            'status' => $this->faker->randomElement(['active', 'inactive']),
+            'status' => $this->faker->randomElement(['aktif', 'inactive']),
             'tahun_ajaran' => TahunAjaran::inRandomOrder()->value('id') ?? null,
             'id_kelas' => Kelas::inRandomOrder()->value('id_kelas') ?? null,
         ];

@@ -18,7 +18,7 @@ class SiswaSeeder extends Seeder
             'nisn' => '20250001',
             'nama_siswa' => 'Relana Mordred',
             'password' => bcrypt('rahasia123'),
-            'status' => 'active',
+            'status' => 'aktif',
             'tahun_ajaran' => 1, // pastikan ada id di tahun_ajaran
             'id_kelas' => 1, // pastikan ada id di kelas
         ]);

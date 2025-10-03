@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('nisn')->primary(); // primary key string
             $table->string('nama_siswa');
             $table->string('password');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['aktif', 'inactive'])->default('aktif');
             $table->unsignedBigInteger('tahun_ajaran')->nullable();
             $table->unsignedBigInteger('id_kelas')->nullable();
 
