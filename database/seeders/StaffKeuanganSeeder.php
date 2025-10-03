@@ -14,7 +14,7 @@ class StaffKeuanganSeeder extends Seeder
      */
     public function run(): void
     {
-        StaffKeuangan::create([
+        StaffKeuangan::insert([
             [
                 'nama' => 'Darryl Rambi',
                 'email' => 'darryl@example.com',

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             StaffKeuanganSeeder::class,
+            TahunAjaranSeeder::class,
         ]);
     }
 }
