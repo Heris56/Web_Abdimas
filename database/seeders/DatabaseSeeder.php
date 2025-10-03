@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             SeederTagihan::class,
             KasSeeder::class,
             KasTransaksiSeeder::class,
+            PengeluaranSeeder::class,
         ]);
     }
 }
