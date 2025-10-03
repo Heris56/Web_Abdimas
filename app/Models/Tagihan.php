@@ -35,4 +35,9 @@ class Tagihan extends Model
     {
         return $this->belongsTo(TipePembayaran::class, 'id_tipe_pembayaran', 'id_tipe_pembayaran');
     }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaran::class, 'id_tahun_ajaran', 'id_tahun_ajaran');
+    }
 }

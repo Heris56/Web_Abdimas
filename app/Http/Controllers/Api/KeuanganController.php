@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagihanRequest;
 use App\Models\ActivityLogs;
+use App\Models\TahunAjaran;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
 use App\Models\Pengeluaran;
@@ -257,19 +258,31 @@ class KeuanganController extends Controller
                 'idTahunAjaran' => 'nullable|integer',
             ]);
 
+            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
+            $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
+            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
+
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
-            $query = Tagihan::with(['tipePembayaran'])->where("id_tipe_pembayaran", $request->tipe)
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
                 ->where("nisn", $request->nisn);
             switch ($tipePeriode) {
                 case "sekali":
                     break;
                 case "tahunan":
-                    $query->where("id_tahun_ajaran", $request->idTahunAjaran);
+                    $query->where("id_tahun_ajaran", $idTahunAjaran)
+                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
+                            $q->where("tahun", $tahun_ajaran->tahun);
+                        });
                     break;
                 case "semester":
-                    $query->where("id_tahun_ajaran", $request->idTahunAjaran);
+                    $query->where("id_tahun_ajaran", $idTahunAjaran)
+                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
+                            $q->where("tahun", $tahun_ajaran->tahun)
+                                ->where("semester", $tahun_ajaran->semester);
+                        });
                     break;
                 case "bulanan":
+                    $query->where("id_tahun_ajaran", $idTahunAjaran);
                     break;
                 default:
                     return response()->json([
@@ -282,6 +295,7 @@ class KeuanganController extends Controller
             return response()->json([
                 "message" => "Berhasil Fetch data Tagihan Siswa",
                 "data" => $data,
+                "currentTahunAjaran" => $currentTahunAjaran
             ], 200);
         } catch (Exception $e) {
             return response()->json([
