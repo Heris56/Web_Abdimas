@@ -4,16 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\ActivityLogs;
+use App\Models\KasTransaksi;
 
-
-class ActivityLogsSeeder extends Seeder
+class KasTransaksiSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        ActivityLogs::factory()->count(10)->create();
+        KasTransaksi::factory()->count(10)->create();
     }
 }
