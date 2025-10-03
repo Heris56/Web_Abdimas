@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ActivityLogsSeeder::class,
             TipePembayaranSeeder::class,
             KasSeeder::class,
+            KasTransaksiSeeder::class,
         ]);
     }
 }
