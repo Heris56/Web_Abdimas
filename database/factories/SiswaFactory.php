@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Kelas;
 use App\Models\TahunAjaran;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;

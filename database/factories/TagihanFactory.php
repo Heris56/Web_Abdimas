@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Siswa;
 use App\Models\TahunAjaran;
 use App\Models\TipePembayaran;
 use Illuminate\Database\Eloquent\Factories\Factory;
