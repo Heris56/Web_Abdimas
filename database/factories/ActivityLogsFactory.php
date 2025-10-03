@@ -21,7 +21,7 @@ class ActivityLogsFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => StaffKeuangan::factory(),
+            'user_id' => StaffKeuangan::inRandomOrder()->value('id') ?? null,
             'action' => $this->faker->randomElement(['create', 'update', 'delete']),
             'table_name' => $this->faker->word(),
             'record_id' => $this->faker->numberBetween(1, 100),
