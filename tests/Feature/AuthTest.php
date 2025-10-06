@@ -15,7 +15,7 @@ class AuthTest extends TestCase
             $staff = StaffKeuangan::create([
                 ['email' => 'test_only@example.com'],
                 [
-                    'password' => bcrypt('new1234'),
+                    'password' => bcrypt('newtest1234'),
                     'nama' => 'Test Staff',
                     'status' => 'Aktif'
                 ]
@@ -94,7 +94,7 @@ class AuthTest extends TestCase
 
         $response = $this->withToken($token)->postJson('/api/passchangestaff', [
             'new_password' => 'newpassword123',
-            'new_password_confirmation' => 'differentpassword'
+            'new_password_confirmation' => 'newpassword12345'
         ]);
         $response->assertStatus(422);
     }
