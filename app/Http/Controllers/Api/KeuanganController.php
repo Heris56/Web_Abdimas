@@ -149,6 +149,25 @@ class KeuanganController extends Controller
 
     }
 
+    public function getTahunAjaran(Request $request)
+    {
+        try {
+            $tahunAjaran = TahunAjaran::get();
+            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
+            return response()->json([
+                'message' => "Berhasil Fetch Tahun Ajaran",
+                "data" => $tahunAjaran,
+                "currentTahunAjaran" => $currentTahunAjaran
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Pofile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
     public function LoginKeuangan(Request $request)
     {
         DB::beginTransaction();
@@ -330,6 +349,21 @@ class KeuanganController extends Controller
                     ]);
                     break;
                 case "tahunan":
+                    if ($idTahunAjaran) {
+                        Tagihan::create([
+                            "nisn" => $nisn,
+                            "status_pembayaran" => "Belum Lunas",
+                            'id_tipe_pembayaran' => $tipeTagihanID,
+                            'id_tahun_ajaran' => $idTahunAjaran,
+                            'tanggal_pembuatan_tagihan' => now(),
+                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
+
                     break;
                 case "semester":
                     break;

@@ -18,6 +18,7 @@ Route::post('/inserttipepembayaran', [KeuanganController::class, 'insertTipePemb
 Route::put('/updatetipepembayaran/{id}', [KeuanganController::class, 'updateTipePembayaran'])->name('api.updatetipepembayaran');
 Route::delete('/deletetipepembayaran/{id}', [KeuanganController::class, 'deleteTipePembayaran'])->name('api.deletepengeluaran');
 Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
+Route::get('/getTahunAjaran', [KeuanganController::class, "getTahunAjaran"]);
 Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
 Route::middleware(['auth:sanctum'])->group(function () {
