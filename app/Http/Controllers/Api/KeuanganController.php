@@ -98,7 +98,7 @@ class KeuanganController extends Controller
     public function getTipePembayaran(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page',);
             $search = $request->input("search");
 
             $query = TipePembayaran::query();
@@ -109,19 +109,29 @@ class KeuanganController extends Controller
                 });
             }
 
-            $tipePembayaran = $query->paginate($perPage);
-            sleep(seconds: 0); // for debugging timeout
+            if ($perPage && is_numeric($perPage) && $perPage > 0) {
+                // Kalau ada per_page -> pakai paginate
+                $tipePembayaran = $query->paginate($perPage);
 
-            return response()->json([
-                "message" => "Berhasil Fetch data Tipe Pembayaran",
-                "data" => $tipePembayaran->items(),
-                "meta" => [
-                    "current_page" => $tipePembayaran->currentPage(),
-                    "last_page" => $tipePembayaran->lastPage(),
-                    "per_page" => $tipePembayaran->perPage(),
-                    "total" => $tipePembayaran->total(),
-                ]
-            ], 200);
+                return response()->json([
+                    "message" => "Berhasil Fetch data Tipe Pembayaran (paginate)",
+                    "data" => $tipePembayaran->items(),
+                    "meta" => [
+                        "current_page" => $tipePembayaran->currentPage(),
+                        "last_page" => $tipePembayaran->lastPage(),
+                        "per_page" => $tipePembayaran->perPage(),
+                        "total" => $tipePembayaran->total(),
+                    ]
+                ], 200);
+            } else {
+                // Kalau gak ada per_page -> ambil semua data
+                $tipePembayaran = $query->get();
+
+                return response()->json([
+                    "message" => "Berhasil Fetch semua data Tipe Pembayaran",
+                    "data" => $tipePembayaran
+                ], 200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal Get Tipe Pembayaran',
@@ -295,11 +305,11 @@ class KeuanganController extends Controller
                     break;
                 case "semester":
                     $query->where("id_tahun_ajaran", $idTahunAjaran);
-                        
+
                     break;
                 case "bulanan":
                     $query->where("id_tahun_ajaran", $idTahunAjaran);
-                        
+
                     break;
                 default:
                     return response()->json([
