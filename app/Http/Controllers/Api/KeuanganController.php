@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagihanRequest;
 use App\Models\ActivityLogs;
+use App\Models\Kas;
 use App\Models\TahunAjaran;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
@@ -288,25 +289,17 @@ class KeuanganController extends Controller
                 case "sekali":
                     break;
                 case "tahunan":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                            $q->where("tahun", $tahun_ajaran->tahun);
-                        });
+                    $query->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
+                        $q->where("tahun", $tahun_ajaran->tahun);
+                    });
                     break;
                 case "semester":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                            $q->where("tahun", $tahun_ajaran->tahun)
-                                ->where("semester", $tahun_ajaran->semester);
-                        });
+                    $query->where("id_tahun_ajaran", $idTahunAjaran);
+                        
                     break;
                 case "bulanan":
                     $query->where("id_tahun_ajaran", $idTahunAjaran);
-                    $query->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                            $q->where("tahun", $tahun_ajaran->tahun)
-                                ->where("semester", $tahun_ajaran->semester);
-                        });
+                        
                     break;
                 default:
                     return response()->json([
@@ -365,7 +358,7 @@ class KeuanganController extends Controller
                             "nisn" => $nisn,
                             "status_pembayaran" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
-                            'id_tahun_ajaran' => 1,
+                            'id_tahun_ajaran' => $idTahunAjaran,
                             'periode' => $tahunAjaran["tahun"],
                             'tanggal_pembuatan_tagihan' => now(),
                             'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
@@ -383,7 +376,7 @@ class KeuanganController extends Controller
                             "nisn" => $nisn,
                             "status_pembayaran" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
-                            'id_tahun_ajaran' => 1,
+                            'id_tahun_ajaran' => $idTahunAjaran,
                             'periode' => $tahunAjaran["tahun"] . '-' . $tahunAjaran["semester"],
                             'tanggal_pembuatan_tagihan' => now(),
                             'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
@@ -404,7 +397,7 @@ class KeuanganController extends Controller
                                 "nisn" => $nisn,
                                 "status_pembayaran" => "Belum Lunas",
                                 'id_tipe_pembayaran' => $tipeTagihanID,
-                                'id_tahun_ajaran' => 1,
+                                'id_tahun_ajaran' => $idTahunAjaran,
                                 'periode' => $bulan,
                                 'tanggal_pembuatan_tagihan' => now(),
                                 'nominal_tagihan' => $nominal,
@@ -430,6 +423,53 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Menambahkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getKas()
+    {
+        try {
+            $kas = Kas::get();
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "data" => $kas,
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createKasDefault(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listTipeKas = TipePembayaran::get();
+            foreach ($listTipeKas as $tipekas) {
+                $kas = Kas::where("id_tipe_pembayaran", $tipekas->id_tipe_pembayaran)->first();
+                if (!$kas) {
+                    Kas::create(
+                        [
+                            "id_tipe_pembayaran" => $tipekas->id_tipe_pembayaran,
+                            "nama_kas" => $tipekas->nama_tipe,
+                            "saldo" => 0,
+                        ]
+                    );
+                }
+            }
+            DB::commit();
+
+            return response()->json(["message" => "Berhasil menambahkan semua Kas"], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Kas',
                 'error' => $e->getMessage()
             ], 500);
         }

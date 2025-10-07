@@ -21,6 +21,9 @@ Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
 Route::get('/getTahunAjaran', [KeuanganController::class, "getTahunAjaran"]);
 Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
+Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]);
+Route::get("/getKas", [KeuanganController::class, "getKas"]);
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/testapi', function (Request $request) {
         return response()->json([
