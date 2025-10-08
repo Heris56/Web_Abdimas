@@ -21,6 +21,8 @@ Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
 Route::get('/getTahunAjaran', [KeuanganController::class, "getTahunAjaran"]);
 Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
+Route::post('/createPembayaran', [KeuanganController::class, "createPembayaran"]);
+
 Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]);
 Route::get("/getKas", [KeuanganController::class, "getKas"]);
 

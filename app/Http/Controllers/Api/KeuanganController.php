@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TagihanRequest;
 use App\Models\ActivityLogs;
 use App\Models\Kas;
+use App\Models\KasTransaksi;
 use App\Models\TahunAjaran;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
@@ -444,7 +445,7 @@ class KeuanganController extends Controller
             $kas = Kas::get();
 
             return response()->json([
-                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "message" => "Berhasil Fetch data Kas",
                 "data" => $kas,
             ], 200);
         } catch (Exception $e) {
@@ -480,6 +481,171 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Menambahkan Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createPembayaran(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                "jumlah_pembayaran" => "required|numeric|min:0",
+                "id_tagihan" => "required|integer",
+            ]);
+
+            $listPembayaran = Pembayaran::where("id_tagihan", $request->id_tagihan)->get();
+            $tagihan = Tagihan::findOrFail($request->id_tagihan);
+            $totalTagihan = $tagihan->nominal_tagihan;
+
+            $idKas = Kas::where("id_tipe_pembayaran", $tagihan->id_tipe_pembayaran)->value("id_kas");
+            if (!$idKas) {
+                return response()->json([
+                    "message" => "Kas untuk tipe pembayaran ini tidak ditemukan",
+                ], 404);
+            }
+
+            $kas = Kas::findOrFail($idKas);
+
+            // define listnya kosong atau nggak
+            if ($listPembayaran->isNotEmpty()) { // gak kosong
+                $totalPembayaran = 0;
+
+                // cari semua pembayaran terus akumulasiin total pembayaran (semua pembayaran dengan tagihan terkait)
+                foreach ($listPembayaran as $pembayaran) {
+                    $totalPembayaran = $totalPembayaran + $pembayaran->jumlah_pembayaran;
+                }
+                $totalPembayaran += $request->jumlah_pembayaran; // jumlah akhir pembayaran
+
+                // tentukan jika total pembayaran melebihi total tagihan atau tidak
+                if ($totalPembayaran <= $totalTagihan) {
+
+                    // create pembayaran
+                    $pembayaran = Pembayaran::create([
+                        "jumlah_pembayaran" => $request->jumlah_pembayaran,
+                        "id_tagihan" => $request->id_tagihan,
+                    ]);
+
+                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+
+                    // create Transaksi Kas
+                    KasTransaksi::create([
+                        "id_kas" => $idKas,
+                        "sumber" => "pembayaran",
+                        "id_sumber" => $pembayaran->id_tagihan_pembayaran,
+                        "tanggal" => now(),
+                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "debit" => $request->jumlah_pembayaran,
+                        "kredit" => 0,
+                        "saldo_akhir" => $saldoAkhir,
+                    ]);
+
+                    $kas->update([
+                        "saldo" => $saldoAkhir
+                    ]);
+
+                } else {
+
+                    // return, karna jumlah pembayaran melebihi tagihan
+                    return response()->json([
+                        "message" => "gagal menambahkan Pembayaran karena jumlah pembayaran melebihi batas tagihan yang harus dibayar",
+                    ], 400);
+
+                }
+
+                if ($totalPembayaran >= $totalTagihan) {
+                    // update tagihan jadi lunas kalo total pembayaran udah sama dengan tagihan
+                    $tagihan->update([
+                        "status_tagihan" => "Lunas"
+                    ]);
+                }
+            } else { // kosong
+                $totalPembayaran = $request->jumlah_pembayaran;
+
+                // tentukan jika total pembayaran melebihi total tagihan atau tidak
+                if ($totalPembayaran <= $totalTagihan) {
+                    $pembayaran = Pembayaran::create([
+                        "jumlah_pembayaran" => $request->jumlah_pembayaran,
+                        "id_tagihan" => $request->id_tagihan,
+                    ]);
+
+                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+
+                    // create Transaksi Kas
+                    KasTransaksi::create([
+                        "id_kas" => $idKas,
+                        "sumber" => "pembayaran",
+                        "id_sumber" => $pembayaran->id_tagihan_pembayaran,
+                        "tanggal" => now(),
+                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "debit" => $request->jumlah_pembayaran,
+                        "kredit" => 0,
+                        "saldo_akhir" => $saldoAkhir,
+                    ]);
+
+                    $kas->update([
+                        "saldo" => $saldoAkhir
+                    ]);
+
+                } else {
+                    return response()->json([
+                        "message" => "gagal menambahkan Pembayaran karena jumlah pembayaran melebihi batas tagihan yang harus dibayar",
+                    ], 400);
+                }
+
+                if ($totalPembayaran >= $totalTagihan) {
+                    // update tagihan jadi lunas kalo total pembayaran udah sama dengan tagihan
+                    $tagihan->update([
+                        "status_tagihan" => "Lunas"
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "Berhasil menambahkan Pembayaran",
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getTransaksiKas(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+
+            $query = KasTransaksi::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('keterangan', 'like', "%{$search}%");
+                });
+            }
+
+            $kasTransaksi = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "data" => $kasTransaksi->items(),
+                "meta" => [
+                    "current_page" => $kasTransaksi->currentPage(),
+                    "last_page" => $kasTransaksi->lastPage(),
+                    "per_page" => $kasTransaksi->perPage(),
+                    "total" => $kasTransaksi->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Transaksi',
                 'error' => $e->getMessage()
             ], 500);
         }
