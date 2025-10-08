@@ -10,9 +10,9 @@ class Tagihan extends Model
 {
     use SoftDeletes, HasFactory;
     protected $table = 'cashflow_tagihan';
-    protected $primaryKey = "id_pembayaran";
+    protected $primaryKey = "id_tagihan";
     protected $fillable = [
-        'status_pembayaran',
+        'status_tagihan',
         'tanggal_pembuatan_tagihan',
         'nisn',
         'periode',
