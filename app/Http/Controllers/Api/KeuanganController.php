@@ -98,7 +98,7 @@ class KeuanganController extends Controller
     public function getTipePembayaran(Request $request)
     {
         try {
-            $perPage = $request->input('per_page',);
+            $perPage = $request->input('per_page', );
             $search = $request->input("search");
 
             $query = TipePembayaran::query();
@@ -732,17 +732,32 @@ class KeuanganController extends Controller
             'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $tipe = TipePembayaran::create([
-            'nama_tipe' => $request->nama_tipe,
-            'nominal' => $request->nominal,
-            'tipe_periodik' => $request->tipe_periodik,
-            'keterangan' => $request->keterangan,
-        ]);
+        DB::beginTransaction();
+        try {
+            $tipe = TipePembayaran::create([
+                'nama_tipe' => $request->nama_tipe,
+                'nominal' => $request->nominal,
+                'tipe_periodik' => $request->tipe_periodik,
+                'keterangan' => $request->keterangan,
+            ]);
 
-        return response()->json([
-            'message' => 'Tipe Pembayaran created successfully',
-            'data' => $tipe
-        ], 201);
+            // ✅ Automatically create Kas entry
+            Kas::create([
+                'id_tipe_pembayaran' => $tipe->id_tipe_pembayaran,
+                'nama_kas' => $tipe->nama_tipe,
+                'saldo' => 0,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Tipe Pembayaran & Kas created successfully',
+                'data' => $tipe
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 
