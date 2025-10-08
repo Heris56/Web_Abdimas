@@ -355,7 +355,7 @@ class KeuanganController extends Controller
                 case "sekali":
                     Tagihan::create([
                         "nisn" => $nisn,
-                        "status_pembayaran" => "Belum Lunas",
+                        "status_tagihan" => "Belum Lunas",
                         'id_tipe_pembayaran' => $tipeTagihanID,
                         'id_tahun_ajaran' => null,
                         'tanggal_pembuatan_tagihan' => now(),
@@ -366,7 +366,7 @@ class KeuanganController extends Controller
                     if ($idTahunAjaran && $idTahunAjaran != 0) {
                         Tagihan::create([
                             "nisn" => $nisn,
-                            "status_pembayaran" => "Belum Lunas",
+                            "status_tagihan" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
                             'id_tahun_ajaran' => $idTahunAjaran,
                             'periode' => $tahunAjaran["tahun"],
@@ -384,7 +384,7 @@ class KeuanganController extends Controller
                     if ($idTahunAjaran && $idTahunAjaran != 0) {
                         Tagihan::create([
                             "nisn" => $nisn,
-                            "status_pembayaran" => "Belum Lunas",
+                            "status_tagihan" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
                             'id_tahun_ajaran' => $idTahunAjaran,
                             'periode' => $tahunAjaran["tahun"] . '-' . $tahunAjaran["semester"],
@@ -405,7 +405,7 @@ class KeuanganController extends Controller
                         foreach ($listBulan as $bulan) {
                             Tagihan::create([
                                 "nisn" => $nisn,
-                                "status_pembayaran" => "Belum Lunas",
+                                "status_tagihan" => "Belum Lunas",
                                 'id_tipe_pembayaran' => $tipeTagihanID,
                                 'id_tahun_ajaran' => $idTahunAjaran,
                                 'periode' => $bulan,
@@ -630,11 +630,11 @@ class KeuanganController extends Controller
     {
         $request->validate([
             'id_tipe_pembayaran' => 'required|exists:cashflow_tipe_pembayaran,id_tipe_pembayaran',
-            'status_pembayaran' => 'nullable|string|in:belum_lunas,lunas,menunggu',
+            'status_tagihan' => 'nullable|string|in:belum_lunas,lunas,menunggu',
             'tanggal_pembuatan_tagihan' => 'nullable|date',
         ]);
 
-        $status = $request->status_pembayaran ?? 'belum_lunas';
+        $status = $request->status_tagihan ?? 'belum_lunas';
         $tanggalMulai = $request->tanggal_pembuatan_tagihan
             ? \Carbon\Carbon::parse($request->tanggal_pembuatan_tagihan)
             : now();
