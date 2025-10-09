@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagihanRequest;
 use App\Models\ActivityLogs;
+use App\Models\Kas;
+use App\Models\KasTransaksi;
 use App\Models\TahunAjaran;
 use App\Traits\LogActivity;
 use App\Models\Pembayaran;
@@ -97,7 +99,7 @@ class KeuanganController extends Controller
     public function getTipePembayaran(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', );
             $search = $request->input("search");
 
             $query = TipePembayaran::query();
@@ -108,19 +110,29 @@ class KeuanganController extends Controller
                 });
             }
 
-            $tipePembayaran = $query->paginate($perPage);
-            sleep(seconds: 0); // for debugging timeout
+            if ($perPage && is_numeric($perPage) && $perPage > 0) {
+                // Kalau ada per_page -> pakai paginate
+                $tipePembayaran = $query->paginate($perPage);
 
-            return response()->json([
-                "message" => "Berhasil Fetch data Tipe Pembayaran",
-                "data" => $tipePembayaran->items(),
-                "meta" => [
-                    "current_page" => $tipePembayaran->currentPage(),
-                    "last_page" => $tipePembayaran->lastPage(),
-                    "per_page" => $tipePembayaran->perPage(),
-                    "total" => $tipePembayaran->total(),
-                ]
-            ], 200);
+                return response()->json([
+                    "message" => "Berhasil Fetch data Tipe Pembayaran (paginate)",
+                    "data" => $tipePembayaran->items(),
+                    "meta" => [
+                        "current_page" => $tipePembayaran->currentPage(),
+                        "last_page" => $tipePembayaran->lastPage(),
+                        "per_page" => $tipePembayaran->perPage(),
+                        "total" => $tipePembayaran->total(),
+                    ]
+                ], 200);
+            } else {
+                // Kalau gak ada per_page -> ambil semua data
+                $tipePembayaran = $query->get();
+
+                return response()->json([
+                    "message" => "Berhasil Fetch semua data Tipe Pembayaran",
+                    "data" => $tipePembayaran
+                ], 200);
+            }
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal Get Tipe Pembayaran',
@@ -288,20 +300,17 @@ class KeuanganController extends Controller
                 case "sekali":
                     break;
                 case "tahunan":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                            $q->where("tahun", $tahun_ajaran->tahun);
-                        });
+                    $query->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
+                        $q->where("tahun", $tahun_ajaran->tahun);
+                    });
                     break;
                 case "semester":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                            $q->where("tahun", $tahun_ajaran->tahun)
-                                ->where("semester", $tahun_ajaran->semester);
-                        });
+                    $query->where("id_tahun_ajaran", $idTahunAjaran);
+
                     break;
                 case "bulanan":
                     $query->where("id_tahun_ajaran", $idTahunAjaran);
+
                     break;
                 default:
                     return response()->json([
@@ -329,10 +338,16 @@ class KeuanganController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
+            $bulanSemester = [
+                "Ganjil" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
+                "Genap" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+            ];
+
 
             $nisn = $data['nisn'];
             $tipeTagihanID = $data['id_tipe_pembayaran'];
             $idTahunAjaran = $data['id_tahun_ajaran'] ?? null;
+            $tahunAjaran = TahunAjaran::find(1);
 
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("tipe_periodik");
             $tipetagihan = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("nama_tipe");
@@ -341,7 +356,7 @@ class KeuanganController extends Controller
                 case "sekali":
                     Tagihan::create([
                         "nisn" => $nisn,
-                        "status_pembayaran" => "Belum Lunas",
+                        "status_tagihan" => "Belum Lunas",
                         'id_tipe_pembayaran' => $tipeTagihanID,
                         'id_tahun_ajaran' => null,
                         'tanggal_pembuatan_tagihan' => now(),
@@ -349,12 +364,13 @@ class KeuanganController extends Controller
                     ]);
                     break;
                 case "tahunan":
-                    if ($idTahunAjaran) {
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
                         Tagihan::create([
                             "nisn" => $nisn,
-                            "status_pembayaran" => "Belum Lunas",
+                            "status_tagihan" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
                             'id_tahun_ajaran' => $idTahunAjaran,
+                            'periode' => $tahunAjaran["tahun"],
                             'tanggal_pembuatan_tagihan' => now(),
                             'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
                         ]);
@@ -366,8 +382,44 @@ class KeuanganController extends Controller
 
                     break;
                 case "semester":
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
+                        Tagihan::create([
+                            "nisn" => $nisn,
+                            "status_tagihan" => "Belum Lunas",
+                            'id_tipe_pembayaran' => $tipeTagihanID,
+                            'id_tahun_ajaran' => $idTahunAjaran,
+                            'periode' => $tahunAjaran["tahun"] . '-' . $tahunAjaran["semester"],
+                            'tanggal_pembuatan_tagihan' => now(),
+                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
+
                     break;
                 case "bulanan":
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
+                        $listBulan = $bulanSemester[$tahunAjaran["semester"]] ?? [];
+                        $nominal = TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal');
+                        foreach ($listBulan as $bulan) {
+                            Tagihan::create([
+                                "nisn" => $nisn,
+                                "status_tagihan" => "Belum Lunas",
+                                'id_tipe_pembayaran' => $tipeTagihanID,
+                                'id_tahun_ajaran' => $idTahunAjaran,
+                                'periode' => $bulan,
+                                'tanggal_pembuatan_tagihan' => now(),
+                                'nominal_tagihan' => $nominal,
+                            ]);
+                        }
+
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
                     break;
                 default:
                     return response()->json([
@@ -377,11 +429,223 @@ class KeuanganController extends Controller
 
             DB::commit();
 
-            return response()->json(["message" => "Berhasil menambahkan $tipetagihan"]);
+            return response()->json(["message" => "Berhasil menambahkan $tipetagihan"], 201);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Menambahkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getKas()
+    {
+        try {
+            $kas = Kas::get();
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Kas",
+                "data" => $kas,
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createKasDefault(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $listTipeKas = TipePembayaran::get();
+            foreach ($listTipeKas as $tipekas) {
+                $kas = Kas::where("id_tipe_pembayaran", $tipekas->id_tipe_pembayaran)->first();
+                if (!$kas) {
+                    Kas::create(
+                        [
+                            "id_tipe_pembayaran" => $tipekas->id_tipe_pembayaran,
+                            "nama_kas" => $tipekas->nama_tipe,
+                            "saldo" => 0,
+                        ]
+                    );
+                }
+            }
+            DB::commit();
+
+            return response()->json(["message" => "Berhasil menambahkan semua Kas"], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createPembayaran(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                "jumlah_pembayaran" => "required|numeric|min:0",
+                "id_tagihan" => "required|integer",
+            ]);
+
+            $listPembayaran = Pembayaran::where("id_tagihan", $request->id_tagihan)->get();
+            $tagihan = Tagihan::findOrFail($request->id_tagihan);
+            $totalTagihan = $tagihan->nominal_tagihan;
+
+            $idKas = Kas::where("id_tipe_pembayaran", $tagihan->id_tipe_pembayaran)->value("id_kas");
+            if (!$idKas) {
+                return response()->json([
+                    "message" => "Kas untuk tipe pembayaran ini tidak ditemukan",
+                ], 404);
+            }
+
+            $kas = Kas::findOrFail($idKas);
+
+            // define listnya kosong atau nggak
+            if ($listPembayaran->isNotEmpty()) { // gak kosong
+                $totalPembayaran = 0;
+
+                // cari semua pembayaran terus akumulasiin total pembayaran (semua pembayaran dengan tagihan terkait)
+                foreach ($listPembayaran as $pembayaran) {
+                    $totalPembayaran = $totalPembayaran + $pembayaran->jumlah_pembayaran;
+                }
+                $totalPembayaran += $request->jumlah_pembayaran; // jumlah akhir pembayaran
+
+                // tentukan jika total pembayaran melebihi total tagihan atau tidak
+                if ($totalPembayaran <= $totalTagihan) {
+
+                    // create pembayaran
+                    $pembayaran = Pembayaran::create([
+                        "jumlah_pembayaran" => $request->jumlah_pembayaran,
+                        "id_tagihan" => $request->id_tagihan,
+                    ]);
+
+                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+
+                    // create Transaksi Kas
+                    KasTransaksi::create([
+                        "id_kas" => $idKas,
+                        "sumber" => "pembayaran",
+                        "id_sumber" => $pembayaran->id_tagihan_pembayaran,
+                        "tanggal" => now(),
+                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "debit" => $request->jumlah_pembayaran,
+                        "kredit" => 0,
+                        "saldo_akhir" => $saldoAkhir,
+                    ]);
+
+                    $kas->update([
+                        "saldo" => $saldoAkhir
+                    ]);
+
+                } else {
+
+                    // return, karna jumlah pembayaran melebihi tagihan
+                    return response()->json([
+                        "message" => "gagal menambahkan Pembayaran karena jumlah pembayaran melebihi batas tagihan yang harus dibayar",
+                    ], 400);
+
+                }
+
+                if ($totalPembayaran >= $totalTagihan) {
+                    // update tagihan jadi lunas kalo total pembayaran udah sama dengan tagihan
+                    $tagihan->update([
+                        "status_tagihan" => "Lunas"
+                    ]);
+                }
+            } else { // kosong
+                $totalPembayaran = $request->jumlah_pembayaran;
+
+                // tentukan jika total pembayaran melebihi total tagihan atau tidak
+                if ($totalPembayaran <= $totalTagihan) {
+                    $pembayaran = Pembayaran::create([
+                        "jumlah_pembayaran" => $request->jumlah_pembayaran,
+                        "id_tagihan" => $request->id_tagihan,
+                    ]);
+
+                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+
+                    // create Transaksi Kas
+                    KasTransaksi::create([
+                        "id_kas" => $idKas,
+                        "sumber" => "pembayaran",
+                        "id_sumber" => $pembayaran->id_tagihan_pembayaran,
+                        "tanggal" => now(),
+                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "debit" => $request->jumlah_pembayaran,
+                        "kredit" => 0,
+                        "saldo_akhir" => $saldoAkhir,
+                    ]);
+
+                    $kas->update([
+                        "saldo" => $saldoAkhir
+                    ]);
+
+                } else {
+                    return response()->json([
+                        "message" => "gagal menambahkan Pembayaran karena jumlah pembayaran melebihi batas tagihan yang harus dibayar",
+                    ], 400);
+                }
+
+                if ($totalPembayaran >= $totalTagihan) {
+                    // update tagihan jadi lunas kalo total pembayaran udah sama dengan tagihan
+                    $tagihan->update([
+                        "status_tagihan" => "Lunas"
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "Berhasil menambahkan Pembayaran",
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getTransaksiKas(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+
+            $query = KasTransaksi::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('keterangan', 'like', "%{$search}%");
+                });
+            }
+
+            $kasTransaksi = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "data" => $kasTransaksi->items(),
+                "meta" => [
+                    "current_page" => $kasTransaksi->currentPage(),
+                    "last_page" => $kasTransaksi->lastPage(),
+                    "per_page" => $kasTransaksi->perPage(),
+                    "total" => $kasTransaksi->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Transaksi',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -532,11 +796,11 @@ class KeuanganController extends Controller
     {
         $request->validate([
             'id_tipe_pembayaran' => 'required|exists:cashflow_tipe_pembayaran,id_tipe_pembayaran',
-            'status_pembayaran' => 'nullable|string|in:belum_lunas,lunas,menunggu',
+            'status_tagihan' => 'nullable|string|in:belum_lunas,lunas,menunggu',
             'tanggal_pembuatan_tagihan' => 'nullable|date',
         ]);
 
-        $status = $request->status_pembayaran ?? 'belum_lunas';
+        $status = $request->status_tagihan ?? 'belum_lunas';
         $tanggalMulai = $request->tanggal_pembuatan_tagihan
             ? \Carbon\Carbon::parse($request->tanggal_pembuatan_tagihan)
             : now();
@@ -634,17 +898,32 @@ class KeuanganController extends Controller
             'keterangan' => 'nullable|string|max:255',
         ]);
 
-        $tipe = TipePembayaran::create([
-            'nama_tipe' => $request->nama_tipe,
-            'nominal' => $request->nominal,
-            'tipe_periodik' => $request->tipe_periodik,
-            'keterangan' => $request->keterangan,
-        ]);
+        DB::beginTransaction();
+        try {
+            $tipe = TipePembayaran::create([
+                'nama_tipe' => $request->nama_tipe,
+                'nominal' => $request->nominal,
+                'tipe_periodik' => $request->tipe_periodik,
+                'keterangan' => $request->keterangan,
+            ]);
 
-        return response()->json([
-            'message' => 'Tipe Pembayaran created successfully',
-            'data' => $tipe
-        ], 201);
+            // ✅ Automatically create Kas entry
+            Kas::create([
+                'id_tipe_pembayaran' => $tipe->id_tipe_pembayaran,
+                'nama_kas' => $tipe->nama_tipe,
+                'saldo' => 0,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Tipe Pembayaran & Kas created successfully',
+                'data' => $tipe
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 

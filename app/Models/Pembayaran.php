@@ -12,14 +12,14 @@ class Pembayaran extends Model
     protected $primaryKey = "id_tagihan_pembayaran";
     protected $fillable = [
         'jumlah_pembayaran',
-        'id_pembayaran',
+        'id_tagihan',
     ];
     protected $hidden = [
         'deleted_at'
     ];
     public function Tagihan()
     {
-        return $this->belongsTo(Tagihan::class, 'id_pembayaran', 'id_pembayaran');
+        return $this->belongsTo(Tagihan::class, 'id_tagihan', 'id_tagihan');
     }
 
 
