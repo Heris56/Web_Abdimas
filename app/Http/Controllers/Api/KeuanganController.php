@@ -727,7 +727,7 @@ class KeuanganController extends Controller
     public function insertPengeluaran(Request $request)
     {
         $request->validate([
-            'nominal' => 'required|numeric',
+            'nominal' => 'required|numeric|min:0|max:10000000',
             'tanggal' => 'required|date',
             'keterangan' => 'required|string|max:255',
         ]);
