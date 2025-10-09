@@ -768,7 +768,7 @@ class KeuanganController extends Controller
             //     $pengeluaran->getAttributes(),
             //     "tambah data pengeluaran baru"
             // );
-            // DB::commit();
+            DB::commit();
 
             return response()->json([
                 'message' => 'Pengeluaran berhasil ditambahkan',
