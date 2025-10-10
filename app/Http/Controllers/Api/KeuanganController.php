@@ -74,7 +74,7 @@ class KeuanganController extends Controller
         try {
             $perPage = $request->input('per_page', 10);
             $search = $request->input("search");
-            $query = Tagihan::with('siswa');
+            $query = Pembayaran::with('tagihan.siswa');
             sleep(seconds: 0); // for debugging timeout
 
             $pembayaran = $query->paginate($perPage);
@@ -727,31 +727,57 @@ class KeuanganController extends Controller
     public function insertPengeluaran(Request $request)
     {
         $request->validate([
-            'nominal' => 'required|numeric',
-            'tanggal' => 'required|date',
+            'nominal' => 'required|numeric|min:0|max:10000000',
             'keterangan' => 'required|string|max:255',
+            'id_kas' => 'required|integer',
         ]);
+        DB::beginTransaction();
         try {
             $pengeluaran = Pengeluaran::create([
                 'nominal' => $request->nominal,
                 'keterangan' => $request->keterangan,
-                'tanggal' => $request->tanggal,
+                'tanggal' => now(),
+                'id_kas' => $request->id_kas
             ]);
 
-            $this->logActivity(
-                "create",
-                "cashflow_pengeluaran",
-                $pengeluaran->id_pengeluaran,
-                null,
-                $pengeluaran->getAttributes(),
-                "tambah data pengeluaran baru"
-            );
+            $kas = Kas::find($request->id_kas);
+            $saldoAkhir = $kas->saldo - $request->nominal;
+            // dd(KasTransaksi::latest()->get());
+
+            // create Transaksi Kas
+            $kasTransaksi =  KasTransaksi::create([
+                "id_kas" => $request->id_kas,
+                "sumber" => "pengeluaran",
+                "id_sumber" => $pengeluaran->id_pengeluaran,
+                "tanggal" => now(),
+                "keterangan" => "Pengeluaran ke #{$pengeluaran->id_pengeluaran}",
+                "debit" => 0,
+                "kredit" => $request->nominal,
+                "saldo_akhir" => $saldoAkhir,
+            ]);
+
+            $kas->update([
+                'saldo' => $saldoAkhir
+            ]);
+
+            // $this->logActivity(
+            //     "create",
+            //     "cashflow_pengeluaran",
+            //     $pengeluaran->id_pengeluaran,
+            //     null,
+            //     $pengeluaran->getAttributes(),
+            //     "tambah data pengeluaran baru"
+            // );
+            DB::commit();
 
             return response()->json([
                 'message' => 'Pengeluaran berhasil ditambahkan',
-                'data' => $pengeluaran
+                'data' => $pengeluaran,
+                'transaksi' => $kasTransaksi,
+                'kas' => $kas
             ], 201);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Gagal menambahkan pengeluaran',
                 'error' => $e->getMessage()
