@@ -35,8 +35,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/updatetipepembayaran/{id}', [KeuanganController::class, 'updateTipePembayaran'])->name('api.updatetipepembayaran');
     Route::delete('/deletetipepembayaran/{id}', [KeuanganController::class, 'deleteTipePembayaran'])->name('api.deletepengeluaran');
 
+    // kas
     Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]);
     Route::get("/getKas", [KeuanganController::class, "getKas"]);
+    Route::get("/TransaksiKas", [KeuanganController::class, "getTransaksiKas"]);
 
     // Logs
     Route::get('/getlogs', [KeuanganController::class, 'dataLog'])->name('api.dataLog');
