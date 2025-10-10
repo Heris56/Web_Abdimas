@@ -347,7 +347,7 @@ class KeuanganController extends Controller
             $nisn = $data['nisn'];
             $tipeTagihanID = $data['id_tipe_pembayaran'];
             $idTahunAjaran = $data['id_tahun_ajaran'] ?? null;
-            $tahunAjaran = TahunAjaran::find(1);
+            $tahunAjaran = TahunAjaran::find($idTahunAjaran);
 
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("tipe_periodik");
             $tipetagihan = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("nama_tipe");
@@ -619,10 +619,18 @@ class KeuanganController extends Controller
     public function getTransaksiKas(Request $request)
     {
         try {
+            $idKas = $request->input("idKas");
+            if (!$idKas || $idKas == 0) {
+                return response()->json([
+                    "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
+                    "data" => [],
+                ]);
+            }
+
             $perPage = $request->input('per_page', 10);
             $search = $request->input("search");
 
-            $query = KasTransaksi::query();
+            $query = KasTransaksi::query()->where("id_kas", $idKas);
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -745,7 +753,7 @@ class KeuanganController extends Controller
             // dd(KasTransaksi::latest()->get());
 
             // create Transaksi Kas
-            $kasTransaksi =  KasTransaksi::create([
+            $kasTransaksi = KasTransaksi::create([
                 "id_kas" => $request->id_kas,
                 "sumber" => "pengeluaran",
                 "id_sumber" => $pengeluaran->id_pengeluaran,
