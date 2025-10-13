@@ -457,6 +457,7 @@ class KeuanganController extends Controller
         }
     }
 
+    // Dev test (for test pusposes)
     public function createKasDefault(Request $request)
     {
         DB::beginTransaction();
@@ -481,6 +482,46 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Menambahkan Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function ResetAllKas()
+    {
+        DB::beginTransaction();
+        try {
+            $kasTransaksiList = KasTransaksi::all();
+
+            foreach ($kasTransaksiList as $trx) {
+                if ($trx->sumber === "pembayaran") {
+                    $pembayaran = Pembayaran::with("Tagihan")->where("id_tagihan_pembayaran", $trx->id_sumber)->first();
+
+                    if ($pembayaran && $pembayaran->Tagihan) {
+                        $pembayaran->Tagihan->update(["status_tagihan" => "Belum Lunas"]);
+                    }
+
+                    if ($pembayaran) {
+                        $pembayaran->delete();
+                    }
+                } else if ($trx->sumber === "pengeluaran") {
+                    Pengeluaran::where("id_pengeluaran", $trx->id_sumber)->delete();
+                }
+            }
+
+            KasTransaksi::truncate();
+
+            Kas::query()->update(["saldo" => 0]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Berhasil mereset semua data kas, transaksi kas, dan sumber terkait.',
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Reset semua Kas',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -527,7 +568,7 @@ class KeuanganController extends Controller
                         "id_tagihan" => $request->id_tagihan,
                     ]);
 
-                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+                    $saldoAkhir = (KasTransaksi::whereIdKas($idKas)->latest()->value("saldo_akhir") ?? 0) + $request->jumlah_pembayaran; // $kas->saldo + $request->jumlah_pembayaran;
 
                     // create Transaksi Kas
                     KasTransaksi::create([
@@ -570,7 +611,7 @@ class KeuanganController extends Controller
                         "id_tagihan" => $request->id_tagihan,
                     ]);
 
-                    $saldoAkhir = $kas->saldo + $request->jumlah_pembayaran;
+                    $saldoAkhir = (KasTransaksi::whereIdKas($idKas)->latest()->value("saldo_akhir") ?? 0) + $request->jumlah_pembayaran; // $kas->saldo + $request->jumlah_pembayaran;
 
                     // create Transaksi Kas
                     KasTransaksi::create([
@@ -620,6 +661,9 @@ class KeuanganController extends Controller
     {
         try {
             $idKas = $request->input("idKas");
+            $pengeluaran = 0;
+            $pemasukan = 0;
+            $month = "2025-08";
             if (!$idKas || $idKas == 0) {
                 return response()->json([
                     "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
@@ -638,11 +682,23 @@ class KeuanganController extends Controller
                 });
             }
 
+            $kasTransaksiData = $query->get();
+            foreach($kasTransaksiData as $data){
+                if ($data->sumber === "pembayaran") {
+                    $pemasukan += $data->debit;
+                } else if ($data->sumber === "pengeluaran") {
+                    $pengeluaran += $data->kredit;
+                }
+            }
+
             $kasTransaksi = $query->paginate($perPage);
 
             return response()->json([
                 "message" => "Berhasil Fetch Kas Transaksi",
                 "data" => $kasTransaksi->items(),
+                "saldo" => Kas::find($idKas)->saldo,
+                "pengeluaran" => $pengeluaran,
+                "pemasukan" => $pemasukan,
                 "meta" => [
                     "current_page" => $kasTransaksi->currentPage(),
                     "last_page" => $kasTransaksi->lastPage(),
@@ -749,7 +805,7 @@ class KeuanganController extends Controller
             ]);
 
             $kas = Kas::find($request->id_kas);
-            $saldoAkhir = $kas->saldo - $request->nominal;
+            $saldoAkhir = (KasTransaksi::where("id_kas", $request->id_kas)->latest()->value("saldo_akhir") ?? 0) - $request->nominal; // $kas->saldo - $request->nominal;
             // dd(KasTransaksi::latest()->get());
 
             // create Transaksi Kas
@@ -758,7 +814,7 @@ class KeuanganController extends Controller
                 "sumber" => "pengeluaran",
                 "id_sumber" => $pengeluaran->id_pengeluaran,
                 "tanggal" => now(),
-                "keterangan" => "Pengeluaran ke #{$pengeluaran->id_pengeluaran}",
+                "keterangan" => "$pengeluaran->keterangan",
                 "debit" => 0,
                 "kredit" => $request->nominal,
                 "saldo_akhir" => $saldoAkhir,
