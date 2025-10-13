@@ -13,7 +13,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             "message" => "Test Data Ganti"
         ], 200);
     });
-
+    route::prefix("test")->group(function(){
+        Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]); // untuk test dan pastikan semua kas konek ke tipe pembayaran
+        Route::post("/ResetAllKas", [KeuanganController::class, "ResetAllKas"]);
+    });
+        
     // Pembayaran
     Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->name('api.datapembayaran');
     Route::post('/insertpembayaran', [KeuanganController::class, 'insertPembayaran'])->name('api.addpembayaran');
@@ -36,7 +40,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/deletetipepembayaran/{id}', [KeuanganController::class, 'deleteTipePembayaran'])->name('api.deletepengeluaran');
 
     // kas
-    Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]);
     Route::get("/getKas", [KeuanganController::class, "getKas"]);
     Route::get("/TransaksiKas", [KeuanganController::class, "getTransaksiKas"]);
 
