@@ -280,6 +280,40 @@ class KeuanganController extends Controller
         }
     }
 
+    public function AllTagihan(Request $request){
+        try{
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+
+            $query = Tagihan::with('siswa', 'tipePembayaran');
+
+            // if ($search) {
+            //     $query->where(function ($q) use ($search) {
+            //         $q->where('keterangan', 'like', "%{$search}%");
+            //     });
+            // }
+
+            $tagihan = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "data" => $tagihan->items(),
+                "meta" => [
+                    "current_page" => $tagihan->currentPage(),
+                    "last_page" => $tagihan->lastPage(),
+                    "per_page" => $tagihan->perPage(),
+                    "total" => $tagihan->total(),
+                ]
+            ], 200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Gagal Fetch Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function TagihanSiswa(Request $request)
     {
         try {
@@ -663,7 +697,7 @@ class KeuanganController extends Controller
             $idKas = $request->input("idKas");
             $pengeluaran = 0;
             $pemasukan = 0;
-            $month = "2025-08";
+            $datemonth = "2025-10";
             if (!$idKas || $idKas == 0) {
                 return response()->json([
                     "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
@@ -675,6 +709,12 @@ class KeuanganController extends Controller
             $search = $request->input("search");
 
             $query = KasTransaksi::query()->where("id_kas", $idKas);
+
+            if($datemonth){
+                [$year, $month] = explode('-', $datemonth);
+                $query->whereYear('tanggal', $year)
+                    -> whereMonth('tanggal', $month);
+            }
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
