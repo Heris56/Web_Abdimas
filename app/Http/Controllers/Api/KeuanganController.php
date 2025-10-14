@@ -29,468 +29,7 @@ class KeuanganController extends Controller
 
     use LogActivity;
 
-    public function getsiswa(Request $request)
-    {
-        try {
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-            $status = $request->input("status");
-
-            $query = Siswa::query();
-
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_siswa', 'like', "%{$search}%")
-                        ->orWhere('nisn', 'like', "%{$search}%");
-                });
-            }
-
-            if ($status) {
-                $query->where('status', $status);
-            }
-
-            $siswa = $query->paginate($perPage);
-
-            return response()->json([
-                "message" => "Berhasil Fetch Siswa",
-                "data" => $siswa->items(),
-                "meta" => [
-                    "current_page" => $siswa->currentPage(),
-                    "last_page" => $siswa->lastPage(),
-                    "per_page" => $siswa->perPage(),
-                    "total" => $siswa->total(),
-                ]
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Get Siswa',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-    public function getPembayaran(Request $request)
-    {
-        try {
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-            $query = Pembayaran::with('tagihan.siswa');
-            sleep(seconds: 0); // for debugging timeout
-
-            $pembayaran = $query->paginate($perPage);
-            return response()->json([
-                "message" => "Berhasil Fetch data Pembayaran",
-                "data" => $pembayaran->items(),
-                "meta" => [
-                    "current_page" => $pembayaran->currentPage(),
-                    "last_page" => $pembayaran->lastPage(),
-                    "per_page" => $pembayaran->perPage(),
-                    "total" => $pembayaran->total(),
-                ]
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Get Pembayaran',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-    public function getTipePembayaran(Request $request)
-    {
-        try {
-            $perPage = $request->input('per_page', );
-            $search = $request->input("search");
-
-            $query = TipePembayaran::query();
-
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('nama_tipe', "like", "%{$search}%");
-                });
-            }
-
-            if ($perPage && is_numeric($perPage) && $perPage > 0) {
-                // Kalau ada per_page -> pakai paginate
-                $tipePembayaran = $query->paginate($perPage);
-
-                return response()->json([
-                    "message" => "Berhasil Fetch data Tipe Pembayaran (paginate)",
-                    "data" => $tipePembayaran->items(),
-                    "meta" => [
-                        "current_page" => $tipePembayaran->currentPage(),
-                        "last_page" => $tipePembayaran->lastPage(),
-                        "per_page" => $tipePembayaran->perPage(),
-                        "total" => $tipePembayaran->total(),
-                    ]
-                ], 200);
-            } else {
-                // Kalau gak ada per_page -> ambil semua data
-                $tipePembayaran = $query->get();
-
-                return response()->json([
-                    "message" => "Berhasil Fetch semua data Tipe Pembayaran",
-                    "data" => $tipePembayaran
-                ], 200);
-            }
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Get Tipe Pembayaran',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-
-    public function getProfile(Request $request)
-    {
-        try {
-            $user = $request->user();
-            return response()->json([
-                'message' => "Berhasil Fetch Profile",
-                'id' => $user->id,
-                'nama' => $user->nama,
-                'email' => $user->email,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Get Pofile',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-
-    public function getTahunAjaran(Request $request)
-    {
-        try {
-            $tahunAjaran = TahunAjaran::get();
-            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
-            return response()->json([
-                'message' => "Berhasil Fetch Tahun Ajaran",
-                "data" => $tahunAjaran,
-                "currentTahunAjaran" => $currentTahunAjaran
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Get Pofile',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-
-    public function LoginKeuangan(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            $staff = StaffKeuangan::where('email', $request->email)->first();
-
-            if (!$staff || !Hash::check($request->password, $staff->password)) {
-                return response()->json(['message' => 'email atau password salah']);
-            }
-
-            //generate token
-            $token = $staff->createToken('staff-token')->plainTextToken;
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Login berhasil',
-                'token' => $token,
-                'user' => [
-                    'id' => $staff->id,
-                    'nama' => $staff->nama,
-                    'email' => $staff->email,
-                ]
-            ], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal Login Keuangan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-    }
-
-    public function LogoutKeuangan(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            $request->user()->currentAccessToken()->delete();
-            DB::commit();
-
-            return response()->json([
-                "message" => "Logout berhasil"
-            ], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal Logout',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function CreateACCKeuangan()
-    {
-        DB::beginTransaction();
-        try {
-            StaffKeuangan::create([
-                'nama' => 'Raphael Permana Barus',
-                'email' => 'raphael@example.com',
-                'password' => Hash::make('rahasia123'),
-                'status' => 'Aktif'
-            ]);
-
-            DB::commit();
-            return response()->json(['message' => 'Akun staff keuangan berhasil dibuat'], 201);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal membuat akun staff keuangan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function ChangePassword(Request $request)
-    {
-        DB::beginTransaction();
-        try {
-            $request->validate([
-                "new_password" => "required|min:8|confirmed"
-            ]);
-
-            $user = Auth::user();
-
-            $user->password = Hash::make($request->new_password);
-            $user->save();
-            DB::commit();
-
-            return response()->json([
-                "message" => "Password Berhasil Diganti"
-            ], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal Mengganti password',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function AllTagihan(Request $request){
-        try{
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-
-            $query = Tagihan::with('siswa', 'tipePembayaran');
-
-            // if ($search) {
-            //     $query->where(function ($q) use ($search) {
-            //         $q->where('keterangan', 'like', "%{$search}%");
-            //     });
-            // }
-
-            $tagihan = $query->paginate($perPage);
-
-            return response()->json([
-                "message" => "Berhasil Fetch Kas Transaksi",
-                "data" => $tagihan->items(),
-                "meta" => [
-                    "current_page" => $tagihan->currentPage(),
-                    "last_page" => $tagihan->lastPage(),
-                    "per_page" => $tagihan->perPage(),
-                    "total" => $tagihan->total(),
-                ]
-            ], 200);
-
-        }catch(Exception $e){
-            return response()->json([
-                'message' => 'Gagal Fetch Tagihan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function TagihanSiswa(Request $request)
-    {
-        try {
-            $request->validate([
-                'nisn' => 'required',
-                'tipe' => 'required',
-                'idTahunAjaran' => 'nullable|integer',
-            ]);
-
-            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
-            $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
-            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
-
-            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
-            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
-                ->where("nisn", $request->nisn);
-            switch ($tipePeriode) {
-                case "sekali":
-                    break;
-                case "tahunan":
-                    $query->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                        $q->where("tahun", $tahun_ajaran->tahun);
-                    });
-                    break;
-                case "semester":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran);
-
-                    break;
-                case "bulanan":
-                    $query->where("id_tahun_ajaran", $idTahunAjaran);
-
-                    break;
-                default:
-                    return response()->json([
-                        'message' => 'Tidak ditemukan tipe tagihan',
-                    ], 404);
-            }
-
-            $data = $query->get();
-
-            return response()->json([
-                "message" => "Berhasil Fetch data Tagihan Siswa",
-                "data" => $data,
-                "currentTahunAjaran" => $currentTahunAjaran
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Mendapatkan Tagihan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function createTagihan(TagihanRequest $request)
-    {
-        DB::beginTransaction();
-        try {
-            $data = $request->validated();
-            $bulanSemester = [
-                "Ganjil" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
-                "Genap" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
-            ];
-
-
-            $nisn = $data['nisn'];
-            $tipeTagihanID = $data['id_tipe_pembayaran'];
-            $idTahunAjaran = $data['id_tahun_ajaran'] ?? null;
-            $tahunAjaran = TahunAjaran::find($idTahunAjaran);
-
-            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("tipe_periodik");
-            $tipetagihan = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("nama_tipe");
-
-            switch ($tipePeriode) {
-                case "sekali":
-                    Tagihan::create([
-                        "nisn" => $nisn,
-                        "status_tagihan" => "Belum Lunas",
-                        'id_tipe_pembayaran' => $tipeTagihanID,
-                        'id_tahun_ajaran' => null,
-                        'tanggal_pembuatan_tagihan' => now(),
-                        'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
-                    ]);
-                    break;
-                case "tahunan":
-                    if ($idTahunAjaran && $idTahunAjaran != 0) {
-                        Tagihan::create([
-                            "nisn" => $nisn,
-                            "status_tagihan" => "Belum Lunas",
-                            'id_tipe_pembayaran' => $tipeTagihanID,
-                            'id_tahun_ajaran' => $idTahunAjaran,
-                            'periode' => $tahunAjaran["tahun"],
-                            'tanggal_pembuatan_tagihan' => now(),
-                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Gagal menambahkan Tagihan',
-                        ], 400);
-                    }
-
-                    break;
-                case "semester":
-                    if ($idTahunAjaran && $idTahunAjaran != 0) {
-                        Tagihan::create([
-                            "nisn" => $nisn,
-                            "status_tagihan" => "Belum Lunas",
-                            'id_tipe_pembayaran' => $tipeTagihanID,
-                            'id_tahun_ajaran' => $idTahunAjaran,
-                            'periode' => $tahunAjaran["tahun"] . '-' . $tahunAjaran["semester"],
-                            'tanggal_pembuatan_tagihan' => now(),
-                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Gagal menambahkan Tagihan',
-                        ], 400);
-                    }
-
-                    break;
-                case "bulanan":
-                    if ($idTahunAjaran && $idTahunAjaran != 0) {
-                        $listBulan = $bulanSemester[$tahunAjaran["semester"]] ?? [];
-                        $nominal = TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal');
-                        foreach ($listBulan as $bulan) {
-                            Tagihan::create([
-                                "nisn" => $nisn,
-                                "status_tagihan" => "Belum Lunas",
-                                'id_tipe_pembayaran' => $tipeTagihanID,
-                                'id_tahun_ajaran' => $idTahunAjaran,
-                                'periode' => $bulan,
-                                'tanggal_pembuatan_tagihan' => now(),
-                                'nominal_tagihan' => $nominal,
-                            ]);
-                        }
-
-                    } else {
-                        return response()->json([
-                            'message' => 'Gagal menambahkan Tagihan',
-                        ], 400);
-                    }
-                    break;
-                default:
-                    return response()->json([
-                        'message' => 'Tidak ditemukan tipe tagihan',
-                    ], 404);
-            }
-
-            DB::commit();
-
-            return response()->json(["message" => "Berhasil menambahkan $tipetagihan"], 201);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal Menambahkan Tagihan',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function getKas()
-    {
-        try {
-            $kas = Kas::get();
-
-            return response()->json([
-                "message" => "Berhasil Fetch data Kas",
-                "data" => $kas,
-            ], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal fetch Kas',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
+    // Start Test
     // Dev test (for test pusposes)
     public function createKasDefault(Request $request)
     {
@@ -556,6 +95,67 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal Reset semua Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    // End dari bagian Test
+
+
+
+    // Start Pembayaran
+    public function dataPembayaran(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
+            return response()->json([
+                'message' => 'Berhasil Fetch Data Transaksi',
+                'data' => $dataPembayaran,
+                "meta" => [
+                    "current_page" => $dataPembayaran->currentPage(),
+                    "last_page" => $dataPembayaran->lastPage(),
+                    "per_page" => $dataPembayaran->perPage(),
+                    "total" => $dataPembayaran->total(),
+                ],
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Fetch Data Transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function insertPembayaran(Request $request)
+    {
+        $request->validate([
+            'jumlah_pembayaran' => 'required|numeric',
+            'id_pembayaran' => 'required|numeric|exists:cashflow_tagihan,id_pembayaran',
+        ]);
+        try {
+            $pembayaran = Pembayaran::create([
+                'jumlah_pembayaran' => $request->jumlah_pembayaran,
+                'id_pembayaran' => $request->id_pembayaran,
+            ]);
+
+            $this->logActivity(
+                "create",
+                "cashflow_tagihan_pembayaran",
+                $pembayaran->id_pembayaran,
+                null,
+                $pembayaran->getAttributes(),
+                "tambah data pembayaran baru"
+            );
+
+            return response()->json([
+                'message' => 'Pembayaran berhasil ditambahkan',
+                'data' => $pembayaran
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menambahkan pembayaran',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -691,94 +291,38 @@ class KeuanganController extends Controller
         }
     }
 
-    public function getTransaksiKas(Request $request)
+    public function getPembayaran(Request $request)
     {
         try {
-            $idKas = $request->input("idKas");
-            $pengeluaran = 0;
-            $pemasukan = 0;
-            $datemonth = "2025-10";
-            if (!$idKas || $idKas == 0) {
-                return response()->json([
-                    "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
-                    "data" => [],
-                ]);
-            }
-
             $perPage = $request->input('per_page', 10);
             $search = $request->input("search");
+            $query = Pembayaran::with('tagihan.siswa');
+            sleep(seconds: 0); // for debugging timeout
 
-            $query = KasTransaksi::query()->where("id_kas", $idKas);
-
-            if($datemonth){
-                [$year, $month] = explode('-', $datemonth);
-                $query->whereYear('tanggal', $year)
-                    -> whereMonth('tanggal', $month);
-            }
-
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('keterangan', 'like', "%{$search}%");
-                });
-            }
-
-            $kasTransaksiData = $query->get();
-            foreach($kasTransaksiData as $data){
-                if ($data->sumber === "pembayaran") {
-                    $pemasukan += $data->debit;
-                } else if ($data->sumber === "pengeluaran") {
-                    $pengeluaran += $data->kredit;
-                }
-            }
-
-            $kasTransaksi = $query->paginate($perPage);
-
+            $pembayaran = $query->paginate($perPage);
             return response()->json([
-                "message" => "Berhasil Fetch Kas Transaksi",
-                "data" => $kasTransaksi->items(),
-                "saldo" => Kas::find($idKas)->saldo,
-                "pengeluaran" => $pengeluaran,
-                "pemasukan" => $pemasukan,
+                "message" => "Berhasil Fetch data Pembayaran",
+                "data" => $pembayaran->items(),
                 "meta" => [
-                    "current_page" => $kasTransaksi->currentPage(),
-                    "last_page" => $kasTransaksi->lastPage(),
-                    "per_page" => $kasTransaksi->perPage(),
-                    "total" => $kasTransaksi->total(),
+                    "current_page" => $pembayaran->currentPage(),
+                    "last_page" => $pembayaran->lastPage(),
+                    "per_page" => $pembayaran->perPage(),
+                    "total" => $pembayaran->total(),
                 ]
             ], 200);
         } catch (Exception $e) {
-            DB::rollBack();
             return response()->json([
-                'message' => 'Gagal fetch Transaksi',
+                'message' => 'Gagal Get Pembayaran',
                 'error' => $e->getMessage()
             ], 500);
         }
-    }
 
-    public function dataPembayaran(Request $request)
-    {
-        try {
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-            $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
-            return response()->json([
-                'message' => 'Berhasil Fetch Data Transaksi',
-                'data' => $dataPembayaran,
-                "meta" => [
-                    "current_page" => $dataPembayaran->currentPage(),
-                    "last_page" => $dataPembayaran->lastPage(),
-                    "per_page" => $dataPembayaran->perPage(),
-                    "total" => $dataPembayaran->total(),
-                ],
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal Fetch Data Transaksi',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
+    // End Pembayaran
 
+
+
+    // Start Pengeluaran
     public function dataPengeluaran(Request $request)
     {
         try {
@@ -888,40 +432,11 @@ class KeuanganController extends Controller
             ], 500);
         }
     }
+    // End Pengeluaran
 
-    public function insertPembayaran(Request $request)
-    {
-        $request->validate([
-            'jumlah_pembayaran' => 'required|numeric',
-            'id_pembayaran' => 'required|numeric|exists:cashflow_tagihan,id_pembayaran',
-        ]);
-        try {
-            $pembayaran = Pembayaran::create([
-                'jumlah_pembayaran' => $request->jumlah_pembayaran,
-                'id_pembayaran' => $request->id_pembayaran,
-            ]);
 
-            $this->logActivity(
-                "create",
-                "cashflow_tagihan_pembayaran",
-                $pembayaran->id_pembayaran,
-                null,
-                $pembayaran->getAttributes(),
-                "tambah data pembayaran baru"
-            );
 
-            return response()->json([
-                'message' => 'Pembayaran berhasil ditambahkan',
-                'data' => $pembayaran
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Gagal menambahkan pembayaran',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
+    // Start Tagihan
     public function inputTagihanAllSiswa(Request $request)
     {
         $request->validate([
@@ -972,51 +487,247 @@ class KeuanganController extends Controller
         ], 201);
     }
 
-    public function dataLog(Request $request)
+    public function TagihanSiswa(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-            $status = $request->input("status");
+            $request->validate([
+                'nisn' => 'required',
+                'tipe' => 'required',
+                'idTahunAjaran' => 'nullable|integer',
+            ]);
 
-            $query = ActivityLogs::query()->with('user');
+            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
+            $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
+            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
 
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('description', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($uq) use ($search) {
-                            $uq->where('nama', 'like', "%{$search}%");
-                        });
-                });
+            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
+                ->where("nisn", $request->nisn);
+            switch ($tipePeriode) {
+                case "sekali":
+                    break;
+                case "tahunan":
+                    $query->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
+                        $q->where("tahun", $tahun_ajaran->tahun);
+                    });
+                    break;
+                case "semester":
+                    $query->where("id_tahun_ajaran", $idTahunAjaran);
+
+                    break;
+                case "bulanan":
+                    $query->where("id_tahun_ajaran", $idTahunAjaran);
+
+                    break;
+                default:
+                    return response()->json([
+                        'message' => 'Tidak ditemukan tipe tagihan',
+                    ], 404);
             }
 
-
-            if ($status) {
-                $query->where('status', $status);
-            }
-
-            $log = $query->paginate($perPage);
+            $data = $query->get();
 
             return response()->json([
-                'message' => 'Berhasil Fetch Data Log',
-                'data' => $log->items(),
-                "meta" => [
-                    "current_page" => $log->currentPage(),
-                    "last_page" => $log->lastPage(),
-                    "per_page" => $log->perPage(),
-                    "total" => $log->total(),
-                ],
-                'links' => [
-                    'next' => $log->nextPageUrl(),
-                    'prev' => $log->previousPageUrl(),
-                ]
+                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "data" => $data,
+                "currentTahunAjaran" => $currentTahunAjaran
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Gagal Fetch Data Log',
+                'message' => 'Gagal Mendapatkan Tagihan',
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function AllTagihan(Request $request){
+        try{
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+
+            $query = Tagihan::with('siswa', 'tipePembayaran');
+
+            // if ($search) {
+            //     $query->where(function ($q) use ($search) {
+            //         $q->where('keterangan', 'like', "%{$search}%");
+            //     });
+            // }
+
+            $tagihan = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "data" => $tagihan->items(),
+                "meta" => [
+                    "current_page" => $tagihan->currentPage(),
+                    "last_page" => $tagihan->lastPage(),
+                    "per_page" => $tagihan->perPage(),
+                    "total" => $tagihan->total(),
+                ]
+            ], 200);
+
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Gagal Fetch Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createTagihan(TagihanRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
+            $bulanSemester = [
+                "Ganjil" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
+                "Genap" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+            ];
+
+
+            $nisn = $data['nisn'];
+            $tipeTagihanID = $data['id_tipe_pembayaran'];
+            $idTahunAjaran = $data['id_tahun_ajaran'] ?? null;
+            $tahunAjaran = TahunAjaran::find($idTahunAjaran);
+
+            $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("tipe_periodik");
+            $tipetagihan = TipePembayaran::where("id_tipe_pembayaran", $tipeTagihanID)->value("nama_tipe");
+
+            switch ($tipePeriode) {
+                case "sekali":
+                    Tagihan::create([
+                        "nisn" => $nisn,
+                        "status_tagihan" => "Belum Lunas",
+                        'id_tipe_pembayaran' => $tipeTagihanID,
+                        'id_tahun_ajaran' => null,
+                        'tanggal_pembuatan_tagihan' => now(),
+                        'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                    ]);
+                    break;
+                case "tahunan":
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
+                        Tagihan::create([
+                            "nisn" => $nisn,
+                            "status_tagihan" => "Belum Lunas",
+                            'id_tipe_pembayaran' => $tipeTagihanID,
+                            'id_tahun_ajaran' => $idTahunAjaran,
+                            'periode' => $tahunAjaran["tahun"],
+                            'tanggal_pembuatan_tagihan' => now(),
+                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
+
+                    break;
+                case "semester":
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
+                        Tagihan::create([
+                            "nisn" => $nisn,
+                            "status_tagihan" => "Belum Lunas",
+                            'id_tipe_pembayaran' => $tipeTagihanID,
+                            'id_tahun_ajaran' => $idTahunAjaran,
+                            'periode' => $tahunAjaran["tahun"] . '-' . $tahunAjaran["semester"],
+                            'tanggal_pembuatan_tagihan' => now(),
+                            'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
+
+                    break;
+                case "bulanan":
+                    if ($idTahunAjaran && $idTahunAjaran != 0) {
+                        $listBulan = $bulanSemester[$tahunAjaran["semester"]] ?? [];
+                        $nominal = TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal');
+                        foreach ($listBulan as $bulan) {
+                            Tagihan::create([
+                                "nisn" => $nisn,
+                                "status_tagihan" => "Belum Lunas",
+                                'id_tipe_pembayaran' => $tipeTagihanID,
+                                'id_tahun_ajaran' => $idTahunAjaran,
+                                'periode' => $bulan,
+                                'tanggal_pembuatan_tagihan' => now(),
+                                'nominal_tagihan' => $nominal,
+                            ]);
+                        }
+
+                    } else {
+                        return response()->json([
+                            'message' => 'Gagal menambahkan Tagihan',
+                        ], 400);
+                    }
+                    break;
+                default:
+                    return response()->json([
+                        'message' => 'Tidak ditemukan tipe tagihan',
+                    ], 404);
+            }
+
+            DB::commit();
+
+            return response()->json(["message" => "Berhasil menambahkan $tipetagihan"], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Menambahkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    // End Tagihan
+
+
+
+    // Start Tipe Pembayaran
+    public function getTipePembayaran(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', );
+            $search = $request->input("search");
+
+            $query = TipePembayaran::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_tipe', "like", "%{$search}%");
+                });
+            }
+
+            if ($perPage && is_numeric($perPage) && $perPage > 0) {
+                // Kalau ada per_page -> pakai paginate
+                $tipePembayaran = $query->paginate($perPage);
+
+                return response()->json([
+                    "message" => "Berhasil Fetch data Tipe Pembayaran (paginate)",
+                    "data" => $tipePembayaran->items(),
+                    "meta" => [
+                        "current_page" => $tipePembayaran->currentPage(),
+                        "last_page" => $tipePembayaran->lastPage(),
+                        "per_page" => $tipePembayaran->perPage(),
+                        "total" => $tipePembayaran->total(),
+                    ]
+                ], 200);
+            } else {
+                // Kalau gak ada per_page -> ambil semua data
+                $tipePembayaran = $query->get();
+
+                return response()->json([
+                    "message" => "Berhasil Fetch semua data Tipe Pembayaran",
+                    "data" => $tipePembayaran
+                ], 200);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Tipe Pembayaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
     }
 
     public function insertTipePembayaran(Request $request)
@@ -1091,4 +802,330 @@ class KeuanganController extends Controller
             'message' => 'Tipe Pembayaran deleted successfully'
         ], 200);
     }
+    // End Tipe Pembayaran
+
+
+
+    // Start Kas
+    public function getKas()
+    {
+        try {
+            $kas = Kas::get();
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Kas",
+                "data" => $kas,
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getTransaksiKas(Request $request)
+    {
+        try {
+            $idKas = $request->input("idKas");
+            $pengeluaran = 0;
+            $pemasukan = 0;
+            $datemonth = "2025-10";
+            if (!$idKas || $idKas == 0) {
+                return response()->json([
+                    "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
+                    "data" => [],
+                ]);
+            }
+
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+
+            $query = KasTransaksi::query()->where("id_kas", $idKas);
+
+            if($datemonth){
+                [$year, $month] = explode('-', $datemonth);
+                $query->whereYear('tanggal', $year)
+                    -> whereMonth('tanggal', $month);
+            }
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('keterangan', 'like', "%{$search}%");
+                });
+            }
+
+            $kasTransaksiData = $query->get();
+            foreach($kasTransaksiData as $data){
+                if ($data->sumber === "pembayaran") {
+                    $pemasukan += $data->debit;
+                } else if ($data->sumber === "pengeluaran") {
+                    $pengeluaran += $data->kredit;
+                }
+            }
+
+            $kasTransaksi = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "data" => $kasTransaksi->items(),
+                "saldo" => Kas::find($idKas)->saldo,
+                "pengeluaran" => $pengeluaran,
+                "pemasukan" => $pemasukan,
+                "meta" => [
+                    "current_page" => $kasTransaksi->currentPage(),
+                    "last_page" => $kasTransaksi->lastPage(),
+                    "per_page" => $kasTransaksi->perPage(),
+                    "total" => $kasTransaksi->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    // End Kas
+
+
+
+    // Start Logs
+    public function dataLog(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $status = $request->input("status");
+
+            $query = ActivityLogs::query()->with('user');
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('description', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($uq) use ($search) {
+                            $uq->where('nama', 'like', "%{$search}%");
+                        });
+                });
+            }
+
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $log = $query->paginate($perPage);
+
+            return response()->json([
+                'message' => 'Berhasil Fetch Data Log',
+                'data' => $log->items(),
+                "meta" => [
+                    "current_page" => $log->currentPage(),
+                    "last_page" => $log->lastPage(),
+                    "per_page" => $log->perPage(),
+                    "total" => $log->total(),
+                ],
+                'links' => [
+                    'next' => $log->nextPageUrl(),
+                    'prev' => $log->previousPageUrl(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Fetch Data Log',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    // End Logs
+
+
+
+    // Start misc
+    public function getsiswa(Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+            $search = $request->input("search");
+            $status = $request->input("status");
+
+            $query = Siswa::query();
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                        ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            $siswa = $query->paginate($perPage);
+
+            return response()->json([
+                "message" => "Berhasil Fetch Siswa",
+                "data" => $siswa->items(),
+                "meta" => [
+                    "current_page" => $siswa->currentPage(),
+                    "last_page" => $siswa->lastPage(),
+                    "per_page" => $siswa->perPage(),
+                    "total" => $siswa->total(),
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Siswa',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function getTahunAjaran(Request $request)
+    {
+        try {
+            $tahunAjaran = TahunAjaran::get();
+            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
+            return response()->json([
+                'message' => "Berhasil Fetch Tahun Ajaran",
+                "data" => $tahunAjaran,
+                "currentTahunAjaran" => $currentTahunAjaran
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Pofile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function LogoutKeuangan(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->user()->currentAccessToken()->delete();
+            DB::commit();
+
+            return response()->json([
+                "message" => "Logout berhasil"
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Logout',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function ChangePassword(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                "new_password" => "required|min:8|confirmed"
+            ]);
+
+            $user = Auth::user();
+
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            DB::commit();
+
+            return response()->json([
+                "message" => "Password Berhasil Diganti"
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Mengganti password',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function getProfile(Request $request)
+    {
+        try {
+            $user = $request->user();
+            return response()->json([
+                'message' => "Berhasil Fetch Profile",
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'email' => $user->email,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Pofile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+    // End misc
+
+
+    // Start Auth Keuangan
+
+    public function CreateACCKeuangan()
+    {
+        DB::beginTransaction();
+        try {
+            StaffKeuangan::create([
+                'nama' => 'Raphael Permana Barus',
+                'email' => 'raphael@example.com',
+                'password' => Hash::make('rahasia123'),
+                'status' => 'Aktif'
+            ]);
+
+            DB::commit();
+            return response()->json(['message' => 'Akun staff keuangan berhasil dibuat'], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal membuat akun staff keuangan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function LoginKeuangan(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $staff = StaffKeuangan::where('email', $request->email)->first();
+
+            if (!$staff || !Hash::check($request->password, $staff->password)) {
+                return response()->json(['message' => 'email atau password salah']);
+            }
+
+            //generate token
+            $token = $staff->createToken('staff-token')->plainTextToken;
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Login berhasil',
+                'token' => $token,
+                'user' => [
+                    'id' => $staff->id,
+                    'nama' => $staff->nama,
+                    'email' => $staff->email,
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal Login Keuangan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+    // End Auth Keuangan
 }
