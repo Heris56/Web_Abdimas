@@ -758,7 +758,7 @@ class KeuanganController extends Controller
                 ]
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -837,7 +837,7 @@ class KeuanganController extends Controller
             $idKas = $request->input("idKas");
             $pengeluaran = 0;
             $pemasukan = 0;
-            $datemonth = "2025-10";
+            $datemonth = $request->input('yearmonth');
             if (!$idKas || $idKas == 0) {
                 return response()->json([
                     "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
