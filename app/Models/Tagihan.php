@@ -19,7 +19,6 @@ class Tagihan extends Model
         'id_tipe_pembayaran',
         'id_tahun_ajaran',
         'nominal_tagihan',
-
     ];
 
     protected $hidden = [

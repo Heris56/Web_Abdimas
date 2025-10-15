@@ -107,18 +107,13 @@ class KeuanganController extends Controller
     public function dataPembayaran(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
+            $perPage = $request->input('per_page', );
             $search = $request->input("search");
-            $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->paginate();
+            $dataPembayaran = Pembayaran::with('tagihan', 'tagihan.siswa', 'tagihan.tipePembayaran')->get();
             return response()->json([
                 'message' => 'Berhasil Fetch Data Transaksi',
                 'data' => $dataPembayaran,
-                "meta" => [
-                    "current_page" => $dataPembayaran->currentPage(),
-                    "last_page" => $dataPembayaran->lastPage(),
-                    "per_page" => $dataPembayaran->perPage(),
-                    "total" => $dataPembayaran->total(),
-                ],
+                
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -326,43 +321,39 @@ class KeuanganController extends Controller
     public function dataPengeluaran(Request $request)
     {
         try {
-            $perPage = $request->input('per_page', 10);
-            $search = $request->input("search");
-            $status = $request->input("status");
-            $tipe = $request->input("tipe", 0);
 
             $query = Pengeluaran::with(['tipe_kas']);
 
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('keterangan', 'like', "%{$search}%")
-                        ->orWhere('nominal', 'like', "%{$search}%");
-                });
-            }
+            // if ($search) {
+            //     $query->where(function ($q) use ($search) {
+            //         $q->where('keterangan', 'like', "%{$search}%")
+            //             ->orWhere('nominal', 'like', "%{$search}%");
+            //     });
+            // }
 
-            if ($status) {
-                $query->where('status', $status);
-            }
+            // if ($status) {
+            //     $query->where('status', $status);
+            // }
 
-            if ($tipe && $tipe != 0) {
-                $query->where("id_kas", $tipe);
-            }
+            // if ($tipe && $tipe != 0) {
+            //     $query->where("id_kas", $tipe);
+            // }
 
-            $dataPengeluaran = $query->paginate($perPage);
+            $dataPengeluaran = $query->get();
 
             return response()->json([
                 'message' => 'Berhasil Fetch Data Pengeluaran',
-                'data' => $dataPengeluaran->items(),
-                "meta" => [
-                    "current_page" => $dataPengeluaran->currentPage(),
-                    "last_page" => $dataPengeluaran->lastPage(),
-                    "per_page" => $dataPengeluaran->perPage(),
-                    "total" => $dataPengeluaran->total(),
-                ],
-                'links' => [
-                    'next' => $dataPengeluaran->nextPageUrl(),
-                    'prev' => $dataPengeluaran->previousPageUrl(),
-                ]
+                'data' => $dataPengeluaran,
+                // "meta" => [
+                //     "current_page" => $dataPengeluaran->currentPage(),
+                //     "last_page" => $dataPengeluaran->lastPage(),
+                //     "per_page" => $dataPengeluaran->perPage(),
+                //     "total" => $dataPengeluaran->total(),
+                // ],
+                // 'links' => [
+                //     'next' => $dataPengeluaran->nextPageUrl(),
+                //     'prev' => $dataPengeluaran->previousPageUrl(),
+                // ]
             ], 200);
         } catch (Exception $e) {
             return response()->json([
