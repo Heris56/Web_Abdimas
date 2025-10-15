@@ -13,11 +13,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
             "message" => "Test Data Ganti"
         ], 200);
     });
-    route::prefix("test")->group(function(){
+    route::prefix("test")->group(function () {
         Route::post("/createKasDefault", [KeuanganController::class, "createKasDefault"]); // untuk test dan pastikan semua kas konek ke tipe pembayaran
         Route::post("/ResetAllKas", [KeuanganController::class, "ResetAllKas"]);
     });
-        
+
     // Pembayaran
     Route::get('/datapembayaran', [KeuanganController::class, 'dataPembayaran'])->name('api.datapembayaran');
     Route::post('/insertpembayaran', [KeuanganController::class, 'insertPembayaran'])->name('api.addpembayaran');

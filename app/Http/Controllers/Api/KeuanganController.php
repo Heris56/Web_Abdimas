@@ -540,8 +540,9 @@ class KeuanganController extends Controller
         }
     }
 
-    public function AllTagihan(Request $request){
-        try{
+    public function AllTagihan(Request $request)
+    {
+        try {
             $perPage = $request->input('per_page', 10);
             $search = $request->input("search");
 
@@ -566,7 +567,7 @@ class KeuanganController extends Controller
                 ]
             ], 200);
 
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'Gagal Fetch Tagihan',
                 'error' => $e->getMessage()
@@ -737,6 +738,7 @@ class KeuanganController extends Controller
             'nominal' => 'required|numeric',
             'tipe_periodik' => 'required|string|in:bulanan,sekali,semester,tahunan',
             'keterangan' => 'nullable|string|max:255',
+            'is_cicilable' => 'required|boolean',
         ]);
 
         DB::beginTransaction();
@@ -746,11 +748,11 @@ class KeuanganController extends Controller
                 'nominal' => $request->nominal,
                 'tipe_periodik' => $request->tipe_periodik,
                 'keterangan' => $request->keterangan,
+                'is_cicilable' => $request->is_cicilable
             ]);
 
-            // ✅ Automatically create Kas entry
-            Kas::create([
-                'id_tipe_pembayaran' => $tipe->id_tipe_pembayaran,
+            $kas = Kas::create([
+                'id_tipe_pembayaran' => $tipe->id_tipe_pembayaran, // ✅ ensure correct field name
                 'nama_kas' => $tipe->nama_tipe,
                 'saldo' => 0,
             ]);
@@ -759,13 +761,18 @@ class KeuanganController extends Controller
 
             return response()->json([
                 'message' => 'Tipe Pembayaran & Kas created successfully',
-                'data' => $tipe
+                'data' => [
+                    'tipe_pembayaran' => $tipe,
+                    'kas' => $kas
+                ]
             ], 201);
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
     public function updateTipePembayaran(Request $request, $id)
@@ -777,6 +784,7 @@ class KeuanganController extends Controller
             'nominal' => 'required|numeric',
             'tipe_periodik' => 'required|string|in:bulanan,sekali,semester,tahunan',
             'keterangan' => 'nullable|string|max:255',
+            'is_cicilable' => 'required|boolean',
         ]);
 
         $tipe->update([
@@ -784,13 +792,20 @@ class KeuanganController extends Controller
             'nominal' => $request->nominal,
             'tipe_periodik' => $request->tipe_periodik,
             'keterangan' => $request->keterangan,
+            'is_cicilable' => $request->is_cicilable
         ]);
+
+        $kas = Kas::where('id_tipe_pembayaran', $tipe->id_tipe_pembayaran)->first();
+        if ($kas) {
+            $kas->update(['nama_kas' => $request->nama_tipe]);
+        }
 
         return response()->json([
             'message' => 'Tipe Pembayaran updated successfully',
             'data' => $tipe
         ], 200);
     }
+
 
 
     public function deleteTipePembayaran($id)
@@ -844,10 +859,10 @@ class KeuanganController extends Controller
 
             $query = KasTransaksi::query()->where("id_kas", $idKas);
 
-            if($datemonth){
+            if ($datemonth) {
                 [$year, $month] = explode('-', $datemonth);
                 $query->whereYear('tanggal', $year)
-                    -> whereMonth('tanggal', $month);
+                    ->whereMonth('tanggal', $month);
             }
 
             if ($search) {
@@ -857,7 +872,7 @@ class KeuanganController extends Controller
             }
 
             $kasTransaksiData = $query->get();
-            foreach($kasTransaksiData as $data){
+            foreach ($kasTransaksiData as $data) {
                 if ($data->sumber === "pembayaran") {
                     $pemasukan += $data->debit;
                 } else if ($data->sumber === "pengeluaran") {
