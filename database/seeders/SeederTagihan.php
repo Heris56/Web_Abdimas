@@ -13,6 +13,18 @@ class SeederTagihan extends Seeder
      */
     public function run(): void
     {
-        Tagihan::factory()->count(30)->create();
+        // manual data tagihan
+        Tagihan::create([
+            'status_tagihan' => "Belum Lunas",
+            'tanggal_pembuatan_tagihan' => now(),
+            'nisn' => '20250001',
+            'periode' => "sekali",
+            'id_tipe_pembayaran' => 2,
+            'id_tahun_ajaran' => 1,
+            'nominal_tagihan' => 10000000,
+        ]);
+
+        // automated create data tagihan
+        // Tagihan::factory()->count(30)->create();
     }
 }

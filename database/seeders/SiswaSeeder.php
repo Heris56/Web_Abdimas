@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Siswa;
+use Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,13 +18,13 @@ class SiswaSeeder extends Seeder
         Siswa::create([
             'nisn' => '20250001',
             'nama_siswa' => 'Relana Mordred',
-            'password' => bcrypt('rahasia123'),
+            'password' => Hash::make('rahasia123'),
             'status' => 'aktif',
             'tahun_ajaran' => 1, // pastikan ada id di tahun_ajaran
-            'id_kelas' => 1, // pastikan ada id di kelas
+            'id_kelas' => "XII-RPL-1", // pastikan ada id di kelas
         ]);
 
         // generate dummy 10 siswa pakai factory
-        Siswa::factory()->count(10)->create();
+        // Siswa::factory()->count(10)->create();
     }
 }
