@@ -31,7 +31,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Tagihan
     Route::post('/inserttagihan', [KeuanganController::class, 'inputTagihanAllSiswa'])->name('api.inputtagihanallsiswa');
     Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
-    Route::get('/getAllTagihan', [KeuanganController::class, "AllTagihan"]);
+    Route::get('/getAllTagihanSiswa', [KeuanganController::class, "AllTagihanSiswa"]); // buat get semua tagihan siswa per-tahunajaran
+    Route::get('/getAllTagihan', [KeuanganController::class, "AllTagihan"]); // buat get tagihan siswa per-tipe dan per-tahunajaran
     Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
     //Route Tipe Pembayaran
