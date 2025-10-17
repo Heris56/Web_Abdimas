@@ -113,7 +113,7 @@ class KeuanganController extends Controller
             return response()->json([
                 'message' => 'Berhasil Fetch Data Transaksi',
                 'data' => $dataPembayaran,
-                
+
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -478,6 +478,38 @@ class KeuanganController extends Controller
         ], 201);
     }
 
+    public function AllTagihanSiswa(Request $request)
+    {
+        try {
+            $request->validate([
+                'nisn' => 'required',
+                'idTahunAjaran' => 'required|integer',
+            ]);
+
+            $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
+            $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
+            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
+
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("nisn", $request->nisn)
+            ->where(function ($q) use ($idTahunAjaran) {
+                $q->where("id_tahun_ajaran", $idTahunAjaran)
+                    ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
+            });
+
+            $data = $query->get();
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "data" => $data,
+                "currentTahunAjaran" => $currentTahunAjaran
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Mendapatkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function TagihanSiswa(Request $request)
     {
         try {
@@ -602,7 +634,7 @@ class KeuanganController extends Controller
                             "nisn" => $nisn,
                             "status_tagihan" => "Belum Lunas",
                             'id_tipe_pembayaran' => $tipeTagihanID,
-                            'id_tahun_ajaran' => $idTahunAjaran,
+                            'id_tahun_ajaran' => null,
                             'periode' => $tahunAjaran["tahun"],
                             'tanggal_pembuatan_tagihan' => now(),
                             'nominal_tagihan' => TipePembayaran::where('id_tipe_pembayaran', $tipeTagihanID)->value('nominal')
