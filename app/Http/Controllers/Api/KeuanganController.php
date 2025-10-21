@@ -490,11 +490,11 @@ class KeuanganController extends Controller
             $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
             $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
 
-            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("nisn", $request->nisn)
-            ->where(function ($q) use ($idTahunAjaran) {
-                $q->where("id_tahun_ajaran", $idTahunAjaran)
-                    ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
-            });
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran', 'pembayaran'])->where("nisn", $request->nisn)
+                ->where(function ($q) use ($idTahunAjaran) {
+                    $q->where("id_tahun_ajaran", $idTahunAjaran)
+                        ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
+                });
 
             $data = $query->get();
 

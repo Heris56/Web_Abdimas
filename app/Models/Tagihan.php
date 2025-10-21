@@ -39,4 +39,9 @@ class Tagihan extends Model
     {
         return $this->belongsTo(TahunAjaran::class, 'id_tahun_ajaran', 'id_tahun_ajaran');
     }
+
+    public function pembayaran()
+    {
+        return $this->hasMany(Pembayaran::class, 'id_tagihan', 'id_tagihan');
+    }
 }
