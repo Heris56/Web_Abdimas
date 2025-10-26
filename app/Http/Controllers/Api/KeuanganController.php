@@ -1158,10 +1158,11 @@ class KeuanganController extends Controller
         DB::beginTransaction();
         try {
             StaffKeuangan::create([
-                'nama' => 'Raphael Permana Barus',
-                'email' => 'raphael@example.com',
+                'nama' => 'Dini Insan Fatonah',
+                'email' => 'dini.insanpatonah62@gmail.com',
                 'password' => Hash::make('rahasia123'),
-                'status' => 'Aktif'
+                'status' => 'Aktif',
+                'role' => "Auditor",
             ]);
 
             DB::commit();
