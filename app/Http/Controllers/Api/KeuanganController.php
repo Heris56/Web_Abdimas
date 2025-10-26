@@ -166,8 +166,9 @@ class KeuanganController extends Controller
             ]);
 
             $listPembayaran = Pembayaran::where("id_tagihan", $request->id_tagihan)->get();
-            $tagihan = Tagihan::findOrFail($request->id_tagihan);
+            $tagihan = Tagihan::with('tipePembayaran')->findOrFail($request->id_tagihan);
             $totalTagihan = $tagihan->nominal_tagihan;
+            $cicilable = $tagihan->tipePembayaran->is_cicilable; // akses langsung relasinya
 
             $idKas = Kas::where("id_tipe_pembayaran", $tagihan->id_tipe_pembayaran)->value("id_kas");
             if (!$idKas) {
@@ -187,7 +188,13 @@ class KeuanganController extends Controller
                     $totalPembayaran = $totalPembayaran + $pembayaran->jumlah_pembayaran;
                 }
                 $totalPembayaran += $request->jumlah_pembayaran; // jumlah akhir pembayaran
-
+                if (!$cicilable) {
+                    if ($totalPembayaran != $totalTagihan) {
+                        return response()->json([
+                            "message" => "gagal menambahkan Pembayaran karena Pembayaran tidak bisa dicicil",
+                        ], 400);
+                    }
+                }
                 // tentukan jika total pembayaran melebihi total tagihan atau tidak
                 if ($totalPembayaran <= $totalTagihan) {
 
@@ -233,6 +240,15 @@ class KeuanganController extends Controller
             } else { // kosong
                 $totalPembayaran = $request->jumlah_pembayaran;
 
+                // throw kalo gak bisa dicicil
+                if (!$cicilable) {
+                    if ($totalPembayaran != $totalTagihan) {
+                        return response()->json([
+                            "message" => "gagal menambahkan Pembayaran karena Pembayaran tidak bisa dicicil",
+                        ], 400);
+                    }
+                }
+
                 // tentukan jika total pembayaran melebihi total tagihan atau tidak
                 if ($totalPembayaran <= $totalTagihan) {
                     $pembayaran = Pembayaran::create([
@@ -276,7 +292,7 @@ class KeuanganController extends Controller
 
             return response()->json([
                 "message" => "Berhasil menambahkan Pembayaran",
-            ], 200);
+            ], 201);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -510,6 +526,31 @@ class KeuanganController extends Controller
             ], 500);
         }
     }
+
+    public function TagihanPembayaranSiswa(Request $request)
+    {
+        try {
+            $request->validate([
+                'id_tagihan' => 'required',
+                'idTahunAjaran' => 'required',
+            ]);
+
+            $query = Tagihan::with('pembayaran', 'tipePembayaran')->find($request->id_tagihan);
+            $tahun_ajaran = TahunAjaran::find($request->idTahunAjaran);
+
+            return response()->json([
+                "message" => "Berhasil Fetch data Tagihan Siswa",
+                "data" => $query,
+                "tahun_ajaran" => $tahun_ajaran
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Mendapatkan Tagihan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function TagihanSiswa(Request $request)
     {
         try {
@@ -523,6 +564,8 @@ class KeuanganController extends Controller
             $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
             $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
 
+            $periodeTahunan = $tahun_ajaran->tahun;
+
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
             $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
                 ->where("nisn", $request->nisn);
@@ -530,9 +573,7 @@ class KeuanganController extends Controller
                 case "sekali":
                     break;
                 case "tahunan":
-                    $query->whereHas("tahunAjaran", function ($q) use ($tahun_ajaran) {
-                        $q->where("tahun", $tahun_ajaran->tahun);
-                    });
+                    $query->where('periode', $periodeTahunan);
                     break;
                 case "semester":
                     $query->where("id_tahun_ajaran", $idTahunAjaran);
@@ -553,6 +594,7 @@ class KeuanganController extends Controller
             return response()->json([
                 "message" => "Berhasil Fetch data Tagihan Siswa",
                 "data" => $data,
+                "tahun_ajaran" => $tahun_ajaran,
                 "currentTahunAjaran" => $currentTahunAjaran
             ], 200);
         } catch (Exception $e) {
@@ -1154,6 +1196,7 @@ class KeuanganController extends Controller
                     'id' => $staff->id,
                     'nama' => $staff->nama,
                     'email' => $staff->email,
+                    'role' => $staff->role,
                 ]
             ], 200);
         } catch (Exception $e) {
