@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/getTagihanSiswa', [KeuanganController::class, "TagihanSiswa"]);
     Route::get('/TagihanPembayaranSiswa', [KeuanganController::class, "TagihanPembayaranSiswa"]);
     Route::get('/getAllTagihanSiswa', [KeuanganController::class, "AllTagihanSiswa"]); // buat get semua tagihan siswa per-tahunajaran
+    Route::get('/getTahunAjaranbyID', [KeuanganController::class, "getTahunAjaranbyID"]);
     Route::get('/getAllTagihan', [KeuanganController::class, "AllTagihan"]); // buat get tagihan siswa per-tipe dan per-tahunajaran
     Route::post('/createTagihanSiswa', [KeuanganController::class, "createTagihan"]);
 
