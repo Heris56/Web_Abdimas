@@ -310,6 +310,13 @@ class KeuanganController extends Controller
             $query = Pembayaran::with('tagihan.siswa');
             sleep(seconds: 0); // for debugging timeout
 
+            if ($search) {
+                $query->whereHas('tagihan.siswa',function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                        ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
+
             $pembayaran = $query->paginate($perPage);
             return response()->json([
                 "message" => "Berhasil Fetch data Pembayaran",
@@ -613,11 +620,12 @@ class KeuanganController extends Controller
 
             $query = Tagihan::with('siswa', 'tipePembayaran');
 
-            // if ($search) {
-            //     $query->where(function ($q) use ($search) {
-            //         $q->where('keterangan', 'like', "%{$search}%");
-            //     });
-            // }
+            if ($search) {
+                $query->whereHas('siswa', function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
 
             $tagihan = $query->paginate($perPage);
 
