@@ -310,6 +310,13 @@ class KeuanganController extends Controller
             $query = Pembayaran::with('tagihan.siswa');
             sleep(seconds: 0); // for debugging timeout
 
+            if ($search) {
+                $query->whereHas('tagihan.siswa',function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                        ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
+
             $pembayaran = $query->paginate($perPage);
             return response()->json([
                 "message" => "Berhasil Fetch data Pembayaran",
@@ -613,11 +620,12 @@ class KeuanganController extends Controller
 
             $query = Tagihan::with('siswa', 'tipePembayaran');
 
-            // if ($search) {
-            //     $query->where(function ($q) use ($search) {
-            //         $q->where('keterangan', 'like', "%{$search}%");
-            //     });
-            // }
+            if ($search) {
+                $query->whereHas('siswa', function ($q) use ($search) {
+                    $q->where('nama_siswa', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
+                });
+            }
 
             $tagihan = $query->paginate($perPage);
 
@@ -646,8 +654,8 @@ class KeuanganController extends Controller
         try {
             $data = $request->validated();
             $bulanSemester = [
-                "Ganjil" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
-                "Genap" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+                "Genap" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
+                "Ganjil" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
             ];
 
 
@@ -900,6 +908,59 @@ class KeuanganController extends Controller
             DB::rollBack();
             return response()->json([
                 'message' => 'Gagal fetch Kas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function DashboardTransaksiKas(Request $request)
+    {
+        try {
+            $idKas = $request->input("idKas");
+            $pengeluaran = 0;
+            $pemasukan = 0;
+            $datemonth = $request->input('yearmonth');
+            if (!$idKas || $idKas == 0) {
+                return response()->json([
+                    "message" => "Gagal Fetch Kas Transaksi, id Kas Tidak ditemukan",
+                    "data" => [],
+                ]);
+            }
+
+            $query = KasTransaksi::query()->where("id_kas", $idKas);
+
+            if ($datemonth) {
+                [$year, $month] = explode('-', $datemonth);
+                $query->whereYear('tanggal', $year)
+                    ->whereMonth('tanggal', $month);
+            }
+
+            $kasTransaksiData = $query->get();
+            foreach ($kasTransaksiData as $data) {
+                if ($data->sumber === "pembayaran") {
+                    $pemasukan += $data->debit;
+                } else if ($data->sumber === "pengeluaran") {
+                    $pengeluaran += $data->kredit;
+                }
+            }
+
+            $kasTransaksi = $query->orderBy('tanggal', 'desc')->get();
+
+            $datapemasukan = $kasTransaksi->where('sumber', 'pembayaran');
+            $datapengeluaran = $kasTransaksi->where('sumber', 'pengeluaran');
+
+            return response()->json([
+                "message" => "Berhasil Fetch Kas Transaksi",
+                "saldo" => Kas::find($idKas)->saldo,
+                "pengeluaran" => $pengeluaran,
+                "pemasukan" => $pemasukan,
+                "datapemasukan" => $datapemasukan,
+                "datapengeluaran" => $datapengeluaran,
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal fetch Transaksi',
                 'error' => $e->getMessage()
             ], 500);
         }
