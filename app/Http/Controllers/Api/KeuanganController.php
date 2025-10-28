@@ -646,8 +646,8 @@ class KeuanganController extends Controller
         try {
             $data = $request->validated();
             $bulanSemester = [
-                "Ganjil" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
-                "Genap" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+                "Genap" => ["Januari", "Februari", "Maret", "April", "Mei", "Juni"],
+                "Ganjil" => ["Juli", "Agustus", "September", "Oktober", "November", "Desember"],
             ];
 
 
