@@ -1081,8 +1081,33 @@ class KeuanganController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
+
+    public function getTahunAjaranbyID(Request $request)
+    {
+        try {
+            $id_tahun_ajaran = $request->input("idTahunAjaran");
+            $dataTahunAjaran = TahunAjaran::where("id_tahun_ajaran", $id_tahun_ajaran)->first();
+
+            if (!$dataTahunAjaran) {
+                return response()->json([
+                    'message' => 'Tahun Ajaran tidak ditemukan',
+                    'dataTahunAjaran' => null
+                ], 404);
+            }
+
+            return response()->json([
+                'message' => 'Berhasil Fetch Tahun Ajaran',
+                'dataTahunAjaran' => $dataTahunAjaran
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Gagal Get Tahun Ajaran',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function LogoutKeuangan(Request $request)
     {
