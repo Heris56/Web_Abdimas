@@ -45,6 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // kas
     Route::get("/getKas", [KeuanganController::class, "getKas"]);
+    Route::get('/DashboardTransaksiKas', [KeuanganController::class, 'DashboardTransaksiKas']);
     Route::get("/TransaksiKas", [KeuanganController::class, "getTransaksiKas"]);
 
     // Logs
