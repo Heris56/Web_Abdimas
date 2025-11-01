@@ -1011,9 +1011,18 @@ class KeuanganController extends Controller
             $query = KasTransaksi::query()->where("id_kas", $idKas);
 
             if ($datemonth) {
-                [$year, $month] = explode('-', $datemonth);
-                $query->whereYear('tanggal', $year)
-                    ->whereMonth('tanggal', $month);
+                // [$year, $month] = explode('-', $datemonth);
+                // $query->whereYear('tanggal', $year)
+                //     ->whereMonth('tanggal', $month);
+                $parts = explode('-', $datemonth);
+                $year = $parts[0];
+
+                $query->whereYear('tanggal', $year);
+
+                if (isset($parts[1]) && is_numeric($parts[1])) {
+                    $month = $parts[1];
+                    $query->whereMonth('tanggal', $month);
+                }
             }
 
             if ($search) {
