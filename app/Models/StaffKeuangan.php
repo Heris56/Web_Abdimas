@@ -18,7 +18,8 @@ class StaffKeuangan extends Authenticatable
         'nama',
         'email',
         'password',
-        'status'
+        'status',
+        'role'
     ];
 
     // optional: biar password tidak ikut ke JSON response

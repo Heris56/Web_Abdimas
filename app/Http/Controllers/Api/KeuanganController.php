@@ -212,7 +212,7 @@ class KeuanganController extends Controller
                         "sumber" => "pembayaran",
                         "id_sumber" => $pembayaran->id_tagihan_pembayaran,
                         "tanggal" => now(),
-                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "keterangan" => "menerima pembayaran dari {$tagihan->tipePembayaran->nama_tipe} #{$tagihan->id_tagihan}",
                         "debit" => $request->jumlah_pembayaran,
                         "kredit" => 0,
                         "saldo_akhir" => $saldoAkhir,
@@ -264,7 +264,7 @@ class KeuanganController extends Controller
                         "sumber" => "pembayaran",
                         "id_sumber" => $pembayaran->id_tagihan_pembayaran,
                         "tanggal" => now(),
-                        "keterangan" => "Pembayaran tagihan #{$tagihan->id_tagihan}",
+                        "keterangan" => "menerima pembayaran dari {$tagihan->tipePembayaran->nama_tipe} #{$tagihan->id_tagihan}",
                         "debit" => $request->jumlah_pembayaran,
                         "kredit" => 0,
                         "saldo_akhir" => $saldoAkhir,
@@ -280,6 +280,14 @@ class KeuanganController extends Controller
                     ], 400);
                 }
 
+                $this->logActivity(
+                    "create",
+                    "cashflow_tagihan_pembayaran",
+                    $pembayaran->id_tagihan_pembayaran,
+                    null,
+                    $pembayaran->getAttributes(),
+                    "tambah data pembayaran baru #{$pembayaran->id_tagihan_pembayaran}"
+                );
                 if ($totalPembayaran >= $totalTagihan) {
                     // update tagihan jadi lunas kalo total pembayaran udah sama dengan tagihan
                     $tagihan->update([
@@ -311,7 +319,7 @@ class KeuanganController extends Controller
             sleep(seconds: 0); // for debugging timeout
 
             if ($search) {
-                $query->whereHas('tagihan.siswa',function ($q) use ($search) {
+                $query->whereHas('tagihan.siswa', function ($q) use ($search) {
                     $q->where('nama_siswa', 'like', "%{$search}%")
                         ->orWhere('nisn', 'like', "%{$search}%");
                 });
@@ -422,14 +430,22 @@ class KeuanganController extends Controller
                 'saldo' => $saldoAkhir
             ]);
 
-            // $this->logActivity(
-            //     "create",
-            //     "cashflow_pengeluaran",
-            //     $pengeluaran->id_pengeluaran,
-            //     null,
-            //     $pengeluaran->getAttributes(),
-            //     "tambah data pengeluaran baru"
-            // );
+            $this->logActivity(
+                "create",
+                "cashflow_pengeluaran",
+                $pengeluaran->id_pengeluaran,
+                null,
+                $pengeluaran->getAttributes(),
+                "tambah data pengeluaran baru"
+            );
+            $this->logActivity(
+                "create",
+                "cashflow_kas_transaksi",
+                $kasTransaksi->id_transaksi,
+                null,
+                $kasTransaksi->getAttributes(),
+                "tambah data Transaksi baru"
+            );
             DB::commit();
 
             return response()->json([
@@ -623,7 +639,7 @@ class KeuanganController extends Controller
             if ($search) {
                 $query->whereHas('siswa', function ($q) use ($search) {
                     $q->where('nama_siswa', 'like', "%{$search}%")
-                    ->orWhere('nisn', 'like', "%{$search}%");
+                        ->orWhere('nisn', 'like', "%{$search}%");
                 });
             }
 
@@ -930,9 +946,18 @@ class KeuanganController extends Controller
             $query = KasTransaksi::query()->where("id_kas", $idKas);
 
             if ($datemonth) {
-                [$year, $month] = explode('-', $datemonth);
-                $query->whereYear('tanggal', $year)
-                    ->whereMonth('tanggal', $month);
+                // [$year, $month] = explode('-', $datemonth);
+                // $query->whereYear('tanggal', $year)
+                //     ->whereMonth('tanggal', $month);
+                $parts = explode('-', $datemonth);
+                $year = $parts[0];
+
+                $query->whereYear('tanggal', $year);
+
+                if (isset($parts[1]) && is_numeric($parts[1])) {
+                    $month = $parts[1];
+                    $query->whereMonth('tanggal', $month);
+                }
             }
 
             $kasTransaksiData = $query->get();
@@ -986,9 +1011,18 @@ class KeuanganController extends Controller
             $query = KasTransaksi::query()->where("id_kas", $idKas);
 
             if ($datemonth) {
-                [$year, $month] = explode('-', $datemonth);
-                $query->whereYear('tanggal', $year)
-                    ->whereMonth('tanggal', $month);
+                // [$year, $month] = explode('-', $datemonth);
+                // $query->whereYear('tanggal', $year)
+                //     ->whereMonth('tanggal', $month);
+                $parts = explode('-', $datemonth);
+                $year = $parts[0];
+
+                $query->whereYear('tanggal', $year);
+
+                if (isset($parts[1]) && is_numeric($parts[1])) {
+                    $month = $parts[1];
+                    $query->whereMonth('tanggal', $month);
+                }
             }
 
             if ($search) {
@@ -1244,10 +1278,11 @@ class KeuanganController extends Controller
         DB::beginTransaction();
         try {
             StaffKeuangan::create([
-                'nama' => 'Raphael Permana Barus',
-                'email' => 'raphael@example.com',
+                'nama' => 'Dini Insan Fatonah',
+                'email' => 'dini.insanpatonah62@gmail.com',
                 'password' => Hash::make('rahasia123'),
-                'status' => 'Aktif'
+                'status' => 'Aktif',
+                'role' => "Auditor",
             ]);
 
             DB::commit();
