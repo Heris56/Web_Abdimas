@@ -612,7 +612,7 @@ class KeuanganController extends Controller
             $periodeTahunan = $tahun_ajaran->tahun;
 
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
-            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran', 'pembayaran'])->where("id_tipe_pembayaran", $request->tipe)
                 ->where("nisn", $request->nisn);
             switch ($tipePeriode) {
                 case "sekali":
