@@ -533,7 +533,8 @@ class KeuanganController extends Controller
                 ->where(function ($q) use ($idTahunAjaran) {
                     $q->where("id_tahun_ajaran", $idTahunAjaran)
                         ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
-                });
+                })
+                ->whereHas("tipePembayaran");
 
             $data = $query->get();
 
@@ -876,6 +877,9 @@ class KeuanganController extends Controller
             'is_cicilable' => 'required|boolean',
         ]);
 
+        // Simpan data lama sebelum update
+        $oldValues = $tipe->toArray();
+
         $tipe->update([
             'nama_tipe' => $request->nama_tipe,
             'nominal' => $request->nominal,
@@ -884,10 +888,23 @@ class KeuanganController extends Controller
             'is_cicilable' => $request->is_cicilable
         ]);
 
+        // Ambil data baru setelah update
+        $newValues = $tipe->fresh()->toArray();
+
         $kas = Kas::where('id_tipe_pembayaran', $tipe->id_tipe_pembayaran)->first();
         if ($kas) {
             $kas->update(['nama_kas' => $request->nama_tipe]);
         }
+
+        // Log aktivitas update
+        $this->logActivity(
+            action: 'update',
+            tableName: 'tipe_pembayaran',
+            recordId: $tipe->id_tipe_pembayaran,
+            oldValues: $oldValues,
+            newValues: $newValues,
+            description: "Mengubah tipe pembayaran dengan ID {$tipe->id_tipe_pembayaran}"
+        );
 
         return response()->json([
             'message' => 'Tipe Pembayaran updated successfully',
@@ -900,7 +917,18 @@ class KeuanganController extends Controller
     public function deleteTipePembayaran($id)
     {
         $tipe = TipePembayaran::findOrFail($id);
+        // Simpan data lama sebelum dihapus
+        $oldValues = $tipe->toArray();
         $tipe->delete();
+
+        $this->logActivity(
+            action: 'delete',
+            tableName: 'tipe_pembayaran',
+            recordId: $id,
+            oldValues: $oldValues,
+            newValues: null,
+            description: "Menghapus tipe pembayaran dengan ID $id"
+        );
 
         return response()->json([
             'message' => 'Tipe Pembayaran deleted successfully'
