@@ -527,12 +527,32 @@ class KeuanganController extends Controller
 
             $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
             $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
-            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
+            $tahunAjaran = TahunAjaran::find($idTahunAjaran);
 
             $query = Tagihan::with(['tipePembayaran', 'tahunAjaran', 'pembayaran'])->where("nisn", $request->nisn)
-                ->where(function ($q) use ($idTahunAjaran) {
-                    $q->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
+                // ->where(function ($q) use ($idTahunAjaran) {
+                //     $q->where("id_tahun_ajaran", $idTahunAjaran)
+                //         ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
+                // })
+                ->where(function ($outer) use ($idTahunAjaran, $tahunAjaran) {
+                    $outer
+                        // 🔹 CASE 1: periodik non-tahunan dan sekali
+                        ->where(function ($q) use ($idTahunAjaran) {
+                            $q->whereHas('tipePembayaran', function ($tp) {
+                                $tp->whereIn('tipe_periodik', ['bulanan', 'semester', 'sekali']); // bisa ditambah tipe lain
+                            })
+                                ->where(function ($x) use ($idTahunAjaran) {
+                                    $x->where('id_tahun_ajaran', $idTahunAjaran)
+                                        ->orWhereNull(column: 'id_tahun_ajaran'); // null diizinkan untuk "sekali"
+                                });
+                        })
+                        // 🔹 CASE 2: periodik tahunan, tapi periode-nya harus sama dengan tahun ajaran aktif
+                        ->orWhere(function ($sub) use ($tahunAjaran) {
+                            $sub->whereHas('tipePembayaran', function ($tp) {
+                                $tp->where('tipe_periodik', 'tahunan');
+                            })
+                                ->where('periode', $tahunAjaran->tahun);
+                        });
                 })
                 ->whereHas("tipePembayaran");
 
@@ -541,6 +561,7 @@ class KeuanganController extends Controller
             return response()->json([
                 "message" => "Berhasil Fetch data Tagihan Siswa",
                 "data" => $data,
+                "tahun_ajaran" => $tahunAjaran,
                 "currentTahunAjaran" => $currentTahunAjaran
             ], 200);
         } catch (Exception $e) {
