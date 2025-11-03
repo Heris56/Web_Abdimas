@@ -527,19 +527,41 @@ class KeuanganController extends Controller
 
             $currentTahunAjaran = TahunAjaran::where("is_current", true)->first();
             $idTahunAjaran = $request->idTahunAjaran ?? $currentTahunAjaran->id_tahun_ajaran;
-            $tahun_ajaran = TahunAjaran::find($idTahunAjaran);
+            $tahunAjaran = TahunAjaran::find($idTahunAjaran);
 
             $query = Tagihan::with(['tipePembayaran', 'tahunAjaran', 'pembayaran'])->where("nisn", $request->nisn)
-                ->where(function ($q) use ($idTahunAjaran) {
-                    $q->where("id_tahun_ajaran", $idTahunAjaran)
-                        ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
-                });
+                // ->where(function ($q) use ($idTahunAjaran) {
+                //     $q->where("id_tahun_ajaran", $idTahunAjaran)
+                //         ->orWhereNull("id_tahun_ajaran"); // 🔹 ambil juga yang null
+                // })
+                ->where(function ($outer) use ($idTahunAjaran, $tahunAjaran) {
+                    $outer
+                        // 🔹 CASE 1: periodik non-tahunan dan sekali
+                        ->where(function ($q) use ($idTahunAjaran) {
+                            $q->whereHas('tipePembayaran', function ($tp) {
+                                $tp->whereIn('tipe_periodik', ['bulanan', 'semester', 'sekali']); // bisa ditambah tipe lain
+                            })
+                                ->where(function ($x) use ($idTahunAjaran) {
+                                    $x->where('id_tahun_ajaran', $idTahunAjaran)
+                                        ->orWhereNull(column: 'id_tahun_ajaran'); // null diizinkan untuk "sekali"
+                                });
+                        })
+                        // 🔹 CASE 2: periodik tahunan, tapi periode-nya harus sama dengan tahun ajaran aktif
+                        ->orWhere(function ($sub) use ($tahunAjaran) {
+                            $sub->whereHas('tipePembayaran', function ($tp) {
+                                $tp->where('tipe_periodik', 'tahunan');
+                            })
+                                ->where('periode', $tahunAjaran->tahun);
+                        });
+                })
+                ->whereHas("tipePembayaran");
 
             $data = $query->get();
 
             return response()->json([
                 "message" => "Berhasil Fetch data Tagihan Siswa",
                 "data" => $data,
+                "tahun_ajaran" => $tahunAjaran,
                 "currentTahunAjaran" => $currentTahunAjaran
             ], 200);
         } catch (Exception $e) {
@@ -590,7 +612,7 @@ class KeuanganController extends Controller
             $periodeTahunan = $tahun_ajaran->tahun;
 
             $tipePeriode = TipePembayaran::where("id_tipe_pembayaran", $request->tipe)->value("tipe_periodik");
-            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran'])->where("id_tipe_pembayaran", $request->tipe)
+            $query = Tagihan::with(['tipePembayaran', 'tahunAjaran', 'pembayaran'])->where("id_tipe_pembayaran", $request->tipe)
                 ->where("nisn", $request->nisn);
             switch ($tipePeriode) {
                 case "sekali":
@@ -876,6 +898,9 @@ class KeuanganController extends Controller
             'is_cicilable' => 'required|boolean',
         ]);
 
+        // Simpan data lama sebelum update
+        $oldValues = $tipe->toArray();
+
         $tipe->update([
             'nama_tipe' => $request->nama_tipe,
             'nominal' => $request->nominal,
@@ -884,10 +909,23 @@ class KeuanganController extends Controller
             'is_cicilable' => $request->is_cicilable
         ]);
 
+        // Ambil data baru setelah update
+        $newValues = $tipe->fresh()->toArray();
+
         $kas = Kas::where('id_tipe_pembayaran', $tipe->id_tipe_pembayaran)->first();
         if ($kas) {
             $kas->update(['nama_kas' => $request->nama_tipe]);
         }
+
+        // Log aktivitas update
+        $this->logActivity(
+            action: 'update',
+            tableName: 'tipe_pembayaran',
+            recordId: $tipe->id_tipe_pembayaran,
+            oldValues: $oldValues,
+            newValues: $newValues,
+            description: "Mengubah tipe pembayaran dengan ID {$tipe->id_tipe_pembayaran}"
+        );
 
         return response()->json([
             'message' => 'Tipe Pembayaran updated successfully',
@@ -900,7 +938,18 @@ class KeuanganController extends Controller
     public function deleteTipePembayaran($id)
     {
         $tipe = TipePembayaran::findOrFail($id);
+        // Simpan data lama sebelum dihapus
+        $oldValues = $tipe->toArray();
         $tipe->delete();
+
+        $this->logActivity(
+            action: 'delete',
+            tableName: 'tipe_pembayaran',
+            recordId: $id,
+            oldValues: $oldValues,
+            newValues: null,
+            description: "Menghapus tipe pembayaran dengan ID $id"
+        );
 
         return response()->json([
             'message' => 'Tipe Pembayaran deleted successfully'
