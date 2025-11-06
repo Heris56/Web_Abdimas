@@ -108,7 +108,7 @@ class DataController extends Controller
 
         switch ($type) {
             case 'siswa':
-                $data = DB::table('siswa')->get();
+                $data = DB::table('siswa')->paginate(50);
                 $columns = [
                     'nisn' => 'NISN',
                     'nama_siswa' => 'Nama Siswa',
@@ -118,14 +118,14 @@ class DataController extends Controller
                 ];
                 break;
             case 'kelas':
-                $data = DB::table('kelas')->get();
+                $data = DB::table('kelas')->paginate(50);
                 $columns = [
                     'id_kelas' => 'Kelas',
                     'jurusan' => 'Jurusan',
                 ];
                 break;
             case 'guru_mapel':
-                $data = DB::table('guru_mapel')->get();
+                $data = DB::table('guru_mapel')->paginate(50);
                 $columns = [
                     'nip_guru_mapel' => 'Kode Guru',
                     'nama_guru' => 'Nama Guru',
@@ -137,7 +137,7 @@ class DataController extends Controller
                 ];
                 break;
             case 'wali_kelas':
-                $data = DB::table('wali_kelas')->get();
+                $data = DB::table('wali_kelas')->paginate(50);
                 $columns = [
                     'nip_wali_kelas' => 'Kode Guru',
                     'nama' => 'Nama Guru',
@@ -147,7 +147,7 @@ class DataController extends Controller
                 ];
                 break;
             case 'mapel':
-                $data = DB::table('mapel')->get();
+                $data = DB::table('mapel')->paginate(50);
                 $columns = [
                     'id_mapel' => 'ID Mapel',
                     'nama_mapel' => 'Nama Mapel'
@@ -156,7 +156,7 @@ class DataController extends Controller
             case 'tahun_ajaran':
                 $data = DB::table('tahun_ajaran')
                     ->orderBy('tahun', 'asc')
-                    ->orderBy('semester', 'asc')->get();
+                    ->orderBy('semester', 'asc')->paginate(50);
                 $columns = [
                     'tahun' => 'Tahun Ajaran',
                     'semester' => 'Semester',
@@ -164,7 +164,7 @@ class DataController extends Controller
                 ];
                 break;
             case 'paket_mapel':
-                $data = DB::table('paket_mapel')->get();
+                $data = DB::table('paket_mapel')->paginate(50);
                 $columns = [
                     'kode_paket' => 'Kode Paket',
                     'id_kelas' => 'Kelas',
@@ -175,7 +175,7 @@ class DataController extends Controller
 
                 break;
             default:
-                $data = DB::table('siswa')->get();
+                $data = DB::table('siswa')->paginate(50);
                 $columns = [
                     'nisn' => 'NISN',
                     'nama_siswa' => 'Nama Siswa',
