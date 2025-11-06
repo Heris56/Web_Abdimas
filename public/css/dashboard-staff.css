@@ -54,7 +54,7 @@ input.form-control:focus {
 .content-wrapper {
     display: grid;
     grid-template-columns: 0.3fr 1.7fr;
-    grid-template-rows: 0.2fr 2fr;
+    grid-template-rows: auto 2fr;
     grid-auto-columns: 1fr;
     padding: 0.5rem 1.5rem;
     gap: 0px 0px;
